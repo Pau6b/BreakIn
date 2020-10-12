@@ -1,7 +1,4 @@
-#ifndef _SHADER_PROGRAM_INCLUDE
-#define _SHADER_PROGRAM_INCLUDE
-
-
+#pragma once
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <glm/glm.hpp>
@@ -12,7 +9,8 @@
 // together, bind input attributes to their corresponding vertex shader names, 
 // and bind the fragment output to a name from the fragment shader
 
-
+namespace game
+{
 class ShaderProgram
 {
 
@@ -20,29 +18,27 @@ public:
 	ShaderProgram();
 
 	void init();
-	void addShader(const Shader &shader);
-	void bindFragmentOutput(const string &outputName);
-	GLint bindVertexAttribute(const string &attribName, GLint size, GLsizei stride, GLvoid *firstPointer);
+	void addShader(const Shader& i_shader);
+	void bindFragmentOutput(const std::string& i_outputName);
+	GLint bindVertexAttribute(const std::string& i_attribName, GLint i_size, GLsizei i_stride, GLvoid* i_firstPointer);
 	void link();
 	void free();
 
 	void use();
 
 	// Pass uniforms to the associated shaders
-	void setUniform2f(const string &uniformName, float v0, float v1);
-	void setUniform3f(const string &uniformName, float v0, float v1, float v2);
-	void setUniform4f(const string &uniformName, float v0, float v1, float v2, float v3);
-	void setUniformMatrix4f(const string &uniformName, glm::mat4 &mat);
+	void setUniform2f(const std::string& i_uniformName, float i_v0, float i_v1);
+	void setUniform3f(const std::string& i_uniformName, float i_v0, float i_v1, float i_v2);
+	void setUniform4f(const std::string& i_uniformName, float i_v0, float i_v1, float i_v2, float i_v3);
+	void setUniformMatrix4f(const std::string& i_uniformName, glm::mat4& i_mat);
 
 	bool isLinked();
-	const string &log() const;
+	const std::string &log() const;
 
 private:
-	GLuint programId;
-	bool linked;
-	string errorLog;
+	GLuint m_programId;
+	bool m_linked;
+	std::string m_errorLog;
 
 };
-
-
-#endif // _SHADER_PROGRAM_INCLUDE
+}

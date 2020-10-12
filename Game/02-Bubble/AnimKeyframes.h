@@ -1,13 +1,8 @@
-#ifndef _ANIMATION_KEYFRAMES
-#define _ANIMATION_KEYFRAMES
-
-
+#pragma once
 #include <vector>
 
-
-using namespace std;
-
-
+namespace game
+{
 // AnimKeyframes contains all information related to a single animation.
 // These are the animation speed measured by millisecsPerKeyframe
 // and texture coordinates for all keyframes.
@@ -16,10 +11,7 @@ using namespace std;
 struct AnimKeyframes
 {
 	float millisecsPerKeyframe;
-	vector<glm::vec2> keyframeDispl;
+	std::vector<glm::vec2> keyframeDispl;
 };
 
-
-#endif // _ANIMATION_KEYFRAMES
-
-
+}

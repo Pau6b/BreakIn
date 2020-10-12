@@ -1,43 +1,41 @@
 #include <SOIL.h>
 #include "Texture.h"
 
-
-using namespace std;
-
-
+namespace game
+{
 Texture::Texture()
 {
-	wrapS = GL_REPEAT;
-	wrapT = GL_REPEAT;
-	minFilter = GL_LINEAR_MIPMAP_LINEAR;
-	magFilter = GL_LINEAR_MIPMAP_LINEAR;
+	m_wrapS = GL_REPEAT;
+	m_wrapT = GL_REPEAT;
+	m_minFilter = GL_LINEAR_MIPMAP_LINEAR;
+	m_magFilter = GL_LINEAR_MIPMAP_LINEAR;
 }
 
 
-bool Texture::loadFromFile(const string &filename, PixelFormat format)
+bool Texture::loadFromFile(const std::string& i_filename, PixelFormat i_format)
 {
 	unsigned char *image = NULL;
 	
-	switch(format)
+	switch(i_format)
 	{
-	case TEXTURE_PIXEL_FORMAT_RGB:
-		image = SOIL_load_image(filename.c_str(), &widthTex, &heightTex, 0, SOIL_LOAD_RGB);
+	case PixelFormat::TEXTURE_PIXEL_FORMAT_RGB:
+		image = SOIL_load_image(i_filename.c_str(), &m_widthTex, &m_heightTex, 0, SOIL_LOAD_RGB);
 		break;
-	case TEXTURE_PIXEL_FORMAT_RGBA:
-		image = SOIL_load_image(filename.c_str(), &widthTex, &heightTex, 0, SOIL_LOAD_RGBA);
+	case PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA:
+		image = SOIL_load_image(i_filename.c_str(), &m_widthTex, &m_heightTex, 0, SOIL_LOAD_RGBA);
 		break;
 	}
 	if(image == NULL)
 		return false;
-	glGenTextures(1, &texId);
-	glBindTexture(GL_TEXTURE_2D, texId);
-	switch(format)
+	glGenTextures(1, &m_texId);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
+	switch(i_format)
 	{
-	case TEXTURE_PIXEL_FORMAT_RGB:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthTex, heightTex, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	case PixelFormat::TEXTURE_PIXEL_FORMAT_RGB:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_widthTex, m_heightTex, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		break;
-	case TEXTURE_PIXEL_FORMAT_RGBA:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthTex, heightTex, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	case PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA:
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_widthTex, m_heightTex, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 		break;
 	}
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -45,69 +43,69 @@ bool Texture::loadFromFile(const string &filename, PixelFormat format)
 	return true;
 }
 
-void Texture::loadFromGlyphBuffer(unsigned char *buffer, int width, int height)
+void Texture::loadFromGlyphBuffer(unsigned char* i_buffer, int i_width, int i_height)
 {
-	glGenTextures(1, &texId);
-	glBindTexture(GL_TEXTURE_2D, texId);
+	glGenTextures(1, &m_texId);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, i_width, i_height, 0, GL_RED, GL_UNSIGNED_BYTE, i_buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
-void Texture::createEmptyTexture(int width, int height)
+void Texture::createEmptyTexture(int i_width, int i_height)
 {
-	glGenTextures(1, &texId);
-	glBindTexture(GL_TEXTURE_2D, texId);
+	glGenTextures(1, &m_texId);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, i_width, i_height, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
-void Texture::loadSubtextureFromGlyphBuffer(unsigned char *buffer, int x, int y, int width, int height)
+void Texture::loadSubtextureFromGlyphBuffer(unsigned char* i_buffer, int i_x, int i_y, int i_width, int i_height)
 {
-	glBindTexture(GL_TEXTURE_2D, texId);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_RED, GL_UNSIGNED_BYTE, buffer);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, i_x, i_y, i_width, i_height, GL_RED, GL_UNSIGNED_BYTE, i_buffer);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 void Texture::generateMipmap()
 {
-	glBindTexture(GL_TEXTURE_2D, texId);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
-void Texture::setWrapS(GLint value)
+void Texture::setWrapS(GLint i_value)
 {
-	wrapS = value;
+	m_wrapS = i_value;
 }
 
-void Texture::setWrapT(GLint value)
+void Texture::setWrapT(GLint i_value)
 {
-	wrapT = value;
+	m_wrapT = i_value;
 }
 
-void Texture::setMinFilter(GLint value)
+void Texture::setMinFilter(GLint i_value)
 {
-	minFilter = value;
+	m_minFilter = i_value;
 }
 
-void Texture::setMagFilter(GLint value)
+void Texture::setMagFilter(GLint i_value)
 {
-	magFilter = value;
+	m_magFilter = i_value;
 }
 
 void Texture::use() const
 {
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+	glBindTexture(GL_TEXTURE_2D, m_texId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_wrapS);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_wrapT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_magFilter);
 }
 
-
+}

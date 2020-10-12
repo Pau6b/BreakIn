@@ -2,83 +2,83 @@
 #include "Shader.h"
 
 
-using namespace std;
-
-
+namespace game
+{
 Shader::Shader()
 {
-	shaderId = 0;
-	compiled = false;
+	m_shaderId = 0;
+	m_compiled = false;
 }
 
 
-void Shader::initFromSource(const ShaderType type, const string &source)
+void Shader::initFromSource(const ShaderType i_type, const std::string& i_source)
 {
-	const char *sourcePtr = source.c_str();
+	const char *sourcePtr = i_source.c_str();
 	GLint status;
 	char buffer[512];
 
-	switch(type)
+	switch(i_type)
 	{
 	case VERTEX_SHADER:
-		shaderId = glCreateShader(GL_VERTEX_SHADER);
+		m_shaderId = glCreateShader(GL_VERTEX_SHADER);
 		break;
 	case FRAGMENT_SHADER:
-		shaderId = glCreateShader(GL_FRAGMENT_SHADER);
+		m_shaderId = glCreateShader(GL_FRAGMENT_SHADER);
 		break;
 	}
-	if(shaderId == 0)
+	if(m_shaderId == 0)
 		return;
-	glShaderSource(shaderId, 1, &sourcePtr, NULL);
-	glCompileShader(shaderId);
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-	compiled = (status == GL_TRUE);
-	glGetShaderInfoLog(shaderId, 512, NULL, buffer);
-	errorLog.assign(buffer);
+	glShaderSource(m_shaderId, 1, &sourcePtr, NULL);
+	glCompileShader(m_shaderId);
+	glGetShaderiv(m_shaderId, GL_COMPILE_STATUS, &status);
+	m_compiled = (status == GL_TRUE);
+	glGetShaderInfoLog(m_shaderId, 512, NULL, buffer);
+	m_errorLog.assign(buffer);
 }
 
-bool Shader::initFromFile(const ShaderType type, const string &filename)
+bool Shader::initFromFile(const ShaderType i_type, const std::string& i_filename)
 {
-	string shaderSource;
+	std::string shaderSource;
 
-	if(!loadShaderSource(filename, shaderSource))
+	if(!loadShaderSource(i_filename, shaderSource))
 		return false;
-	initFromSource(type, shaderSource);
+	initFromSource(i_type, shaderSource);
 
 	return true;
 }
 
 void Shader::free()
 {
-	glDeleteShader(shaderId);
-	shaderId = 0;
-	compiled = false;
+	glDeleteShader(m_shaderId);
+	m_shaderId = 0;
+	m_compiled = false;
 }
 
 GLuint Shader::getId() const
 {
-	return shaderId;
+	return m_shaderId;
 }
 
 bool Shader::isCompiled() const
 {
-	return compiled;
+	return m_compiled;
 }
 
-const string &Shader::log() const
+const std::string &Shader::log() const
 {
-	return errorLog;
+	return m_errorLog;
 }
 
-bool Shader::loadShaderSource(const string &filename, string &shaderSource)
+bool Shader::loadShaderSource(const std::string& i_filename, std::string& i_shaderSource)
 {
-	ifstream fin;
+	std::ifstream fin;
 
-	fin.open(filename.c_str());
+	fin.open(i_filename.c_str());
 	if(!fin.is_open())
 		return false;
-	shaderSource.assign(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
+	i_shaderSource.assign(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>());
 
 	return true;
 }
 
+}

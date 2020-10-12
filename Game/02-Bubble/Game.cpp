@@ -2,72 +2,74 @@
 #include <GL/glut.h>
 #include "Game.h"
 
-
+namespace game
+{
 void Game::init()
 {
-	bPlay = true;
+	m_bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	scene.init();
+	m_scene.init();
 }
 
-bool Game::update(int deltaTime)
+bool Game::update(int i_deltaTime)
 {
-	scene.update(deltaTime);
+	m_scene.update(i_deltaTime);
 	
-	return bPlay;
+	return m_bPlay;
 }
 
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	scene.render();
+	m_scene.render();
 }
 
-void Game::keyPressed(int key)
+void Game::keyPressed(int i_key)
 {
-	if(key == 27) // Escape code
-		bPlay = false;
-	keys[key] = true;
+	if(i_key == 27) // Escape code
+		m_bPlay = false;
+	m_keys[i_key] = true;
 }
 
-void Game::keyReleased(int key)
+void Game::keyReleased(int i_key)
 {
-	keys[key] = false;
+	m_keys[i_key] = false;
 }
 
-void Game::specialKeyPressed(int key)
+void Game::specialKeyPressed(int i_key)
 {
-	specialKeys[key] = true;
+	m_specialKeys[i_key] = true;
 }
 
-void Game::specialKeyReleased(int key)
+void Game::specialKeyReleased(int i_key)
 {
-	specialKeys[key] = false;
+	m_specialKeys[i_key] = false;
 }
 
-void Game::mouseMove(int x, int y)
-{
-}
-
-void Game::mousePress(int button)
+void Game::mouseMove(int i_x, int i_y)
 {
 }
 
-void Game::mouseRelease(int button)
+void Game::mousePress(int i_button)
 {
 }
 
-bool Game::getKey(int key) const
+void Game::mouseRelease(int i_button)
 {
-	return keys[key];
 }
 
-bool Game::getSpecialKey(int key) const
+bool Game::getKey(int i_key) const
 {
-	return specialKeys[key];
+	return m_keys[i_key];
+}
+
+bool Game::getSpecialKey(int i_key) const
+{
+	return m_specialKeys[i_key];
 }
 
 
+}
 
 
 

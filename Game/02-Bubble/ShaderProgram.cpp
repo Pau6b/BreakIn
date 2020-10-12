@@ -1,35 +1,36 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "ShaderProgram.h"
 
-
+namespace game
+{
 ShaderProgram::ShaderProgram()
 {
-	programId = 0;
-	linked = false;
+	m_programId = 0;
+	m_linked = false;
 }
 
 
 void ShaderProgram::init()
 {
-	programId = glCreateProgram();
+	m_programId = glCreateProgram();
 }
 
-void ShaderProgram::addShader(const Shader &shader)
+void ShaderProgram::addShader(const Shader& i_shader)
 {
-	glAttachShader(programId, shader.getId());
+	glAttachShader(m_programId, i_shader.getId());
 }
 
-void ShaderProgram::bindFragmentOutput(const string &outputName)
+void ShaderProgram::bindFragmentOutput(const std::string& i_outputName)
 {
-	glBindAttribLocation(programId, 0, outputName.c_str());
+	glBindAttribLocation(m_programId, 0, i_outputName.c_str());
 }
 
-GLint ShaderProgram::bindVertexAttribute(const string &attribName, GLint size, GLsizei stride, GLvoid *firstPointer)
+GLint ShaderProgram::bindVertexAttribute(const std::string& i_attribName, GLint i_size, GLsizei i_stride, GLvoid* i_firstPointer)
 {
 	GLint attribPos;
 
-	attribPos = glGetAttribLocation(programId, attribName.c_str());
-	glVertexAttribPointer(attribPos, size, GL_FLOAT, GL_FALSE, stride, firstPointer);
+	attribPos = glGetAttribLocation(m_programId, i_attribName.c_str());
+	glVertexAttribPointer(attribPos, i_size, GL_FLOAT, GL_FALSE, i_stride, i_firstPointer);
 
 	return attribPos;
 }
@@ -39,62 +40,62 @@ void ShaderProgram::link()
 	GLint status;
 	char buffer[512];
 
-	glLinkProgram(programId);
-	glGetProgramiv(programId, GL_LINK_STATUS, &status);
-	linked = (status == GL_TRUE);
-	glGetProgramInfoLog(programId, 512, NULL, buffer);
-	errorLog.assign(buffer);
+	glLinkProgram(m_programId);
+	glGetProgramiv(m_programId, GL_LINK_STATUS, &status);
+	m_linked = (status == GL_TRUE);
+	glGetProgramInfoLog(m_programId, 512, NULL, buffer);
+	m_errorLog.assign(buffer);
 }
 
 void ShaderProgram::free()
 {
-	glDeleteProgram(programId);
+	glDeleteProgram(m_programId);
 }
 
 void ShaderProgram::use()
 {
-	glUseProgram(programId);
+	glUseProgram(m_programId);
 }
 
 bool ShaderProgram::isLinked()
 {
-	return linked;
+	return m_linked;
 }
 
-const string &ShaderProgram::log() const
+const std::string &ShaderProgram::log() const
 {
-	return errorLog;
+	return m_errorLog;
 }
 
-void ShaderProgram::setUniform2f(const string &uniformName, float v0, float v1)
+void ShaderProgram::setUniform2f(const std::string& i_uniformName, float i_v0, float i_v1)
 {
-	GLint location = glGetUniformLocation(programId, uniformName.c_str());
+	GLint location = glGetUniformLocation(m_programId, i_uniformName.c_str());
 
 	if(location != -1)
-		glUniform2f(location, v0, v1);
+		glUniform2f(location, i_v0, i_v1);
 }
 
-void ShaderProgram::setUniform3f(const string &uniformName, float v0, float v1, float v2)
+void ShaderProgram::setUniform3f(const std::string& i_uniformName, float i_v0, float i_v1, float i_v2)
 {
-	GLint location = glGetUniformLocation(programId, uniformName.c_str());
+	GLint location = glGetUniformLocation(m_programId, i_uniformName.c_str());
 
 	if(location != -1)
-		glUniform3f(location, v0, v1, v2);
+		glUniform3f(location, i_v0, i_v1, i_v2);
 }
 
-void ShaderProgram::setUniform4f(const string &uniformName, float v0, float v1, float v2, float v3)
+void ShaderProgram::setUniform4f(const std::string& i_uniformName, float i_v0, float i_v1, float i_v2, float i_v3)
 {
-	GLint location = glGetUniformLocation(programId, uniformName.c_str());
+	GLint location = glGetUniformLocation(m_programId, i_uniformName.c_str());
 
 	if(location != -1)
-		glUniform4f(location, v0, v1, v2, v3);
+		glUniform4f(location, i_v0, i_v1, i_v2, i_v3);
 }
 
-void ShaderProgram::setUniformMatrix4f(const string &uniformName, glm::mat4 &mat)
+void ShaderProgram::setUniformMatrix4f(const std::string& i_uniformName, glm::mat4& i_mat)
 {
-	GLint location = glGetUniformLocation(programId, uniformName.c_str());
+	GLint location = glGetUniformLocation(m_programId, i_uniformName.c_str());
 
 	if(location != -1)
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(i_mat));
 }
-
+}

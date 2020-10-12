@@ -1,7 +1,4 @@
-#ifndef _PLAYER_INCLUDE
-#define _PLAYER_INCLUDE
-
-
+#pragma once
 #include "Sprite.h"
 #include "TileMap.h"
 
@@ -10,28 +7,27 @@
 // all properties it needs to track its movement, jumping, and collisions.
 
 
+namespace game
+{
 class Player
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
-	void update(int deltaTime);
+	void init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram);
+	void update(int i_deltaTime);
 	void render();
 	
-	void setTileMap(TileMap *tileMap);
-	void setPosition(const glm::vec2 &pos);
+	void setTileMap(TileMap* i_tileMap);
+	void setPosition(const glm::vec2& i_pos);
 	
 private:
-	bool bJumping;
-	glm::ivec2 tileMapDispl, posPlayer;
-	int jumpAngle, startY;
-	Texture spritesheet;
-	Sprite *sprite;
-	TileMap *map;
+	bool m_bJumping;
+	glm::ivec2 m_tileMapDispl, m_posPlayer;
+	int m_jumpAngle, m_startY;
+	Texture m_spritesheet;
+	Sprite* m_sprite;
+	TileMap* m_map;
 
 };
-
-
-#endif // _PLAYER_INCLUDE
-
+}
 

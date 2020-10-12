@@ -1,7 +1,4 @@
-#ifndef _SCENE_INCLUDE
-#define _SCENE_INCLUDE
-
-
+#pragma once
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
 #include "TileMap.h"
@@ -11,7 +8,8 @@
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
 
-
+namespace game
+{
 class Scene
 {
 
@@ -20,21 +18,19 @@ public:
 	~Scene();
 
 	void init();
-	void update(int deltaTime);
+	void update(int i_deltaTime);
 	void render();
 
 private:
 	void initShaders();
 
 private:
-	TileMap *map;
-	Player *player;
-	ShaderProgram texProgram;
-	float currentTime;
-	glm::mat4 projection;
+	TileMap* m_map;
+	Player* m_player;
+	ShaderProgram m_texProgram;
+	float m_currentTime;
+	glm::mat4 m_projection;
 
 };
-
-
-#endif // _SCENE_INCLUDE
+}
 

@@ -1,15 +1,10 @@
-#ifndef _SHADER_INCLUDE
-#define _SHADER_INCLUDE
-
-
+#pragma once
 #include <string>
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-
-using namespace std;
-
-
+namespace game
+{
 enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
 
@@ -25,23 +20,21 @@ public:
 	Shader();
 
 	// These methods should be called with an active OpenGL context
-	void initFromSource(const ShaderType type, const string &source);
-	bool initFromFile(const ShaderType type, const string &filename);
+	void initFromSource(const ShaderType i_type, const std::string& i_source);
+	bool initFromFile(const ShaderType i_type, const std::string& i_filename);
 	void free();
 
 	GLuint getId() const;
 	bool isCompiled() const;
-	const string &log() const;
+	const std::string &log() const;
 
 private:
-	bool loadShaderSource(const string &filename, string &shaderSource);
+	bool loadShaderSource(const std::string& i_filename, std::string& i_shaderSource);
 
 private:
-	GLuint shaderId;
-	bool compiled;
-	string errorLog;
+	GLuint m_shaderId;
+	bool m_compiled;
+	std::string m_errorLog;
 
 };
-
-
-#endif // _SHADER_INCLUDE
+}
