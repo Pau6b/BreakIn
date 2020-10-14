@@ -16,10 +16,8 @@ class Sprite
 {
 
 public:
-	// Textured quads can only be created inside an OpenGL context
-	static Sprite *createSprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, Texture* i_spritesheet, ShaderProgram* i_program);
-
-	Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, Texture* i_spritesheet, ShaderProgram* i_program);
+	// Textured quads can only be created inside an context
+	Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, const std::string& i_imagePath, const PixelFormat& i_pixelFormat, ShaderProgram& i_program);
 
 	void update(int i_deltaTime);
 	void render() const;
@@ -34,8 +32,8 @@ public:
 	void setPosition(const glm::vec2& i_pos);
 
 private:
-	Texture* m_texture;
-	ShaderProgram* m_shaderProgram;
+	Texture m_texture;
+	ShaderProgram& m_shaderProgram;
 	GLuint m_vao;
 	GLuint m_vbo;
 	GLint m_posLocation, m_texCoordLocation;

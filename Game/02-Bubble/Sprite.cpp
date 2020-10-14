@@ -5,15 +5,8 @@
 
 namespace game
 {
-Sprite *Sprite::createSprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, Texture* i_spritesheet, ShaderProgram* i_program)
-{
-	Sprite *quad = new Sprite(i_quadSize, i_sizeInSpritesheet, i_spritesheet, i_program);
-
-	return quad;
-}
-
-
-Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, Texture* i_spritesheet, ShaderProgram* i_program)
+Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, const std::string& i_imagePath, const PixelFormat& i_pixelFormat, ShaderProgram& i_program)
+	: m_shaderProgram(i_program)
 {
 	float vertices[24] = {0.f, 0.f, 0.f, 0.f, 
 												i_quadSize.x, 0.f, i_sizeInSpritesheet.x, 0.f, 
@@ -27,10 +20,9 @@ Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet
 	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), vertices, GL_STATIC_DRAW);
-	m_posLocation = i_program->bindVertexAttribute("position", 2, 4*sizeof(float), 0);
-	m_texCoordLocation = i_program->bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
-	m_texture = i_spritesheet;
-	m_shaderProgram = i_program;
+	m_posLocation = m_shaderProgram.bindVertexAttribute("position", 2, 4*sizeof(float), 0);
+	m_texCoordLocation = m_shaderProgram.bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
+	m_texture.loadFromFile(i_imagePath,i_pixelFormat);
 	m_currentAnimation = -1;
 	m_position = glm::vec2(0.f);
 }
@@ -52,10 +44,10 @@ void Sprite::update(int i_deltaTime)
 void Sprite::render() const
 {
 	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(m_position.x, m_position.y, 0.f));
-	m_shaderProgram->setUniformMatrix4f("modelview", modelview);
-	m_shaderProgram->setUniform2f("texCoordDispl", m_texCoordDispl.x, m_texCoordDispl.y);
+	m_shaderProgram.setUniformMatrix4f("modelview", modelview);
+	m_shaderProgram.setUniform2f("texCoordDispl", m_texCoordDispl.x, m_texCoordDispl.y);
 	glEnable(GL_TEXTURE_2D);
-	m_texture->use();
+	m_texture.use();
 	glBindVertexArray(m_vao);
 	glEnableVertexAttribArray(m_posLocation);
 	glEnableVertexAttribArray(m_texCoordLocation);

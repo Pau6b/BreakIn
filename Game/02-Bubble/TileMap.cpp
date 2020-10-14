@@ -7,14 +7,6 @@
 namespace game
 {
 
-TileMap *TileMap::createTileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program)
-{
-	TileMap *map = new TileMap(i_levelFile, i_minCoords, i_program);
-	
-	return map;
-}
-
-
 TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program)
 {
 	loadLevel(i_levelFile);
@@ -138,65 +130,6 @@ void TileMap::prepareArrays(const glm::vec2& i_minCoords, ShaderProgram& i_progr
 	m_posLocation = i_program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
 	m_texCoordLocation = i_program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 }
-
-// Collision tests for axis aligned bounding boxes.
-// Method collisionMoveDown also corrects Y coordinate if the box is
-// already intersecting a tile below.
-
-bool TileMap::collisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
-{
-	int x, y0, y1;
-	
-	x = i_pos.x / m_tileSize;
-	y0 = i_pos.y / m_tileSize;
-	y1 = (i_pos.y + i_size.y - 1) / m_tileSize;
-	for(int y=y0; y<=y1; y++)
-	{
-		if(m_map[y*m_mapSize.x+x] != 0)
-			return true;
-	}
-	
-	return false;
-}
-
-bool TileMap::collisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
-{
-	int x, y0, y1;
-	
-	x = (i_pos.x + i_size.x - 1) / m_tileSize;
-	y0 = i_pos.y / m_tileSize;
-	y1 = (i_pos.y + i_size.y - 1) / m_tileSize;
-	for(int y=y0; y<=y1; y++)
-	{
-		if(m_map[y*m_mapSize.x+x] != 0)
-			return true;
-	}
-	
-	return false;
-}
-
-bool TileMap::collisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const
-{
-	int x0, x1, y;
-	
-	x0 = i_pos.x / m_tileSize;
-	x1 = (i_pos.x + i_size.x - 1) / m_tileSize;
-	y = (i_pos.y + i_size.y - 1) / m_tileSize;
-	for(int x=x0; x<=x1; x++)
-	{
-		if(m_map[y*m_mapSize.x+x] != 0)
-		{
-			if(*i_posY - m_tileSize * y + i_size.y <= 4)
-			{
-				*i_posY = m_tileSize * y - i_size.y;
-				return true;
-			}
-		}
-	}
-	
-	return false;
-}
-
 
 }
 

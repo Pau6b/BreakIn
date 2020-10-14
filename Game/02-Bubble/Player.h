@@ -1,6 +1,7 @@
 #pragma once
+#include <memory>
 #include "Sprite.h"
-#include "TileMap.h"
+#include "CollisionManager.h"
 
 
 // Player is basically a Sprite that represents the player. As such it has
@@ -11,22 +12,20 @@ namespace game
 {
 class Player
 {
-
 public:
+	Player(physics::CollisionManager& i_collisionsManager);
 	void init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram);
 	void update(int i_deltaTime);
 	void render();
-	
-	void setTileMap(TileMap* i_tileMap);
+
 	void setPosition(const glm::vec2& i_pos);
 	
 private:
 	bool m_bJumping;
 	glm::ivec2 m_tileMapDispl, m_posPlayer;
 	int m_jumpAngle, m_startY;
-	Texture m_spritesheet;
-	Sprite* m_sprite;
-	TileMap* m_map;
+	std::unique_ptr<Sprite> m_sprite;
+	physics::CollisionManager& m_map;
 
 };
 }

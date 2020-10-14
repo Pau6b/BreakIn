@@ -1,9 +1,14 @@
-﻿  main.cpp
+﻿  TileMap.cpp
+  Texture.cpp
   Sprite.cpp
+  ShaderProgram.cpp
   Shader.cpp
   Scene.cpp
   Player.cpp
+  main.cpp
   Game.cpp
+  CollisionManager.cpp
+  Brick.cpp
   Generating Code...
 SOIL.lib(image_DXT.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(image_DXT.obj)' or at 'C:\BreakIn\BreakIn\Game\Debug\vc100.pdb'; linking object as if no debug info
 SOIL.lib(image_helper.obj) : warning LNK4099: PDB 'vc100.pdb' was not found with 'SOIL.lib(image_helper.obj)' or at 'C:\BreakIn\BreakIn\Game\Debug\vc100.pdb'; linking object as if no debug info
