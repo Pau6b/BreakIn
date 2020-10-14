@@ -21,9 +21,9 @@ class CollisionManager
 public:
 	CollisionManager(const std::string& i_staticCollisionMap, const uint32_t i_tileSize);
 
-	CollisionResult collisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
-	CollisionResult collisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
-	CollisionResult collisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const;
+	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
+	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
+	CollisionResult CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const;
 
 private:
 	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath);

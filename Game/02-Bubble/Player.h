@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Sprite.h"
 #include "CollisionManager.h"
 
@@ -23,8 +24,7 @@ private:
 	bool m_bJumping;
 	glm::ivec2 m_tileMapDispl, m_posPlayer;
 	int m_jumpAngle, m_startY;
-	Texture m_spritesheet;
-	Sprite* m_sprite;
+	std::unique_ptr<Sprite> m_sprite;
 	physics::CollisionManager& m_map;
 
 };

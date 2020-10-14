@@ -15,11 +15,12 @@ namespace game
 {
 void Scene::init()
 {
+	m_texProgram = std::make_unique<ShaderProgram>();
 	initShaders();
-	m_map = std::make_unique<TileMap>("levels/level1/visualTilemap.txt", glm::vec2(SCREEN_X, SCREEN_Y), m_texProgram);
+	m_map = std::make_unique<TileMap>("levels/level1/visualTilemap.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_collisionManager = std::make_unique<physics::CollisionManager>("levels/level1/physics.txt", m_map->getTileSize());
 	m_player = std::make_unique<Player>(*m_collisionManager);
-	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), m_texProgram);
+	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
@@ -35,12 +36,12 @@ void Scene::render()
 {
 	glm::mat4 modelview;
 
-	m_texProgram.use();
-	m_texProgram.setUniformMatrix4f("projection", m_projection);
-	m_texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	m_texProgram->use();
+	m_texProgram->setUniformMatrix4f("projection", m_projection);
+	m_texProgram->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
-	m_texProgram.setUniformMatrix4f("modelview", modelview);
-	m_texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	m_texProgram->setUniformMatrix4f("modelview", modelview);
+	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
 	m_player->render();
 }
@@ -61,16 +62,16 @@ void Scene::initShaders()
 		std::cout << "Fragment Shader Error" << "\n";
 		std::cout << "" << fShader.log() << "\n\n";
 	}
-	m_texProgram.init();
-	m_texProgram.addShader(vShader);
-	m_texProgram.addShader(fShader);
-	m_texProgram.link();
-	if(!m_texProgram.isLinked())
+	m_texProgram->init();
+	m_texProgram->addShader(vShader);
+	m_texProgram->addShader(fShader);
+	m_texProgram->link();
+	if(!m_texProgram->isLinked())
 	{
 		std::cout << "Shader Linking Error" << "\n";
-		std::cout << "" << m_texProgram.log() << "\n\n";
+		std::cout << "" << m_texProgram->log() << "\n\n";
 	}
-	m_texProgram.bindFragmentOutput("outColor");
+	m_texProgram->bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
 }

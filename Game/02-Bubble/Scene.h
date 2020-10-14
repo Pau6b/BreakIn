@@ -1,10 +1,12 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <memory>
+#include <set>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
 #include "CollisionManager.h"
+#include "Brick.h"
 
 
 // Scene contains all the entities of our game.
@@ -28,7 +30,7 @@ private:
 	std::unique_ptr<TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
-	ShaderProgram m_texProgram;
+	std::unique_ptr<ShaderProgram> m_texProgram;
 	float m_currentTime;
 	glm::mat4 m_projection;
 

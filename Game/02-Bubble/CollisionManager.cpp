@@ -19,7 +19,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, co
 // already intersecting a tile below.
 
 
-CollisionResult CollisionManager::collisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
+CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
 {
 	int x, y0, y1;
 
@@ -35,7 +35,7 @@ CollisionResult CollisionManager::collisionMoveLeft(const glm::ivec2& i_pos, con
 	return CollisionResult::NoCollision;
 }
 
-CollisionResult CollisionManager::collisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
+CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const
 {
 	int x, y0, y1;
 
@@ -51,7 +51,7 @@ CollisionResult CollisionManager::collisionMoveRight(const glm::ivec2& i_pos, co
 	return CollisionResult::NoCollision;
 }
 
-CollisionResult CollisionManager::collisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const
+CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const
 {
 	int x0, x1, y;
 
