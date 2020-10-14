@@ -9,33 +9,19 @@
 #define SCREEN_Y 16
 
 #define INIT_PLAYER_X_TILES 4
-#define INIT_PLAYER_Y_TILES 25
+#define INIT_PLAYER_Y_TILES 10
 
 namespace game
 {
-Scene::Scene()
-{
-	m_map = NULL;
-	m_player = NULL;
-}
-
-Scene::~Scene()
-{
-	if(m_map != NULL)
-		delete m_map;
-	if(m_player != NULL)
-		delete m_player;
-}
-
-
 void Scene::init()
 {
 	initShaders();
-	m_map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), m_texProgram);
-	m_player = new Player();
+	m_map = std::make_unique<TileMap>("levels/level1/visualTilemap.txt", glm::vec2(SCREEN_X, SCREEN_Y), m_texProgram);
+	m_collisionManager = std::make_unique<physics::CollisionManager>("levels/level1/physics.txt", m_map->getTileSize());
+	m_player = std::make_unique<Player>();
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
-	m_player->setTileMap(m_map);
+	m_player->setTileMap(m_map.get());
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
 }

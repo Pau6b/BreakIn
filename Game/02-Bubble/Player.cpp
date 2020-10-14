@@ -44,8 +44,7 @@ void Player::init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram
 		
 	m_sprite->changeAnimation(0);
 	m_tileMapDispl = i_tileMapPos;
-	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
-	
+	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));	
 }
 
 void Player::update(int i_deltaTime)

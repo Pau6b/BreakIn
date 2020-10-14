@@ -1,8 +1,10 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <memory>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "CollisionManager.h"
 
 
 // Scene contains all the entities of our game.
@@ -14,8 +16,6 @@ class Scene
 {
 
 public:
-	Scene();
-	~Scene();
 
 	void init();
 	void update(int i_deltaTime);
@@ -25,8 +25,9 @@ private:
 	void initShaders();
 
 private:
-	TileMap* m_map;
-	Player* m_player;
+	std::unique_ptr<TileMap> m_map;
+	std::unique_ptr<Player> m_player;
+	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	ShaderProgram m_texProgram;
 	float m_currentTime;
 	glm::mat4 m_projection;

@@ -7,14 +7,6 @@
 namespace game
 {
 
-TileMap *TileMap::createTileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program)
-{
-	TileMap *map = new TileMap(i_levelFile, i_minCoords, i_program);
-	
-	return map;
-}
-
-
 TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program)
 {
 	loadLevel(i_levelFile);

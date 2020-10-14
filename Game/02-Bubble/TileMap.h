@@ -15,8 +15,6 @@ class TileMap
 {
 
 public:
-	// Tile maps can only be created inside an OpenGL context
-	static TileMap *createTileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program);
 
 	TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program);
 	~TileMap();
@@ -24,7 +22,7 @@ public:
 	void render() const;
 	void free();
 	
-	int getTileSize() const { return m_tileSize; }
+	uint32_t getTileSize() const { return m_tileSize; }
 
 	bool collisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
 	bool collisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
@@ -39,7 +37,7 @@ private:
 	GLuint m_vbo;
 	GLint m_posLocation, m_texCoordLocation;
 	glm::ivec2 m_position, m_mapSize, m_tilesheetSize;
-	int m_tileSize, m_blockSize;
+	uint32_t m_tileSize, m_blockSize;
 	Texture m_tilesheet;
 	glm::vec2 m_tileTexSize;
 	int *m_map;
