@@ -23,10 +23,6 @@ public:
 	void free();
 	
 	uint32_t getTileSize() const { return m_tileSize; }
-
-	bool collisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
-	bool collisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
-	bool collisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const;
 	
 private:
 	bool loadLevel(const std::string& i_levelFile);

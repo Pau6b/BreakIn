@@ -19,6 +19,12 @@ enum PlayerAnims
 };
 
 
+Player::Player(physics::CollisionManager& i_collisionsManager)
+	: m_map(i_collisionsManager)
+{
+
+}
+
 void Player::init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram)
 {
 	m_bJumping = false;
@@ -55,7 +61,7 @@ void Player::update(int i_deltaTime)
 		if(m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
 		m_posPlayer.x -= 2;
-		if(m_map->collisionMoveLeft(m_posPlayer, glm::ivec2(32, 32)))
+		if(m_map.collisionMoveLeft(m_posPlayer, glm::ivec2(32, 32)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			m_posPlayer.x += 2;
 			m_sprite->changeAnimation(STAND_LEFT);
@@ -66,7 +72,7 @@ void Player::update(int i_deltaTime)
 		if(m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
 		m_posPlayer.x += 2;
-		if(m_map->collisionMoveRight(m_posPlayer, glm::ivec2(32, 32)))
+		if(m_map.collisionMoveRight(m_posPlayer, glm::ivec2(32, 32)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			m_posPlayer.x -= 2;
 			m_sprite->changeAnimation(STAND_RIGHT);
@@ -92,13 +98,13 @@ void Player::update(int i_deltaTime)
 		{
 			m_posPlayer.y = int(m_startY - 96 * sin(3.14159f * m_jumpAngle / 180.f));
 			if(m_jumpAngle > 90)
-				m_bJumping = !m_map->collisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y);
+				m_bJumping = m_map.collisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::NoCollision;
 		}
 	}
 	else
 	{
 		m_posPlayer.y += FALL_STEP;
-		if(m_map->collisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y))
+		if(m_map.collisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			if(Game::instance().getSpecialKey(GLUT_KEY_UP))
 			{
@@ -115,11 +121,6 @@ void Player::update(int i_deltaTime)
 void Player::render()
 {
 	m_sprite->render();
-}
-
-void Player::setTileMap(TileMap* i_tileMap)
-{
-	m_map = i_tileMap;
 }
 
 void Player::setPosition(const glm::vec2& i_pos)

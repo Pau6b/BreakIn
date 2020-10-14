@@ -26,8 +26,8 @@ private:
 
 private:
 	std::unique_ptr<TileMap> m_map;
-	std::unique_ptr<Player> m_player;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
+	std::unique_ptr<Player> m_player;
 	ShaderProgram m_texProgram;
 	float m_currentTime;
 	glm::mat4 m_projection;
