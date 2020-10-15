@@ -25,8 +25,6 @@ public:
 
 private:
 	void initShaders();
-
-private:
 	std::unique_ptr<TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
