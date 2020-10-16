@@ -24,6 +24,7 @@ public:
 	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size) const;
 	CollisionResult CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const;
+	CollisionResult CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY) const;
 
 private:
 	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath);
