@@ -70,7 +70,7 @@ CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const
 {
 	int x, y;
 	y =  (i_pos.y + 1) / m_tileSize;
-	x = (i_pos.x + i_size.x) / m_tileSize;
+	x = (i_pos.x + i_size.x/2) / m_tileSize;
 	if (m_staticCollisions[m_currentMap][x][y] != '0')
 	{
 		*i_posY = m_tileSize * (y+1);
