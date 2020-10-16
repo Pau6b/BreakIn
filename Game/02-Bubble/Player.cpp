@@ -77,6 +77,25 @@ void Player::update(int i_deltaTime)
 			m_sprite->changeAnimation(STAND_RIGHT);
 		}
 	}
+
+	else if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+	{
+		m_posPlayer.y -= 2;
+		if (m_map.CollisionMoveUp(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
+		{
+			//m_posPlayer.y -= 2;
+		}
+	}
+
+	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
+	{
+		m_posPlayer.y += 2;
+		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
+		{
+			//m_posPlayer.y += 2;
+		}
+	}
+
 	else
 	{
 		if(m_sprite->animation() == MOVE_LEFT)
@@ -85,34 +104,6 @@ void Player::update(int i_deltaTime)
 			m_sprite->changeAnimation(STAND_RIGHT);
 	}
 	
-	if(m_bJumping)
-	{
-		m_jumpAngle += JUMP_ANGLE_STEP;
-		if(m_jumpAngle == 180)
-		{
-			m_bJumping = false;
-			m_posPlayer.y = m_startY;
-		}
-		else
-		{
-			m_posPlayer.y = int(m_startY - 96 * sin(3.14159f * m_jumpAngle / 180.f));
-			if(m_jumpAngle > 90)
-				m_bJumping = m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::NoCollision;
-		}
-	}
-	else
-	{
-		m_posPlayer.y += FALL_STEP;
-		if(m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::CollidedWithStaticBlock)
-		{
-			if(Game::instance().getSpecialKey(GLUT_KEY_UP))
-			{
-				m_bJumping = true;
-				m_jumpAngle = 0;
-				m_startY = m_posPlayer.y;
-			}
-		}
-	}
 	
 	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
 }
