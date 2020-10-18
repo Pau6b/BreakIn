@@ -27,12 +27,15 @@ public:
 
 private:
 	void initShaders();
+	void ParseBricks(std::string i_path);
+	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
+	std::vector<std::vector<std::shared_ptr<Brick>>> m_bricks;
 	std::unique_ptr<TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
-	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	float m_currentTime;
 	glm::mat4 m_projection;
+	uint32_t m_currentMap = 2;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 };

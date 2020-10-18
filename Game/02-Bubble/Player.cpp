@@ -92,7 +92,7 @@ void Player::update(int i_deltaTime)
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
 		m_posPlayer.y += 2;
-		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
+		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::NoCollision)
 		{
 			//m_posPlayer.y += 2;
 		}
