@@ -10,12 +10,15 @@ void Game::init()
 {
 	m_bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	m_scene.init();
+	m_sceneManager = std::make_unique<SceneManager>("scenes/SceneConfig.txt");
 }
 
 bool Game::update(int i_deltaTime)
 {
-	m_scene.update(i_deltaTime);
+	if (m_sceneManager)
+	{
+		m_sceneManager->update(i_deltaTime);
+	}
 	
 	return m_bPlay;
 }
@@ -23,7 +26,10 @@ bool Game::update(int i_deltaTime)
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	m_scene.render();
+	if (m_sceneManager)
+	{
+		m_sceneManager->render();
+	}
 }
 
 void Game::keyPressed(int i_key)

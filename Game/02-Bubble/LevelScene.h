@@ -19,9 +19,8 @@ namespace gameplay
 {
 class LevelScene : public core::Scene
 {
-
 public:
-
+	LevelScene(std::string i_visualTilemapPath, std::string i_physicsMapPath);
 	void init() override;
 	void update(int i_deltaTime) override;
 	void render() override;
@@ -34,7 +33,8 @@ private:
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	float m_currentTime;
 	glm::mat4 m_projection;
-
+	std::string m_visualTilemapPath;
+	std::string m_physicsMapPath;
 };
 }
 }

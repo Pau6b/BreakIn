@@ -12,8 +12,12 @@ class SceneManager
 {
 public:
 	SceneManager(const std::string& i_sceneConfigFilePath);
-private:
 
+	void update(int i_deltaTime);
+	void render();
+
+private:
+	std::unique_ptr<Scene> m_currentScene = nullptr;
 	void ParseSceneConfigFilePath(const std::string& i_sceneConfigFilePath);
 
 	struct LevelConfig

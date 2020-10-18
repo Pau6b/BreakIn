@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "LevelScene.h"
 
 namespace game
 {
@@ -10,6 +11,22 @@ namespace core
 SceneManager::SceneManager(const std::string& i_sceneConfigFilePath)
 {
 	ParseSceneConfigFilePath(i_sceneConfigFilePath);
+}
+
+void SceneManager::update(int i_deltaTime)
+{
+	if (m_currentScene)
+	{
+		m_currentScene->update(i_deltaTime);
+	}
+}
+
+void SceneManager::render()
+{
+	if (m_currentScene)
+	{
+		m_currentScene->render();
+	}
 }
 
 void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFilePath)
@@ -37,6 +54,10 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 			m_config.levels.emplace(levelNumber, LevelConfig(tilemapPath, physicsPath));
 		}
 	}
+
+	//#pau_todo #dani_todo this is hardcoded in order to have a scene now, change it when we have to load diferent scenes
+	m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(1).visualTilemapPath, m_config.levels.at(1).physicsMapPath);
+	m_currentScene->init();
 	
 }
 

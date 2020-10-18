@@ -15,12 +15,20 @@ namespace game
 {
 namespace gameplay
 {
+
+LevelScene::LevelScene(std::string i_visualTilemapPath, std::string i_physicsMapPath)
+	: m_visualTilemapPath(i_visualTilemapPath)
+	, m_physicsMapPath(i_physicsMapPath)
+{
+
+}
+
 void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
 	initShaders();
-	m_map = std::make_unique<TileMap>("levels/level1/visualTilemap.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_collisionManager = std::make_unique<physics::CollisionManager>("levels/level1/physics.txt", m_map->getTileSize());
+	m_map = std::make_unique<TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize());
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
