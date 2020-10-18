@@ -15,6 +15,7 @@
     <ClInclude Include="Brick.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="MainScreenScene.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Player.h" />
@@ -31,6 +32,7 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainScreenScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="LevelScene.cpp" />
     <ClCompile Include="Scene.cpp" />

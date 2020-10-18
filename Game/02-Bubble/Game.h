@@ -35,18 +35,19 @@ public:
 	void specialKeyPressed(int i_key);
 	void specialKeyReleased(int i_key);
 	void mouseMove(int i_x, int i_y);
-	void mousePress(int i_button);
-	void mouseRelease(int i_button);
+	void mousePress(int i_button, int i_x, int i_y);
+	void mouseRelease(int i_button, int i_x, int i_y);
 	
 	bool getKey(int i_key) const;
 	bool getSpecialKey(int i_key) const;
+	std::pair<int32_t, int32_t> getMousePos();
 
 private:
 	bool m_bPlay;                       // Continue to play game?
 	std::unique_ptr<SceneManager> m_sceneManager;
 	bool m_keys[256], m_specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
-
+	std::pair<int32_t, int32_t> m_mousePos = { 0,0 };
 };
 }
 }

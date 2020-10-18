@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "LevelScene.h"
+#include "MainScreenScene.h"
 
 namespace game
 {
@@ -13,20 +14,41 @@ SceneManager::SceneManager(const std::string& i_sceneConfigFilePath)
 	ParseSceneConfigFilePath(i_sceneConfigFilePath);
 }
 
-void SceneManager::update(int i_deltaTime)
+void SceneManager::Update(int i_deltaTime)
 {
 	if (m_currentScene)
 	{
 		m_currentScene->update(i_deltaTime);
+		std::pair<Scene::SceneResult, uint32_t> sceneResult = m_currentScene->GetSceneResult();
+		switch (sceneResult.first)
+		{
+		case Scene::SceneResult::NotFinished:
+			break;
+		case Scene::SceneResult::GoToLevel:
+		{
+			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath);
+			m_currentScene->init();
+			break;
+		}
+		case Scene::SceneResult::GoToMainMenu:
+			m_currentScene = std::make_unique<gui::MainScreenScene>();
+			m_currentScene->init();
+			break;
+		}
 	}
 }
 
-void SceneManager::render()
+void SceneManager::Render()
 {
 	if (m_currentScene)
 	{
 		m_currentScene->render();
 	}
+}
+
+void SceneManager::OnMouseButtonReleased(int32_t i_button)
+{
+	m_currentScene->OnMouseButtonReleased(i_button);
 }
 
 void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFilePath)
@@ -55,8 +77,7 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 		}
 	}
 
-	//#pau_todo #dani_todo this is hardcoded in order to have a scene now, change it when we have to load diferent scenes
-	m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(1).visualTilemapPath, m_config.levels.at(1).physicsMapPath);
+	m_currentScene = std::make_unique<gui::MainScreenScene>();
 	m_currentScene->init();
 	
 }

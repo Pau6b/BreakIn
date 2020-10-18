@@ -34,14 +34,11 @@
     <Filter Include="Archivos de código fuente\Visuals">
       <UniqueIdentifier>{152cc774-1549-43a8-90d4-81e71098ff37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Visuals">
+      <UniqueIdentifier>{4c84f864-5973-4e77-9796-c6c224507661}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Types.h">
-      <Filter>Archivos de encabezado\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Archivos de encabezado\Core</Filter>
-    </ClInclude>
     <ClInclude Include="AnimKeyframes.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
@@ -72,11 +69,20 @@
     <ClInclude Include="Game.h">
       <Filter>Archivos de encabezado\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
       <Filter>Archivos de encabezado\Core</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Archivos de encabezado\Core</Filter>
+    <ClInclude Include="Shader.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScreenScene.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Archivos de código fuente\Visuals</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScreenScene.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

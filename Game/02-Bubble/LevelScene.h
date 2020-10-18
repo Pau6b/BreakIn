@@ -20,14 +20,15 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(std::string i_visualTilemapPath, std::string i_physicsMapPath);
+	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath);
 	void init() override;
 	void update(int i_deltaTime) override;
 	void render() override;
+	std::pair<core::Scene::SceneResult, uint32_t> GetSceneResult() override;
 
 private:
-	void initShaders();
 	void ParseBricks(std::string i_path);
+
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	std::vector<std::vector<std::shared_ptr<Brick>>> m_bricks;
 	std::unique_ptr<TileMap> m_map;

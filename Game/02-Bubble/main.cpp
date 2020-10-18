@@ -53,9 +53,9 @@ static void motionCallback(int x, int y)
 static void mouseCallback(int button, int state, int x, int y)
 {
 	if(state == GLUT_DOWN)
-		game::core::Game::instance().mousePress(button);
+		game::core::Game::instance().mousePress(button, x, y);
 	else if(state == GLUT_UP)
-		game::core::Game::instance().mouseRelease(button);
+		game::core::Game::instance().mouseRelease(button, x, y);
 }
 
 static void drawCallback()
