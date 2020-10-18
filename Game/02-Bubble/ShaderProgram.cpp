@@ -3,6 +3,8 @@
 
 namespace game
 {
+namespace visuals
+{
 ShaderProgram::ShaderProgram()
 {
 	m_programId = 0;
@@ -97,5 +99,6 @@ void ShaderProgram::setUniformMatrix4f(const std::string& i_uniformName, glm::ma
 
 	if(location != -1)
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(i_mat));
+}
 }
 }

@@ -16,78 +16,108 @@
     <Filter Include="Archivos de encabezado\Core">
       <UniqueIdentifier>{07be45f7-182e-48cb-ad85-fedc15486e44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\Core">
+      <UniqueIdentifier>{97b95bf9-43d5-470c-b087-d6767994de57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Gui">
+      <UniqueIdentifier>{0e99857a-6aa2-452b-b67c-8320e1a1ad59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Gameplay">
+      <UniqueIdentifier>{c8b29a6f-a615-40ed-962b-d9c35a18b140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\Gameplay">
+      <UniqueIdentifier>{7354cd45-8921-4104-9fac-8ab09be81598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\Gui">
+      <UniqueIdentifier>{e5b5e029-71f6-4dc2-aeb5-45713bbb7f78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\Visuals">
+      <UniqueIdentifier>{152cc774-1549-43a8-90d4-81e71098ff37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimKeyframes.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="TileMap.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionManager.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Archivos de encabezado\Core</Filter>
     </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Archivos de encabezado\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimKeyframes.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
     <ClInclude Include="Brick.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelScene.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Archivos de encabezado\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Archivos de encabezado\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Archivos de encabezado\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Archivos de encabezado\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Archivos de código fuente\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Brick.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelScene.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Archivos de código fuente</Filter>
+      <Filter>Archivos de código fuente\Core</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Archivos de código fuente</Filter>
+      <Filter>Archivos de código fuente\Core</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>Archivos de código fuente</Filter>
+      <Filter>Archivos de código fuente\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="TileMap.cpp">
-      <Filter>Archivos de código fuente</Filter>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Archivos de código fuente\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionManager.cpp">
-      <Filter>Archivos de código fuente</Filter>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Archivos de código fuente\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="Brick.cpp">
-      <Filter>Archivos de código fuente</Filter>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Archivos de código fuente\Visuals</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

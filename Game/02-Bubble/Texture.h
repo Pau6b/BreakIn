@@ -5,6 +5,8 @@
 
 namespace game
 {
+namespace visuals
+{
 enum class PixelFormat {TEXTURE_PIXEL_FORMAT_RGB, TEXTURE_PIXEL_FORMAT_RGBA};
 
 
@@ -42,4 +44,4 @@ private:
 
 };
 }
-
+}

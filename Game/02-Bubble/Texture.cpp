@@ -3,6 +3,8 @@
 
 namespace game
 {
+namespace visuals
+{
 Texture::Texture()
 {
 	m_wrapS = GL_REPEAT;
@@ -108,4 +110,5 @@ void Texture::use() const
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_magFilter);
 }
 
+}
 }

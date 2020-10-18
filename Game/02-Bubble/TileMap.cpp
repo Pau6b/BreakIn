@@ -6,8 +6,9 @@
 
 namespace game
 {
-
-TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, ShaderProgram& i_program)
+namespace gameplay
+{
+TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program)
 {
 	loadLevel(i_levelFile);
 	prepareArrays(i_minCoords, i_program);
@@ -45,24 +46,24 @@ bool TileMap::loadLevel(const std::string& i_levelFile)
 	fin.open(i_levelFile.c_str());
 	if (!fin.is_open())
 		return false;
-	getline(fin, line);
+	std::getline(fin, line);
 	if (line.compare(0, 7, "TILEMAP") != 0)
 		return false;
-	getline(fin, line);
+	std::getline(fin, line);
 	sstream.str(line);
 	sstream >> m_mapSize.x >> m_mapSize.y;
-	getline(fin, line);
+	std::getline(fin, line);
 	sstream.str(line);
 	sstream >> m_tileSize >> m_blockSize;
-	getline(fin, line);
+	std::getline(fin, line);
 	sstream.str(line);
 	sstream >> tilesheetFile;
-	m_tilesheet.loadFromFile(tilesheetFile, PixelFormat::TEXTURE_PIXEL_FORMAT_RGB);
+	m_tilesheet.loadFromFile(tilesheetFile, visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB);
 	m_tilesheet.setWrapS(GL_CLAMP_TO_EDGE);
 	m_tilesheet.setWrapT(GL_CLAMP_TO_EDGE);
 	m_tilesheet.setMinFilter(GL_NEAREST);
 	m_tilesheet.setMagFilter(GL_NEAREST);
-	getline(fin, line);
+	std::getline(fin, line);
 	sstream.str(line);
 	sstream >> m_tilesheetSize.x >> m_tilesheetSize.y;
 	m_tileTexSize = glm::vec2(1.f / m_tilesheetSize.x, 1.f / m_tilesheetSize.y);
@@ -82,7 +83,7 @@ bool TileMap::loadLevel(const std::string& i_levelFile)
 	return true;
 }
 
-void TileMap::prepareArrays(const glm::vec2& i_minCoords, ShaderProgram& i_program)
+void TileMap::prepareArrays(const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program)
 {
 	int tile, nTiles = 0;
 	glm::vec2 posTile, texCoordTile[2], halfTexel;
@@ -132,30 +133,4 @@ void TileMap::prepareArrays(const glm::vec2& i_minCoords, ShaderProgram& i_progr
 }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

@@ -8,6 +8,8 @@
 
 namespace game
 {
+namespace visuals
+{
 // This class is derived from code seen earlier in TexturedQuad but it is also
 // able to manage animations stored as a spritesheet. 
 
@@ -44,4 +46,4 @@ private:
 	std::vector<AnimKeyframes> m_animations;
 };
 }
-
+}

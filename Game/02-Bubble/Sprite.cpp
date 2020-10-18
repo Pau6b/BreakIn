@@ -5,6 +5,8 @@
 
 namespace game
 {
+namespace visuals
+{
 Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet, const std::string& i_imagePath, const PixelFormat& i_pixelFormat, ShaderProgram& i_program)
 	: m_shaderProgram(i_program)
 {
@@ -100,4 +102,4 @@ void Sprite::setPosition(const glm::vec2& i_pos)
 }
 
 }
-
+}
