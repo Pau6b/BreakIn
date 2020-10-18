@@ -17,7 +17,7 @@ bool Game::update(int i_deltaTime)
 {
 	if (m_sceneManager)
 	{
-		m_sceneManager->update(i_deltaTime);
+		m_sceneManager->Update(i_deltaTime);
 	}
 	
 	return m_bPlay;
@@ -28,7 +28,7 @@ void Game::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (m_sceneManager)
 	{
-		m_sceneManager->render();
+		m_sceneManager->Render();
 	}
 }
 
@@ -42,6 +42,7 @@ void Game::keyPressed(int i_key)
 void Game::keyReleased(int i_key)
 {
 	m_keys[i_key] = false;
+
 }
 
 void Game::specialKeyPressed(int i_key)
@@ -58,12 +59,15 @@ void Game::mouseMove(int i_x, int i_y)
 {
 }
 
-void Game::mousePress(int i_button)
+void Game::mousePress(int i_button, int i_x, int i_y)
 {
+	m_mousePos = { i_x, i_y };
 }
 
-void Game::mouseRelease(int i_button)
+void Game::mouseRelease(int i_button, int i_x, int i_y)
 {
+	m_mousePos = { i_x, i_y };
+	m_sceneManager->OnMouseButtonReleased(i_button);
 }
 
 bool Game::getKey(int i_key) const
@@ -74,6 +78,11 @@ bool Game::getKey(int i_key) const
 bool Game::getSpecialKey(int i_key) const
 {
 	return m_specialKeys[i_key];
+}
+
+std::pair<glm::int32_t, glm::int32_t> Game::getMousePos()
+{
+	return m_mousePos;
 }
 
 }

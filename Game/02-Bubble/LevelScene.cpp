@@ -20,7 +20,7 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(std::string i_visualTilemapPath, std::string i_physicsMapPath)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 {
@@ -30,7 +30,7 @@ LevelScene::LevelScene(std::string i_visualTilemapPath, std::string i_physicsMap
 void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
-	initShaders();
+	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
 	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks);
@@ -64,34 +64,9 @@ void LevelScene::render()
 	std::for_each(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 }
 
-void LevelScene::initShaders()
+std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
 {
-	visuals::Shader vShader, fShader;
-
-	vShader.initFromFile(visuals::ShaderType::VERTEX_SHADER, "shaders/texture.vert");
-	if(!vShader.isCompiled())
-	{
-		std::cout << "Vertex Shader Error" << "\n";
-		std::cout << "" << vShader.log() << "\n\n";
-	}
-	fShader.initFromFile(visuals::ShaderType::FRAGMENT_SHADER, "shaders/texture.frag");
-	if(!fShader.isCompiled())
-	{
-		std::cout << "Fragment Shader Error" << "\n";
-		std::cout << "" << fShader.log() << "\n\n";
-	}
-	m_texProgram->init();
-	m_texProgram->addShader(vShader);
-	m_texProgram->addShader(fShader);
-	m_texProgram->link();
-	if(!m_texProgram->isLinked())
-	{
-		std::cout << "Shader Linking Error" << "\n";
-		std::cout << "" << m_texProgram->log() << "\n\n";
-	}
-	m_texProgram->bindFragmentOutput("outColor");
-	vShader.free();
-	fShader.free();
+	return{ core::Scene::SceneResult::NotFinished, 0 };
 }
 
 void LevelScene::ParseBricks(std::string i_path)

@@ -13,8 +13,9 @@ class SceneManager
 public:
 	SceneManager(const std::string& i_sceneConfigFilePath);
 
-	void update(int i_deltaTime);
-	void render();
+	void Update(int i_deltaTime);
+	void Render();
+	void OnMouseButtonReleased(int32_t i_button);
 
 private:
 	std::unique_ptr<Scene> m_currentScene = nullptr;
