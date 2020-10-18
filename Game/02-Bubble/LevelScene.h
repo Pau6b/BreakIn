@@ -24,6 +24,8 @@ public:
 	void init() override;
 	void update(int i_deltaTime) override;
 	void render() override;
+	void MoveLevelUp();
+	void MoveLevelDown();
 
 private:
 	void initShaders();
@@ -34,8 +36,9 @@ private:
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
 	float m_currentTime;
-	glm::mat4 m_projection;
+	glm::mat4 m_projection, m_traslation;
 	uint32_t m_currentMap = 2;
+	float* m_current_level;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 };

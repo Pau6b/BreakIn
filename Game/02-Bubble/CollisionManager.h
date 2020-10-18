@@ -4,6 +4,7 @@
 #include <map>
 #include "Types.h"
 #include "Brick.h"
+#include <functional>
 
 
 
@@ -25,7 +26,7 @@ enum class CollisionResult
 class CollisionManager
 {
 public:
-	CollisionManager(const std::string& i_staticCollisionMap, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks);
+	CollisionManager(const std::string& i_staticCollisionMap, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks, std::function<void()> i_moveDown, std::function<void()> i_moveUp);
 
 	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size);
@@ -39,7 +40,8 @@ private:
 	uint32_t m_currentMap = 2;
 	std::vector<Matrix<std::string>> m_staticCollisions;
 	std::vector<std::map<uint32_t,std::shared_ptr<Brick>>> m_bricks;
-
+	std::function<void()> m_moveUpFunction;
+	std::function<void()> m_moveDownFunction;
 	const uint32_t m_tileSize;
 };
 }

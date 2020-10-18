@@ -10,8 +10,10 @@ namespace gameplay
 {
 namespace physics
 {
-CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks)
+CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks, std::function<void()> i_moveDown, std::function<void()> i_moveUp)
 	: m_tileSize(i_tileSize)
+	, m_moveDownFunction(i_moveDown)
+	, m_moveUpFunction(i_moveUp)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks);
 }
@@ -32,7 +34,8 @@ CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, con
 	{
 		if (m_staticCollisions[m_currentMap][x][y] != "0")
 		{
-			if (m_staticCollisions[m_currentMap][x][y] == "X")
+			if (m_staticCollisions[m_currentMap][x][y] == "X"
+				|| m_staticCollisions[m_currentMap][x][y] == "I")
 			{
 				return CollisionResult::CollidedWithStaticBlock;
 			}
@@ -58,7 +61,8 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 	{
 		if (m_staticCollisions[m_currentMap][x][y] != "0")
 		{
-			if (m_staticCollisions[m_currentMap][x][y] == "X")
+			if (m_staticCollisions[m_currentMap][x][y] == "X"
+				|| m_staticCollisions[m_currentMap][x][y] == "I")
 			{
 				return CollisionResult::CollidedWithStaticBlock;
 			}
@@ -78,18 +82,20 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 	uint32_t x, y;
 	y = (i_pos.y + i_size.y - 1) / m_tileSize;
 	x =  (i_pos.x + i_size.x/2) / m_tileSize;
-	if (m_staticCollisions[m_currentMap][x][y] == "0")
+	if (y >= m_staticCollisions[m_currentMap][x].size())
+	{
+		*i_posY = m_tileSize * y - i_size.y;
+		return CollisionResult::CollidedWithDownScreen;
+	}
+	else if (m_staticCollisions[m_currentMap][x][y] == "0")
 	{
 		return CollisionResult::NoCollision;
 	}
 	else
 	{
 		*i_posY = m_tileSize * y - i_size.y;
-		if (y >= m_staticCollisions[m_currentMap][x].size())
-		{
-			return CollisionResult::CollidedWithDownScreen;
-		}
-		if (m_staticCollisions[m_currentMap][x][y] == "X")
+		if (m_staticCollisions[m_currentMap][x][y] == "X"
+			|| m_staticCollisions[m_currentMap][x][y] == "I")
 		{
 			return CollisionResult::CollidedWithStaticBlock;
 		}
@@ -116,11 +122,8 @@ CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const
 	else
 	{
 		*i_posY = m_tileSize * (y+1);
-		if (y >= m_staticCollisions[m_currentMap][x].size())
-		{
-			return CollisionResult::CollidedWithDownScreen;
-		}
-		if (m_staticCollisions[m_currentMap][x][y] == "X")
+		if (m_staticCollisions[m_currentMap][x][y] == "X"
+			|| m_staticCollisions[m_currentMap][x][y] == "I")
 		{
 			return CollisionResult::CollidedWithStaticBlock;
 		}

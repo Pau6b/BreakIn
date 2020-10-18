@@ -15,6 +15,9 @@
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 10
 
+#define LEVEL_SIZE_X 384
+#define LEVEL_SIZE_Y 384
+
 namespace game
 {
 namespace gameplay
@@ -33,12 +36,16 @@ void LevelScene::init()
 	initShaders();
 	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this));
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
-	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
 	m_currentTime = 0.0f;
+	m_traslation = glm::mat4(1.0f);
+	m_traslation[3][0] -= SCREEN_X - 10;
+	m_current_level = &m_traslation[3][1];
+	*m_current_level = -SCREEN_Y;
 }
 
 void LevelScene::update(int i_deltaTime)
@@ -56,12 +63,23 @@ void LevelScene::render()
 	m_texProgram->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
 	m_texProgram->setUniformMatrix4f("modelview", modelview);
+	m_texProgram->setUniformMatrix4f("model", m_traslation);
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
 	m_player->render();
 	m_bricks[m_currentMap].erase(std::remove_if(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { return i_brick->GetResistance() == 0; }),
 		end(m_bricks[m_currentMap]));
 	std::for_each(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
+}
+
+void LevelScene::MoveLevelUp()
+{
+
+}
+
+void LevelScene::MoveLevelDown()
+{
+	
 }
 
 void LevelScene::initShaders()
