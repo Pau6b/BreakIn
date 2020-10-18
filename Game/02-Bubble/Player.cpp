@@ -12,6 +12,8 @@
 
 namespace game
 {
+namespace gameplay
+{
 //#pau_todo This should be an enum class
 enum PlayerAnims
 {
@@ -25,10 +27,10 @@ Player::Player(physics::CollisionManager& i_collisionsManager)
 
 }
 
-void Player::init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram)
+void Player::init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
 {
 	m_bJumping = false;
-	m_sprite = std::make_unique<Sprite>(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), "images/bub.png", PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
+	m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), "images/bub.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 	m_sprite->setNumberAnimations(4);
 	
 	m_sprite->setAnimationSpeed(STAND_LEFT, 8);
@@ -55,7 +57,7 @@ void Player::init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram
 void Player::update(int i_deltaTime)
 {
 	m_sprite->update(i_deltaTime);
-	if(Game::instance().getSpecialKey(GLUT_KEY_LEFT))
+	if(core::Game::instance().getSpecialKey(GLUT_KEY_LEFT))
 	{
 		if(m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
@@ -66,7 +68,7 @@ void Player::update(int i_deltaTime)
 			m_sprite->changeAnimation(STAND_LEFT);
 		}
 	}
-	else if(Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
+	else if(core::Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
 	{
 		if(m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
@@ -78,7 +80,7 @@ void Player::update(int i_deltaTime)
 		}
 	}
 
-	else if (Game::instance().getSpecialKey(GLUT_KEY_UP))
+	else if (core::Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
 		m_posPlayer.y -= 2;
 		if (m_map.CollisionMoveUp(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
@@ -87,7 +89,7 @@ void Player::update(int i_deltaTime)
 		}
 	}
 
-	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
+	else if (core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
 		m_posPlayer.y += 2;
 		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
@@ -118,7 +120,5 @@ void Player::setPosition(const glm::vec2& i_pos)
 	m_posPlayer = i_pos;
 	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
 }
-
 }
-
-
+}

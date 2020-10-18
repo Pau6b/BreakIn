@@ -10,11 +10,13 @@
 
 namespace game
 {
+namespace gameplay
+{
 class Player
 {
 public:
 	Player(physics::CollisionManager& i_collisionsManager);
-	void init(const glm::ivec2& i_tileMapPos, ShaderProgram& i_shaderProgram);
+	void init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
 	void update(int i_deltaTime);
 	void render();
 
@@ -24,9 +26,10 @@ private:
 	bool m_bJumping;
 	glm::ivec2 m_tileMapDispl, m_posPlayer;
 	int m_jumpAngle, m_startY;
-	std::unique_ptr<Sprite> m_sprite;
+	std::unique_ptr<visuals::Sprite> m_sprite;
 	physics::CollisionManager& m_map;
 
 };
+}
 }
 

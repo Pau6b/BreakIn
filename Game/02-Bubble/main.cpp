@@ -10,42 +10,42 @@
 #define TIME_PER_FRAME 1000.f / 60.f // Approx. 60 fps
 
 static int prevTime;
-static game::Game gameInstance; // This object represents our whole game
+static game::core::Game gameInstance; // This object represents our whole game
 
 
 // If a key is pressed this callback is called
 
 static void keyboardDownCallback(unsigned char key, int x, int y)
 {
-	game::Game::instance().keyPressed(key);
+	game::core::Game::instance().keyPressed(key);
 }
 
 // If a key is released this callback is called
 
 static void keyboardUpCallback(unsigned char key, int x, int y)
 {
-	game::Game::instance().keyReleased(key);
+	game::core::Game::instance().keyReleased(key);
 }
 
 // If a special key is pressed this callback is called
 
 static void specialDownCallback(int key, int x, int y)
 {
-	game::Game::instance().specialKeyPressed(key);
+	game::core::Game::instance().specialKeyPressed(key);
 }
 
 // If a special key is released this callback is called
 
 static void specialUpCallback(int key, int x, int y)
 {
-	game::Game::instance().specialKeyReleased(key);
+	game::core::Game::instance().specialKeyReleased(key);
 }
 
 // Same for changes in mouse cursor position
 
 static void motionCallback(int x, int y)
 {
-	game::Game::instance().mouseMove(x, y);
+	game::core::Game::instance().mouseMove(x, y);
 }
 
 // Same for mouse button presses or releases
@@ -53,14 +53,14 @@ static void motionCallback(int x, int y)
 static void mouseCallback(int button, int state, int x, int y)
 {
 	if(state == GLUT_DOWN)
-		game::Game::instance().mousePress(button);
+		game::core::Game::instance().mousePress(button);
 	else if(state == GLUT_UP)
-		game::Game::instance().mouseRelease(button);
+		game::core::Game::instance().mouseRelease(button);
 }
 
 static void drawCallback()
 {
-	game::Game::instance().render();
+	game::core::Game::instance().render();
 	glutSwapBuffers();
 }
 
@@ -72,7 +72,7 @@ static void idleCallback()
 	if(deltaTime > TIME_PER_FRAME)
 	{
 		// Every time we enter here is equivalent to a game loop execution
-		if(!game::Game::instance().update(deltaTime))
+		if(!game::core::Game::instance().update(deltaTime))
 			exit(0);
 		prevTime = currentTime;
 		glutPostRedisplay();
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	glewInit();
 	
 	// Game instance initialization
-	game::Game::instance().init();
+	game::core::Game::instance().init();
 	prevTime = glutGet(GLUT_ELAPSED_TIME);
 	// GLUT gains control of the application
 	glutMainLoop();

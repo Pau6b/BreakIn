@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene.h"
+#include "LevelScene.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -8,6 +8,8 @@
 // Game is a singleton (a class with a single instance) that represents our whole application
 
 namespace game
+{
+namespace core
 {
 class Game
 {
@@ -41,11 +43,12 @@ public:
 
 private:
 	bool m_bPlay;                       // Continue to play game?
-	Scene m_scene;                      // Scene to render
+	gameplay::LevelScene m_scene;                      // Scene to render
 	bool m_keys[256], m_specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
 
 };
+}
 }
 
 

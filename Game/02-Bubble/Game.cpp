@@ -4,6 +4,8 @@
 
 namespace game
 {
+namespace core
+{
 void Game::init()
 {
 	m_bPlay = true;
@@ -68,7 +70,7 @@ bool Game::getSpecialKey(int i_key) const
 	return m_specialKeys[i_key];
 }
 
-
+}
 }
 
 

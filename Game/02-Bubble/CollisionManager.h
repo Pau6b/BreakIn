@@ -7,6 +7,8 @@
 
 namespace game
 {
+namespace gameplay
+{
 namespace physics
 {
 
@@ -33,5 +35,6 @@ private:
 	std::vector<Matrix<char>>m_staticCollisions;
 	const uint32_t m_tileSize;
 };
+}
 }
 }

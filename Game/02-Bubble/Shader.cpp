@@ -4,6 +4,8 @@
 
 namespace game
 {
+namespace visuals
+{
 Shader::Shader()
 {
 	m_shaderId = 0;
@@ -17,16 +19,16 @@ void Shader::initFromSource(const ShaderType i_type, const std::string& i_source
 	GLint status;
 	char buffer[512];
 
-	switch(i_type)
+	switch (i_type)
 	{
-	case VERTEX_SHADER:
+	case ShaderType::VERTEX_SHADER:
 		m_shaderId = glCreateShader(GL_VERTEX_SHADER);
 		break;
-	case FRAGMENT_SHADER:
+	case ShaderType::FRAGMENT_SHADER:
 		m_shaderId = glCreateShader(GL_FRAGMENT_SHADER);
 		break;
 	}
-	if(m_shaderId == 0)
+	if (m_shaderId == 0)
 		return;
 	glShaderSource(m_shaderId, 1, &sourcePtr, NULL);
 	glCompileShader(m_shaderId);
@@ -40,7 +42,7 @@ bool Shader::initFromFile(const ShaderType i_type, const std::string& i_filename
 {
 	std::string shaderSource;
 
-	if(!loadShaderSource(i_filename, shaderSource))
+	if (!loadShaderSource(i_filename, shaderSource))
 		return false;
 	initFromSource(i_type, shaderSource);
 
@@ -74,11 +76,11 @@ bool Shader::loadShaderSource(const std::string& i_filename, std::string& i_shad
 	std::ifstream fin;
 
 	fin.open(i_filename.c_str());
-	if(!fin.is_open())
+	if (!fin.is_open())
 		return false;
 	i_shaderSource.assign(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>());
 
 	return true;
 }
-
+}
 }

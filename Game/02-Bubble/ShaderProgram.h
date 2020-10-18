@@ -11,6 +11,8 @@
 
 namespace game
 {
+namespace visuals
+{
 class ShaderProgram
 {
 
@@ -41,4 +43,5 @@ private:
 	std::string m_errorLog;
 
 };
+}
 }

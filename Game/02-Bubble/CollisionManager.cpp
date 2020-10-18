@@ -6,6 +6,8 @@
 
 namespace game
 {
+namespace gameplay
+{
 namespace physics
 {
 CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, const uint32_t i_tileSize)
@@ -98,7 +100,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 
 	std::stringstream sstream;
 	std::string line;
-	getline(fInput, line);
+	std::getline(fInput, line);
 	sstream.str(line);
 	sstream >> levelQuantity >> sizex >> sizey;
 	m_staticCollisions = std::vector<Matrix<char>>(levelQuantity, Matrix<char>(sizey, Row<char>(sizex)));
@@ -123,5 +125,5 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 }
 
 }
-
+}
 }
