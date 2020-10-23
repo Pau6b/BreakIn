@@ -37,11 +37,11 @@
     <Filter Include="Archivos de encabezado\Visuals">
       <UniqueIdentifier>{4c84f864-5973-4e77-9796-c6c224507661}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Core\Types">
+      <UniqueIdentifier>{86c3b444-9af7-4abc-a285-0b22b794064b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimKeyframes.h">
-      <Filter>Archivos de encabezado\Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Brick.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
@@ -51,13 +51,7 @@
     <ClInclude Include="Player.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Archivos de encabezado\Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Archivos de encabezado\Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TileMap.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="LevelScene.h">
@@ -75,14 +69,32 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>Archivos de encabezado\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="MainScreenScene.h">
       <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimKeyframes.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Archivos de encabezado\Core\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="BreakableBlock.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="MainScreenScene.cpp">
       <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="BreakableBlock.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

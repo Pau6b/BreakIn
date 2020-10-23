@@ -2,12 +2,39 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <set>
-#include "ShaderProgram.h"
-#include "TileMap.h"
-#include "Player.h"
-#include "CollisionManager.h"
-#include "Brick.h"
+#include <unordered_set>
 #include "Scene.h"
+#include "ShaderProgram.h"
+
+namespace game
+{
+namespace gameplay
+{
+	class Brick;
+	class Player;
+	class Coin;
+	class BreakableBlock;
+}
+}
+
+namespace game
+{
+namespace visuals
+{
+	class TileMap;
+}
+}
+
+namespace game
+{
+namespace gameplay
+{
+namespace physics
+{
+	class CollisionManager;
+}
+}
+}
 
 
 // Scene contains all the entities of our game.
@@ -21,6 +48,7 @@ class LevelScene : public core::Scene
 {
 public:
 	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath);
+	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
 	void render() override;
@@ -29,9 +57,12 @@ public:
 private:
 	void ParseBricks(std::string i_path);
 
+	void OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_brokenBlock);
+
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
-	std::vector<std::vector<std::shared_ptr<Brick>>> m_bricks;
-	std::unique_ptr<TileMap> m_map;
+	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
+	std::vector<std::unordered_set<std::shared_ptr<Coin>>> m_coins;
+	std::unique_ptr<visuals::TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
 	float m_currentTime;
