@@ -5,6 +5,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Ball.h"
 #include "CollisionManager.h"
 #include "Brick.h"
 #include "Scene.h"
@@ -35,6 +36,7 @@ private:
 	std::unique_ptr<TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
+	std::unique_ptr<Ball> m_ball;
 	float m_currentTime;
 	glm::mat4 m_projection, m_traslation;
 	uint32_t m_currentMap = 2;

@@ -37,9 +37,16 @@ void LevelScene::init()
 	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this));
+
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
+
+
+	m_ball = std::make_unique<Ball>(*m_collisionManager);
+	m_ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_ball->setPosition(glm::vec2((2 + INIT_PLAYER_X_TILES) * m_map->getTileSize(), (4 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
+
 	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
 	m_currentTime = 0.0f;
 	m_traslation = glm::mat4(1.0f);
@@ -52,6 +59,7 @@ void LevelScene::update(int i_deltaTime)
 {
 	m_currentTime += i_deltaTime;
 	m_player->update(i_deltaTime);
+	m_ball->update(i_deltaTime);
 }
 
 void LevelScene::render()
@@ -67,6 +75,7 @@ void LevelScene::render()
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
 	m_player->render();
+	m_ball->render();
 	m_bricks[m_currentMap].erase(std::remove_if(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { return i_brick->GetResistance() == 0; }),
 		end(m_bricks[m_currentMap]));
 	std::for_each(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });

@@ -12,8 +12,8 @@ namespace physics
 {
 CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks, std::function<void()> i_moveDown, std::function<void()> i_moveUp)
 	: m_tileSize(i_tileSize)
-	, m_moveDownFunction(i_moveDown)
-	, m_moveUpFunction(i_moveUp)
+	, m_cameraMoveDownFunction(i_moveDown)
+	, m_cameraMoveUpFunction(i_moveUp)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks);
 }
@@ -85,7 +85,7 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 	if (y >= m_staticCollisions[m_currentMap][x].size())
 	{
 		*i_posY = m_tileSize * y - i_size.y;
-		return CollisionResult::CollidedWithDownScreen;
+		return CollisionResult::CollidedWithScreen;
 	}
 	else if (m_staticCollisions[m_currentMap][x][y] == "0")
 	{
@@ -133,6 +133,86 @@ CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const
 			return CollisionResult::CollidedWithBrick;
 		}
 	}
+
+}
+
+
+CollisionResult CollisionManager::CheckCollision(const int& posX, const int& posY) 
+{
+	if (m_staticCollisions[m_currentMap][posX][posY] != "0")
+	{
+		if (m_staticCollisions[m_currentMap][posX][posY] == "X")
+		{
+			return CollisionResult::CollidedWithStaticBlock;
+		}
+
+		else
+		{
+			return CollisionResult::CollidedWithScreen;
+		}
+	}
+
+	return CollisionResult::NoCollision;
+}
+
+
+CollisionResult CollisionManager::CollisionBall(glm::ivec2& i_pos, glm::vec2& i_dir, const int& i_size, const int& speed)
+{
+	uint32_t x_right, x_left, y_up, y_down, x_mid, y_mid;
+	glm::ivec2 new_pos = glm::ivec2(i_pos.x + i_dir.x*2, i_pos.y + i_dir.y*2);
+	x_mid = (i_pos.x + (i_size / 2)) / m_tileSize;
+	y_mid = (i_pos.y + (i_size / 2)) / m_tileSize;
+	x_right = (new_pos.x + i_size) / m_tileSize;
+	x_left = (new_pos.x) / m_tileSize;
+	y_up = new_pos.y / m_tileSize;
+	y_down = (new_pos.y + i_size + 1) / m_tileSize;
+
+
+	
+	if (m_staticCollisions[m_currentMap][x_mid][y_up] != "0" || m_staticCollisions[m_currentMap][x_mid][y_down] != "0" ||
+		m_staticCollisions[m_currentMap][x_left][y_mid] != "0" || m_staticCollisions[m_currentMap][x_right][y_mid] != "0") 
+	{
+		
+		if (y_up >= m_staticCollisions[m_currentMap][x_mid].size() || y_down <= 0)
+		{
+			
+			if ((y_up >= m_staticCollisions[m_currentMap][x_mid].size()))
+			{
+				m_cameraMoveUpFunction();
+				return CollisionResult::CollidedWithScreen;
+			}
+
+			else
+			{
+				m_cameraMoveDownFunction();
+				return CollisionResult::CollidedWithScreen;
+			}
+		}
+
+		if (CheckCollision(x_mid, y_up) == CollisionResult::CollidedWithStaticBlock || 
+			CheckCollision(x_mid, y_down) == CollisionResult::CollidedWithStaticBlock)
+		{
+			i_dir[1] = -i_dir[1];
+			return CollisionResult::CollidedWithStaticBlock;
+		}
+
+		else if (CheckCollision(x_mid, y_up) == CollisionResult::CollidedWithScreen ||
+				CheckCollision(x_mid, y_down) == CollisionResult::CollidedWithScreen)
+		{
+			return CollisionResult::CollidedWithScreen;
+		}
+
+		else if (CheckCollision(x_right, y_mid) == CollisionResult::CollidedWithStaticBlock || 
+				 CheckCollision(x_left, y_mid) == CollisionResult::CollidedWithStaticBlock)
+		{
+			i_dir[0] = -i_dir[0];
+			return CollisionResult::CollidedWithStaticBlock;
+		}
+
+	}
+	i_pos = new_pos;
+
+	return CollisionResult::NoCollision;
 
 }
 
