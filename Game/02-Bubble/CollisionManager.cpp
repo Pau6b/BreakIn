@@ -3,6 +3,9 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include "BreakableBlock.h"
+#include "Brick.h"
+#include "Coin.h"
 
 namespace game
 {
@@ -10,10 +13,15 @@ namespace gameplay
 {
 namespace physics
 {
-CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, const uint32_t i_tileSize, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks)
+CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
+								   const uint32_t i_tileSize,
+								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
+								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction)
 	: m_tileSize(i_tileSize)
+	, m_onBreakableBlockBroken(i_onBrokenBlockFunction)
 {
-	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks);
+	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins);
 }
 
 // Collision tests for axis aligned bounding boxes.
@@ -23,7 +31,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath, co
 
 CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size)
 {
-	uint32_t x, y0, y1;
+	int32_t x, y0, y1;
 
 	x = i_pos.x / m_tileSize;
 	y0 =  i_pos.y / m_tileSize;
@@ -49,7 +57,7 @@ CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, con
 
 CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size)
 {
-	uint32_t x, y0, y1;
+	int32_t x, y0, y1;
 
 	x = (i_pos.x + i_size.x - 1) / m_tileSize;
 	y0 =  i_pos.y / m_tileSize;
@@ -75,7 +83,7 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 
 CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
-	uint32_t x, y;
+	int32_t x, y;
 	y = (i_pos.y + i_size.y - 1) / m_tileSize;
 	x =  (i_pos.x + i_size.x/2) / m_tileSize;
 	if (m_staticCollisions[m_currentMap][x][y] == "0")
@@ -106,7 +114,7 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 
 CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
-	uint32_t x, y;
+	int32_t x, y;
 	y =  (i_pos.y + 1) / m_tileSize;
 	x = (i_pos.x + i_size.x/2) / m_tileSize;
 	if (m_staticCollisions[m_currentMap][x][y] == "0")
@@ -136,27 +144,29 @@ CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const
 void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 {
 	uint32_t blockPos = std::stoi(m_staticCollisions[m_currentMap][i_x][i_y]);
-	uint32_t brickResistance = m_bricks[m_currentMap].at(blockPos)->GetResistance() - 1;
-	m_bricks[m_currentMap].at(blockPos)->SetResistance(brickResistance);
+	uint32_t brickResistance = m_breakableBlocks[m_currentMap].at(blockPos)->GetResistance() - 1;
+	m_breakableBlocks[m_currentMap].at(blockPos)->SetResistance(brickResistance);
 	if (brickResistance == 0)
 	{
-		m_bricks[m_currentMap].erase(blockPos);
+		m_onBreakableBlockBroken(m_breakableBlocks[m_currentMap].at(blockPos));
+		m_breakableBlocks[m_currentMap].erase(blockPos);
 		std::string blockId = m_staticCollisions[m_currentMap][i_x][i_y];
 		m_staticCollisions[m_currentMap][i_x][i_y] = '0';
-		if (m_staticCollisions[m_currentMap][i_x + 1][i_y] == blockId)
+		for (uint32_t i = i_x - 1; i <= i_x + 1; ++i)
 		{
-			m_staticCollisions[m_currentMap][i_x+1][i_y] = '0';
+			for(uint32_t j = i_y - 1; j <= i_y + 1; ++j)
+			{
+				if (m_staticCollisions[m_currentMap][i][j] == blockId)
+				{
+					m_staticCollisions[m_currentMap][i][j] = '0';
+				}
+			}
 		}
-		else if(m_staticCollisions[m_currentMap][i_x - 1][i_y] == blockId)
-		{
-			m_staticCollisions[m_currentMap][i_x-1][i_y] = '0';
-		}
-	}
-	
+	}	
 }
 
 
-void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisionMapPath, const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks)
+void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisionMapPath, const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks, const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins)
 {
 	std::ifstream fInput;
 	fInput.open(i_staticCollisionMapPath);
@@ -178,9 +188,11 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	sstream >> levelQuantity >> sizex >> sizey;
 	m_staticCollisions = std::vector<Matrix<std::string>>(levelQuantity, Matrix<std::string>(sizey, Row<std::string>(sizex)));
 	uint32_t brickCounter = 1;
-	m_bricks = std::vector<std::map<uint32_t,std::shared_ptr<Brick>>>(levelQuantity);
+	m_breakableBlocks = std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>>(levelQuantity);
 	for (int i = levelQuantity-1; i >= 0; --i)
 	{
+		auto blocksIt = i_bricks[i].begin();
+		auto coinsIt = i_coins[i].begin();
 		for (int j = 0; j < sizey; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
@@ -189,12 +201,25 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 				fInput.get(c);
 				if (c == '1' || c == '2' || c == '3')
 				{
-					m_bricks[i].emplace(brickCounter, i_bricks[i][brickCounter - 1]);
-					m_bricks[i].at(brickCounter)->SetPosition(glm::vec2((k-1)*m_tileSize, j*m_tileSize));
+					m_breakableBlocks[i].emplace(brickCounter, (*blocksIt));
+					++blocksIt;
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k-1)*m_tileSize, j*m_tileSize));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
 					m_staticCollisions[i][k-1][j] = pos;
+				}
+				else if(c == 'N' || c == 'M')
+				{
+					m_breakableBlocks[i].emplace(brickCounter, (*coinsIt));
+					++coinsIt;
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, j*m_tileSize));
+					std::string pos = std::to_string(brickCounter);
+					brickCounter++;
+					m_staticCollisions[i][k][j] = pos;
+					m_staticCollisions[i][k - 1][j] = pos;
+					m_staticCollisions[i][k][j-1] = pos;
+					m_staticCollisions[i][k - 1][j-1] = pos;
 				}
 				else
 				{

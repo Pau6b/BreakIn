@@ -4,10 +4,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <fstream>
 #include <sstream>
+#include <memory>
 #include "LevelScene.h"
 #include "Game.h"
 #include "CollisionManager.h"
-
+#include "Player.h"
+#include "TileMap.h"
+#include "Brick.h"
+#include "Coin.h"
+#include <functional>
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -27,13 +32,23 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 
 }
 
+LevelScene::~LevelScene()
+{
+
+}
+
 void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
 	ParseBricks(m_physicsMapPath);
-	m_map = std::make_unique<TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks);
+	m_map = std::make_unique<visuals::TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	
+	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
+		OnBreakableBlockBroken(i_brokenBlock);
+	};
+
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
@@ -59,9 +74,8 @@ void LevelScene::render()
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
 	m_player->render();
-	m_bricks[m_currentMap].erase(std::remove_if(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { return i_brick->GetResistance() == 0; }),
-		end(m_bricks[m_currentMap]));
-	std::for_each(begin(m_bricks[m_currentMap]), end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
+	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
+	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
 }
 
 std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
@@ -89,7 +103,8 @@ void LevelScene::ParseBricks(std::string i_path)
 	getline(fInput, line);
 	sstream.str(line);
 	sstream >> levelQuantity >> sizex >> sizey;
-	m_bricks = std::vector<std::vector<std::shared_ptr<Brick>>>(levelQuantity);
+	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(levelQuantity);
+	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(levelQuantity);
 	for (int i = levelQuantity - 1; i >= 0; --i)
 	{
 		for (int j = 0; j < sizey; ++j)
@@ -100,7 +115,15 @@ void LevelScene::ParseBricks(std::string i_path)
 				fInput.get(c);
 				if (c == '1' || c == '2' || c == '3')
 				{
-					m_bricks[i].emplace_back(std::make_shared<Brick>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), c - '0'));
+					m_bricks[i].emplace(std::make_shared<Brick>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), c - '0'));
+				}
+				else if (c == 'N')
+				{
+					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Diamond));
+				}
+				else if (c == 'M')
+				{
+					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Emerald));
 				}
 			}
 			//this is to clean the /n
@@ -112,6 +135,21 @@ void LevelScene::ParseBricks(std::string i_path)
 		}
 	}
 }
+
+void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_brokenBlock)
+{
+	std::shared_ptr<Brick> brick = std::dynamic_pointer_cast<Brick>(i_brokenBlock);
+	std::shared_ptr<Coin> coin = std::dynamic_pointer_cast<Coin>(i_brokenBlock);
+	if (brick)
+	{
+		m_bricks[m_currentMap].erase(brick);
+	}
+	else if(coin)
+	{
+		m_coins[m_currentMap].erase(coin);
+	}
+}
+
 }
 }
 

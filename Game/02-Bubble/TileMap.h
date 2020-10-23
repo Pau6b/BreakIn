@@ -5,7 +5,7 @@
 
 namespace game
 {
-namespace gameplay
+namespace visuals
 {
 // Class Tilemap is capable of loading a tile map from a text file in a very
 // simple format (see level01.txt for an example). With this information

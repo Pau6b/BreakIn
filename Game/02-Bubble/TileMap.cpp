@@ -6,7 +6,7 @@
 
 namespace game
 {
-namespace gameplay
+namespace visuals
 {
 TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program)
 {
