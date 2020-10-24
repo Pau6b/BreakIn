@@ -1,4 +1,4 @@
-#include <cmath>
+
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -22,7 +22,8 @@ enum PlayerAnims
 
 
 Player::Player(physics::CollisionManager& i_collisionsManager)
-	: m_map(i_collisionsManager)
+	: m_map(i_collisionsManager),
+	m_sizePlayer(glm::ivec2(32,12))
 {
 
 }
@@ -30,26 +31,7 @@ Player::Player(physics::CollisionManager& i_collisionsManager)
 void Player::init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
 {
 	m_bJumping = false;
-	m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), "images/bub.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
-	m_sprite->setNumberAnimations(4);
-	
-	m_sprite->setAnimationSpeed(STAND_LEFT, 8);
-	m_sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
-		
-	m_sprite->setAnimationSpeed(STAND_RIGHT, 8);
-	m_sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
-		
-	m_sprite->setAnimationSpeed(MOVE_LEFT, 8);
-	m_sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
-	m_sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
-	m_sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
-		
-	m_sprite->setAnimationSpeed(MOVE_RIGHT, 8);
-	m_sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
-	m_sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
-	m_sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
-		
-	m_sprite->changeAnimation(0);
+	m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(32, 12), glm::vec2(1.0, 1.0), "images/slime.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 	m_tileMapDispl = i_tileMapPos;
 	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));	
 }
@@ -62,7 +44,7 @@ void Player::update(int i_deltaTime)
 		if(m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
 		m_posPlayer.x -= 2;
-		if(m_map.CollisionMoveLeft(m_posPlayer, glm::ivec2(32, 32)) == physics::CollisionResult::CollidedWithStaticBlock)
+		if(m_map.CollisionMoveLeft(m_posPlayer, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			m_posPlayer.x += 2;
 			m_sprite->changeAnimation(STAND_LEFT);
@@ -73,7 +55,7 @@ void Player::update(int i_deltaTime)
 		if(m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
 		m_posPlayer.x += 2;
-		if(m_map.CollisionMoveRight(m_posPlayer, glm::ivec2(32, 32)) == physics::CollisionResult::CollidedWithStaticBlock)
+		if(m_map.CollisionMoveRight(m_posPlayer, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			m_posPlayer.x -= 2;
 			m_sprite->changeAnimation(STAND_RIGHT);
@@ -83,7 +65,7 @@ void Player::update(int i_deltaTime)
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
 		m_posPlayer.y -= 2;
-		if (m_map.CollisionMoveUp(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
+		if (m_map.CollisionMoveUp(m_posPlayer, glm::ivec2(32, 12), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			//m_posPlayer.y -= 2;
 		}
@@ -92,7 +74,7 @@ void Player::update(int i_deltaTime)
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
 		m_posPlayer.y += 2;
-		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 32), &m_posPlayer.y) == physics::CollisionResult::NoCollision)
+		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 12), &m_posPlayer.y) == physics::CollisionResult::NoCollision)
 		{
 			//m_posPlayer.y += 2;
 		}
@@ -120,5 +102,16 @@ void Player::setPosition(const glm::vec2& i_pos)
 	m_posPlayer = i_pos;
 	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
 }
+
+glm::ivec2 Player::getPosition()
+{
+	return m_posPlayer;
+}
+
+glm::ivec2 Player::getSize()
+{
+	return m_sizePlayer;
+}
+
 }
 }

@@ -20,6 +20,9 @@
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 10
 
+#define LEVEL_SIZE_X 384
+#define LEVEL_SIZE_Y 384
+
 namespace game
 {
 namespace gameplay
@@ -43,23 +46,35 @@ void LevelScene::init()
 	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
 	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<visuals::TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	
+
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this));
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
-	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+
+	m_collisionManager->LinkPlayer(m_player.get());
+
+	m_ball = std::make_unique<Ball>(*m_collisionManager);
+	m_ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_ball->setPosition(glm::vec2((7 + INIT_PLAYER_X_TILES) * m_map->getTileSize(), (7 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
+
+	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
 	m_currentTime = 0.0f;
+	m_traslation = glm::mat4(1.0f);
+	m_traslation[3][0] -= SCREEN_X - 10;
+	m_current_level = &m_traslation[3][1];
+	*m_current_level = -SCREEN_Y;
 }
 
 void LevelScene::update(int i_deltaTime)
 {
 	m_currentTime += i_deltaTime;
 	m_player->update(i_deltaTime);
+	m_ball->update(i_deltaTime);
 }
 
 void LevelScene::render()
@@ -71,12 +86,25 @@ void LevelScene::render()
 	m_texProgram->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
 	m_texProgram->setUniformMatrix4f("modelview", modelview);
+	m_texProgram->setUniformMatrix4f("model", m_traslation);
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
 	m_player->render();
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+	m_ball->render();
 }
+
+void LevelScene::MoveLevelUp()
+{
+	*m_current_level += LEVEL_SIZE_Y;
+}
+
+void LevelScene::MoveLevelDown()
+{
+	*m_current_level -= LEVEL_SIZE_Y;
+}
+
 
 std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
 {
@@ -152,4 +180,3 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 
 }
 }
-

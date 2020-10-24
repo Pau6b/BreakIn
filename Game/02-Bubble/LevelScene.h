@@ -53,6 +53,8 @@ public:
 	void update(int i_deltaTime) override;
 	void render() override;
 	std::pair<core::Scene::SceneResult, uint32_t> GetSceneResult() override;
+	void MoveLevelUp();
+	void MoveLevelDown();
 
 private:
 	void ParseBricks(std::string i_path);
@@ -65,12 +67,13 @@ private:
 	std::unique_ptr<visuals::TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
+	std::unique_ptr<Ball> m_ball;
 	float m_currentTime;
-	glm::mat4 m_projection;
+	glm::mat4 m_projection, m_traslation;
 	uint32_t m_currentMap = 2;
+	float* m_current_level;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 };
 }
 }
-

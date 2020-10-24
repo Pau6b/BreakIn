@@ -19,12 +19,13 @@ public:
 	void init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
 	void update(int i_deltaTime);
 	void render();
-
 	void setPosition(const glm::vec2& i_pos);
+	glm::ivec2 getPosition();
+	glm::ivec2 getSize();
 	
 private:
 	bool m_bJumping;
-	glm::ivec2 m_tileMapDispl, m_posPlayer;
+	glm::ivec2 m_tileMapDispl, m_posPlayer, m_sizePlayer;
 	int m_jumpAngle, m_startY;
 	std::unique_ptr<visuals::Sprite> m_sprite;
 	physics::CollisionManager& m_map;
