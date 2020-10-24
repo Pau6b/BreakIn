@@ -12,7 +12,7 @@ namespace gui
 void MainScreenScene::init()
 {
 	m_shaderProgram = std::make_unique<visuals::ShaderProgram>();
-	InitShaders(*m_shaderProgram, "shaders/texture.vert", "shaders/texture.frag");
+	InitShaders(*m_shaderProgram, "shaders/menu.vert", "shaders/menu.frag");
 	m_playButtonInfo = {200, 200, 200, 100};
 	m_buttonText = std::make_unique<visuals::Sprite>(glm::vec2(m_playButtonInfo.xWidth, m_playButtonInfo.yWidth), glm::vec2(1, 1), "images/UI/play_text.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB, *m_shaderProgram);
 	m_buttonText->setPosition(glm::vec2(m_playButtonInfo.xPos, m_playButtonInfo.yPos));

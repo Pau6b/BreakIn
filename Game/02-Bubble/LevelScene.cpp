@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <functional>
 #include "LevelScene.h"
 #include "Game.h"
 #include "CollisionManager.h"
@@ -12,7 +13,7 @@
 #include "TileMap.h"
 #include "Brick.h"
 #include "Coin.h"
-#include <functional>
+#include "Ball.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16

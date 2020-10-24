@@ -14,6 +14,7 @@ namespace gameplay
 	class Player;
 	class Coin;
 	class BreakableBlock;
+	class Ball;
 }
 }
 

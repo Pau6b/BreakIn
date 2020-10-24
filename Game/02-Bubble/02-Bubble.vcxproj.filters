@@ -51,9 +51,6 @@
     <ClInclude Include="Player.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Archivos de encabezado\Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="LevelScene.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
@@ -78,9 +75,6 @@
     <ClInclude Include="AnimKeyframes.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Archivos de encabezado\Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Coin.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
@@ -94,6 +88,15 @@
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="TileMap.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Ball.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Archivos de encabezado\Visuals</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
   </ItemGroup>
@@ -144,6 +147,9 @@
       <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="BreakableBlock.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Ball.cpp">
       <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
