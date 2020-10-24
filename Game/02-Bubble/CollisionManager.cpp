@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Coin.h"
 #include "Player.h"
+#include "glm\detail\func_geometric.hpp"
 
 namespace game
 {
@@ -194,80 +195,96 @@ std::tuple<uint32_t,uint32_t,uint32_t> CollisionManager::CheckDirectionOfCollisi
 
 }
 
-bool CollisionManager::CollisionPlayer(int i_Ydown, int i_Xmid, int i_Xleft, int i_Xright, int i_dirY, const int& i_Speed)
+
+bool CollisionManager::CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const int32_t& i_Speed)
 {
 	glm::ivec2 posPlayer = m_player->getPosition();
 	glm::ivec2 sizePlayer = m_player->getSize();
 
 	uint32_t y_ini, y_end;
 	y_ini = posPlayer.y;
-	y_end = posPlayer.y + sizePlayer.y + i_Speed;
-	return (i_Ydown >= y_ini && i_Ydown <= y_end && (i_Xmid >= posPlayer.x ) && i_Xmid <= (posPlayer.x + sizePlayer.x) && i_dirY > 0);
+	y_end = posPlayer.y + sizePlayer.y;
 
+	uint32_t ballDown = i_pos.y + i_size;
+	uint32_t ballMid = i_pos.x + i_size / 2;
+
+	return (ballDown >= y_ini && ballDown <= y_end && (ballMid >= posPlayer.x) && ballMid <= (posPlayer.x + sizePlayer.x+i_size/2) && i_dirY > 0);
 }
 
-CollisionResult CollisionManager::CollisionBall(glm::ivec2& i_pos, glm::vec2& i_dir, const int& i_size, const int& i_speed)
+CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float& i_speed)
 {
-	uint32_t x_right, x_left, y_up, y_down, x_mid, y_mid;
-	glm::ivec2 new_pos = glm::ivec2(i_pos.x + i_dir.x*i_speed, i_pos.y + i_dir.y*i_speed);
-	x_mid = ((i_pos.x + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-	y_mid = ((i_pos.y + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-	x_right = ((new_pos.x + i_size) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-	x_left = ((new_pos.x) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-	y_up = (new_pos.y / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-	y_down = ((new_pos.y + i_size + 1) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-
-
-
-	if (m_staticCollisions[m_currentMap][x_mid][y_up] != "0" || m_staticCollisions[m_currentMap][x_mid][y_down] != "0" ||
-		m_staticCollisions[m_currentMap][x_left][y_mid] != "0" || m_staticCollisions[m_currentMap][x_right][y_mid] != "0")
+	int nsteps = 10;
+	glm::vec2 originalPos = i_pos;
+	for (int nstep = 1; nstep <= nsteps; nstep++)
 	{
+		float currVel = i_speed*(float(nstep) / nsteps);
+		glm::vec2 new_pos = glm::vec2(originalPos.x + i_dir.x*currVel, originalPos.y + i_dir.y*currVel);
+		uint32_t x_mid = uint32_t((i_pos.x + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		uint32_t y_mid = uint32_t((i_pos.y + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		uint32_t x_right = uint32_t((new_pos.x + i_size) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		uint32_t x_left = uint32_t((new_pos.x) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		uint32_t y_up = uint32_t(new_pos.y / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		uint32_t y_down = uint32_t((new_pos.y + i_size + 1) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
 
-		if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I" || m_staticCollisions[m_currentMap][x_mid][y_down] == "I")
+		if (m_staticCollisions[m_currentMap][x_mid][y_up] != "0" || m_staticCollisions[m_currentMap][x_mid][y_down] != "0" ||
+			m_staticCollisions[m_currentMap][x_left][y_mid] != "0" || m_staticCollisions[m_currentMap][x_right][y_mid] != "0")
 		{
 
-			if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I")
+			if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I" || m_staticCollisions[m_currentMap][x_mid][y_down] == "I")
 			{
-				m_cameraMoveUpFunction();
-				m_currentMap += 1;
-				i_pos = glm::ivec2(i_pos.x, i_pos.y - m_tileSize*3);
-				return CollisionResult::CollidedWithScreen;
+
+				if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I")
+				{
+					m_cameraMoveUpFunction();
+					m_currentMap += 1;
+					i_pos = glm::ivec2(i_pos.x, i_pos.y - m_tileSize*3);
+					return CollisionResult::CollidedWithScreen;
+				}
+				else
+				{
+					m_cameraMoveDownFunction();
+					m_currentMap -= 1;
+					i_pos = glm::ivec2(i_pos.x, i_pos.y + m_tileSize * 3);
+					return CollisionResult::CollidedWithScreen;
+				}
 			}
 
+			uint32_t x, y, dir;
+			std::tie(x, y, dir) = CheckDirectionOfCollision(x_mid, y_mid, x_right, x_left, y_up, y_down);
+
+			if (CheckCollision(x, y) == CollisionResult::CollidedWithStaticBlock)
+			{
+				i_dir[dir] = -i_dir[dir];
+				return CollisionResult::CollidedWithStaticBlock;
+			}
 			else
 			{
-				m_cameraMoveDownFunction();
-				m_currentMap -= 1;
-				i_pos = glm::ivec2(i_pos.x, i_pos.y + m_tileSize * 3);
-				return CollisionResult::CollidedWithScreen;
+				i_dir[dir] = -i_dir[dir];
+				ProcessBlockCollision(x, y);
+				return CollisionResult::CollidedWithStaticBlock;
 			}
+
 		}
 
-		uint32_t x, y, dir;
-		std::tie(x, y, dir) = CheckDirectionOfCollision(x_mid, y_mid, x_right, x_left, y_up, y_down);
 
-		if (CheckCollision(x, y) == CollisionResult::CollidedWithStaticBlock)
+		if (CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
 		{
-			i_dir[dir] = -i_dir[dir];
-			return CollisionResult::CollidedWithStaticBlock;
+			glm::vec2 newDirNoChange = i_dir;
+			newDirNoChange[1] = -newDirNoChange[1];
+			
+			glm::vec2 ballDownPos = glm::vec2(new_pos.x+i_size/2, new_pos.y);
+			glm::vec2 playerPos = m_player->getPosition();
+			playerPos.x += m_player->getSize().x / 2.f;
+			glm::vec2 playerToBall = glm::vec2(ballDownPos.x - playerPos.x, ballDownPos.y - playerPos.y);
+			playerToBall = glm::normalize(playerToBall);
+			
+			i_dir = glm::normalize(playerToBall*0.7f+newDirNoChange*0.3f);
+			i_pos.y = m_player->getPosition().y - i_size;
+			return CollisionResult::CollidedWithPlayer;
 		}
-		else
-		{
-			i_dir[dir] = -i_dir[dir];
-			ProcessBlockCollision(x, y);
-			return CollisionResult::CollidedWithStaticBlock;
-		}
 
+		i_pos = new_pos;
 	}
-
-
-	if (CollisionPlayer(y_down*m_tileSize, x_mid*m_tileSize, x_left*m_tileSize, x_right*m_tileSize, i_dir[1], i_speed))
-	{
-		i_dir[1] = -i_dir[1];
-		return CollisionResult::CollidedWithPlayer;
-	}
-
-	i_pos = new_pos;
 
 	return CollisionResult::NoCollision;
 
@@ -326,7 +343,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	m_staticCollisions = std::vector<Matrix<std::string>>(levelQuantity, Matrix<std::string>(sizey, Row<std::string>(sizex)));
 	uint32_t brickCounter = 1;
 	m_breakableBlocks = std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>>(levelQuantity);
-	for (int i = levelQuantity-1; i >= 0; --i)
+	for (int32_t i = levelQuantity-1; i >= 0; --i)
 	{
 		auto blocksIt = i_bricks[i].begin();
 		auto coinsIt = i_coins[i].begin();
@@ -350,13 +367,13 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 				{
 					m_breakableBlocks[i].emplace(brickCounter, (*coinsIt));
 					++coinsIt;
-					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, j*m_tileSize));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j)*m_tileSize));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
 					m_staticCollisions[i][k - 1][j] = pos;
-					m_staticCollisions[i][k][j-1] = pos;
-					m_staticCollisions[i][k - 1][j-1] = pos;
+ 					m_staticCollisions[i][k][j-1] = pos;
+ 					m_staticCollisions[i][k - 1][j-1] = pos;
 				}
 				else
 				{

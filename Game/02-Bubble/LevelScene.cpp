@@ -61,7 +61,7 @@ void LevelScene::init()
 
 	m_ball = std::make_unique<Ball>(*m_collisionManager);
 	m_ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_ball->setPosition(glm::vec2((7 + INIT_PLAYER_X_TILES) * m_map->getTileSize(), (7 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
+	m_ball->setPosition(glm::vec2((INIT_PLAYER_X_TILES) * m_map->getTileSize(), ( -5 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
 
 	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
 	m_currentTime = 0.0f;

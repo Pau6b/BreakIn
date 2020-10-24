@@ -16,7 +16,7 @@ namespace game
 			: m_map(i_collisionsManager)
 			, m_size(12),
 			m_dirBall(glm::vec2(0,1)),
-			m_speed(2)
+			m_speed(5.f)
 		{
 			
 			

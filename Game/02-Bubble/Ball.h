@@ -22,11 +22,12 @@ namespace game
 			void setPosition(const glm::vec2& i_pos);
 
 		private:
-			glm::ivec2 m_tileMapDispl, m_posBall;
+			glm::vec2 m_tileMapDispl, m_posBall;
 			glm::vec2  m_dirBall;
 			std::unique_ptr<visuals::Sprite> m_sprite;
 			physics::CollisionManager& m_map;
-			int m_size, m_speed;
+			int m_size;
+			float m_speed;
 		};
 	}
 }
