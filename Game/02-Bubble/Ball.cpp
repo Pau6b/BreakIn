@@ -15,7 +15,8 @@ namespace game
 		Ball::Ball(physics::CollisionManager& i_collisionsManager)
 			: m_map(i_collisionsManager)
 			, m_size(12),
-			m_dirBall(glm::vec2(-1,1))
+			m_dirBall(glm::vec2(0,1)),
+			m_speed(2)
 		{
 			
 			
@@ -31,7 +32,7 @@ namespace game
 		void Ball::update(int i_deltaTime)
 		{
 			m_sprite->update(i_deltaTime);
-			m_map.CollisionBall(m_posBall, m_dirBall, m_size, i_deltaTime);
+			m_map.CollisionBall(m_posBall, m_dirBall, m_size, m_speed);
 			m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posBall.x), float(m_tileMapDispl.y + m_posBall.y)));
 		}
 

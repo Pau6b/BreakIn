@@ -1,4 +1,4 @@
-#include <cmath>
+
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -22,7 +22,8 @@ enum PlayerAnims
 
 
 Player::Player(physics::CollisionManager& i_collisionsManager)
-	: m_map(i_collisionsManager)
+	: m_map(i_collisionsManager),
+	m_sizePlayer(glm::ivec2(32,12))
 {
 
 }
@@ -101,5 +102,16 @@ void Player::setPosition(const glm::vec2& i_pos)
 	m_posPlayer = i_pos;
 	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
 }
+
+glm::ivec2 Player::getPosition()
+{
+	return m_posPlayer;
+}
+
+glm::ivec2 Player::getSize()
+{
+	return m_sizePlayer;
+}
+
 }
 }

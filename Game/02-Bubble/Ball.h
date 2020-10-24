@@ -26,7 +26,7 @@ namespace game
 			glm::vec2  m_dirBall;
 			std::unique_ptr<visuals::Sprite> m_sprite;
 			physics::CollisionManager& m_map;
-			int m_size;
+			int m_size, m_speed;
 		};
 	}
 }
