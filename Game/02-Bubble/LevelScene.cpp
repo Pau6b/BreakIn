@@ -109,7 +109,7 @@ void LevelScene::MoveLevelDown()
 
 std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
 {
-	return{ core::Scene::SceneResult::NotFinished, 0 };
+	return{ m_currentSceneResult, 0 };
 }
 
 void LevelScene::ParseBricks(std::string i_path)
@@ -176,6 +176,15 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	else if(coin)
 	{
 		m_coins[m_currentMap].erase(coin);
+		bool anyCoinLeft = false;
+		for (uint32_t i = 0; i < m_coins.size() && !anyCoinLeft; ++i)
+		{
+			anyCoinLeft = m_coins[i].size() > 0;
+		}
+		if (!anyCoinLeft)
+		{
+			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+		}
 	}
 }
 

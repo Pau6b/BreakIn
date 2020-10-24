@@ -75,6 +75,7 @@ private:
 	float* m_current_level;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
+	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
 };
 }
 }
