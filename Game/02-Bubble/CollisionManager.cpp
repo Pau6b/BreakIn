@@ -40,8 +40,8 @@ CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, con
 	int32_t x, y0, y1;
 
 	x = i_pos.x / m_tileSize;
-	y0 =  i_pos.y / m_tileSize;
-	y1 =  (i_pos.y + i_size.y - 1) / m_tileSize;
+	y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
+	y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
 	for (int y = y0; y <= y1; y++)
 	{
 		if (m_staticCollisions[m_currentMap][x][y] != "0")
@@ -67,8 +67,8 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 	int32_t x, y0, y1;
 
 	x = (i_pos.x + i_size.x - 1) / m_tileSize;
-	y0 =  i_pos.y / m_tileSize;
-	y1 =  (i_pos.y + i_size.y - 1) / m_tileSize;
+	y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
+	y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
 	for (int y = y0; y <= y1; y++)
 	{
 		if (m_staticCollisions[m_currentMap][x][y] != "0")
@@ -92,7 +92,7 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
 	int32_t x, y;
-	y = (i_pos.y + i_size.y - 1) / m_tileSize;
+	y = ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
 	x =  (i_pos.x + i_size.x/2) / m_tileSize;
 	if (y >= m_staticCollisions[m_currentMap][x].size())
 	{
@@ -125,7 +125,7 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
 	int32_t x, y;
-	y =  (i_pos.y + 1) / m_tileSize;
+	y =  ((i_pos.y + 1) / m_tileSize) % m_mapSizeY;
 	x = (i_pos.x + i_size.x/2) / m_tileSize;
 	if (m_staticCollisions[m_currentMap][x][y] == "0")
 	{
@@ -198,8 +198,8 @@ std::tuple<uint32_t,uint32_t,uint32_t> CollisionManager::CheckDirectionOfCollisi
 
 bool CollisionManager::CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const int32_t& i_Speed)
 {
-	glm::ivec2 posPlayer = m_player->getPosition();
-	glm::ivec2 sizePlayer = m_player->getSize();
+	glm::ivec2 posPlayer = m_player->GetPosition();
+	glm::ivec2 sizePlayer = m_player->GetSize();
 
 	uint32_t y_ini, y_end;
 	y_ini = posPlayer.y;
@@ -243,8 +243,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				else
 				{
 					m_cameraMoveDownFunction();
-					m_currentMap -= 1;
-					i_pos = glm::ivec2(i_pos.x, i_pos.y + m_tileSize * 3);
+					if (m_currentMap > 0)
+					{
+						m_currentMap -= 1;
+						i_pos = glm::ivec2(i_pos.x, i_pos.y + m_tileSize * 3);
+					}
 					return CollisionResult::CollidedWithScreen;
 				}
 			}
@@ -267,19 +270,19 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 		}
 
 
-		if (CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
+		if (i_pos.y + i_size < m_player->GetPosition().y && CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
 		{
 			glm::vec2 newDirNoChange = i_dir;
 			newDirNoChange[1] = -newDirNoChange[1];
 			
 			glm::vec2 ballDownPos = glm::vec2(new_pos.x+i_size/2, new_pos.y);
-			glm::vec2 playerPos = m_player->getPosition();
-			playerPos.x += m_player->getSize().x / 2.f;
+			glm::vec2 playerPos = m_player->GetPosition();
+			playerPos.x += m_player->GetSize().x / 2.f;
 			glm::vec2 playerToBall = glm::vec2(ballDownPos.x - playerPos.x, ballDownPos.y - playerPos.y);
 			playerToBall = glm::normalize(playerToBall);
 			
 			i_dir = glm::normalize(playerToBall*0.7f+newDirNoChange*0.3f);
-			i_pos.y = m_player->getPosition().y - i_size;
+			i_pos.y = m_player->GetPosition().y - i_size;
 			return CollisionResult::CollidedWithPlayer;
 		}
 
@@ -333,21 +336,20 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 
 	int levelQuantity;
 	int sizex;
-	int sizey;
 
 	std::stringstream sstream;
 	std::string line;
 	std::getline(fInput, line);
 	sstream.str(line);
-	sstream >> levelQuantity >> sizex >> sizey;
-	m_staticCollisions = std::vector<Matrix<std::string>>(levelQuantity, Matrix<std::string>(sizey, Row<std::string>(sizex)));
+	sstream >> levelQuantity >> sizex >> m_mapSizeY;
+	m_staticCollisions = std::vector<Matrix<std::string>>(levelQuantity, Matrix<std::string>(m_mapSizeY, Row<std::string>(sizex)));
 	uint32_t brickCounter = 1;
 	m_breakableBlocks = std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>>(levelQuantity);
 	for (int32_t i = levelQuantity-1; i >= 0; --i)
 	{
 		auto blocksIt = i_bricks[i].begin();
 		auto coinsIt = i_coins[i].begin();
-		for (int j = 0; j < sizey; ++j)
+		for (int j = 0; j < m_mapSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
 			{
@@ -367,7 +369,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 				{
 					m_breakableBlocks[i].emplace(brickCounter, (*coinsIt));
 					++coinsIt;
-					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j)*m_tileSize));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j-1)*m_tileSize));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
@@ -388,6 +390,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 #endif
 		}
 	}
+
 }
 
 }

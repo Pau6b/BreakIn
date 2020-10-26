@@ -54,14 +54,13 @@ void LevelScene::init()
 
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this));
 	m_player = std::make_unique<Player>(*m_collisionManager);
-	m_player->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()));
+	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()) );
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
-	m_ball = std::make_unique<Ball>(*m_collisionManager);
-	m_ball->init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_ball->setPosition(glm::vec2((INIT_PLAYER_X_TILES) * m_map->getTileSize(), ( -5 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
+	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player);
+	m_ball->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_ball->SetPosition(glm::vec2((10+INIT_PLAYER_X_TILES) * m_map->getTileSize(), ( 2 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
 
 	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
 	m_currentTime = 0.0f;
@@ -73,9 +72,14 @@ void LevelScene::init()
 
 void LevelScene::update(int i_deltaTime)
 {
+	if (core::Game::instance().getKey('p'))
+	{
+		Reset();
+	}
+
 	m_currentTime += i_deltaTime;
-	m_player->update(i_deltaTime);
-	m_ball->update(i_deltaTime);
+	m_player->Update(i_deltaTime);
+	m_ball->Update(i_deltaTime);
 }
 
 void LevelScene::render()
@@ -90,20 +94,41 @@ void LevelScene::render()
 	m_texProgram->setUniformMatrix4f("model", m_traslation);
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
-	m_player->render();
+	m_player->Render();
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
-	m_ball->render();
+	m_ball->Render();
 }
 
 void LevelScene::MoveLevelUp()
 {
 	*m_current_level += LEVEL_SIZE_Y;
+	glm::ivec2 playerNewPos = m_player->GetPosition();
+	playerNewPos.y -= LEVEL_SIZE_Y;
+	m_player->SetPosition(playerNewPos);
 }
 
 void LevelScene::MoveLevelDown()
 {
-	*m_current_level -= LEVEL_SIZE_Y;
+	if (m_current_level > 0)
+	{
+		*m_current_level -= LEVEL_SIZE_Y;
+		glm::ivec2 playerNewPos = m_player->GetPosition();
+		playerNewPos.y += LEVEL_SIZE_Y;
+		m_player->SetPosition(playerNewPos);
+	}
+	else if (m_current_level == 0)
+	{
+		if (m_currentLives == 0)
+		{
+			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+		}
+		else
+		{
+			Reset();
+			m_currentLives--;
+		}
+	}
 }
 
 
@@ -123,20 +148,18 @@ void LevelScene::ParseBricks(std::string i_path)
 		return;
 	}
 
-	int levelQuantity;
 	int sizex;
-	int sizey;
 
 	std::stringstream sstream;
 	std::string line;
 	getline(fInput, line);
 	sstream.str(line);
-	sstream >> levelQuantity >> sizex >> sizey;
-	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(levelQuantity);
-	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(levelQuantity);
-	for (int i = levelQuantity - 1; i >= 0; --i)
+	sstream >> m_levelQuantity >> sizex >> m_levelSizeY;
+	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(m_levelQuantity);
+	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
+	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
-		for (int j = 0; j < sizey; ++j)
+		for (int j = 0; j < m_levelSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
 			{
@@ -183,9 +206,15 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 		}
 		if (!anyCoinLeft)
 		{
-			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+			//m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 		}
 	}
+}
+
+void LevelScene::Reset()
+{
+	m_ball->Reset();
+	m_player->Reset(m_currentMap, m_levelQuantity, m_levelSizeY*m_map->getTileSize());
 }
 
 }

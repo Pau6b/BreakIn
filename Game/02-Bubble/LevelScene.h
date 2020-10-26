@@ -59,8 +59,8 @@ public:
 
 private:
 	void ParseBricks(std::string i_path);
-
 	void OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_brokenBlock);
+	void Reset();
 
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
@@ -71,11 +71,15 @@ private:
 	std::unique_ptr<Ball> m_ball;
 	float m_currentTime;
 	glm::mat4 m_projection, m_traslation;
+	uint32_t m_levelQuantity;
+	uint32_t m_levelSizeY;
 	uint32_t m_currentMap = 2;
 	float* m_current_level;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
+
+	uint32_t m_currentLives = 0;
 };
 }
 }

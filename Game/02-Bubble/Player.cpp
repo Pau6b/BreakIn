@@ -28,25 +28,27 @@ Player::Player(physics::CollisionManager& i_collisionsManager)
 
 }
 
-void Player::init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
+void Player::Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, const glm::ivec2& i_startPos)
 {
 	m_bJumping = false;
 	m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(32, 12), glm::vec2(1.0, 1.0), "images/slime.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 	m_tileMapDispl = i_tileMapPos;
-	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));	
+	m_pos = i_startPos;
+	m_startingPos = i_startPos;
+	SetPosition(m_pos);
 }
 
-void Player::update(int i_deltaTime)
+void Player::Update(int i_deltaTime)
 {
 	m_sprite->update(i_deltaTime);
 	if(core::Game::instance().getSpecialKey(GLUT_KEY_LEFT))
 	{
 		if(m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
-		m_posPlayer.x -= 2;
-		if(m_map.CollisionMoveLeft(m_posPlayer, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
+		m_pos.x -= 2;
+		if(m_map.CollisionMoveLeft(m_pos, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
-			m_posPlayer.x += 2;
+			m_pos.x += 2;
 			m_sprite->changeAnimation(STAND_LEFT);
 		}
 	}
@@ -54,18 +56,18 @@ void Player::update(int i_deltaTime)
 	{
 		if(m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
-		m_posPlayer.x += 2;
-		if(m_map.CollisionMoveRight(m_posPlayer, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
+		m_pos.x += 2;
+		if(m_map.CollisionMoveRight(m_pos, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
-			m_posPlayer.x -= 2;
+			m_pos.x -= 2;
 			m_sprite->changeAnimation(STAND_RIGHT);
 		}
 	}
 
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
-		m_posPlayer.y -= 2;
-		if (m_map.CollisionMoveUp(m_posPlayer, glm::ivec2(32, 12), &m_posPlayer.y) != physics::CollisionResult::CollidedWithStaticBlock)
+		m_pos.y -= 2;
+		if (m_map.CollisionMoveUp(m_pos, glm::ivec2(32, 12), &m_pos.y) != physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			//m_posPlayer.y -= 2;
 		}
@@ -73,8 +75,8 @@ void Player::update(int i_deltaTime)
 
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
-		m_posPlayer.y += 2;
-		if (m_map.CollisionMoveDown(m_posPlayer, glm::ivec2(32, 12), &m_posPlayer.y) == physics::CollisionResult::NoCollision)
+		m_pos.y += 2;
+		if (m_map.CollisionMoveDown(m_pos, glm::ivec2(32, 12), &m_pos.y) == physics::CollisionResult::NoCollision)
 		{
 			//m_posPlayer.y += 2;
 		}
@@ -88,29 +90,35 @@ void Player::update(int i_deltaTime)
 			m_sprite->changeAnimation(STAND_RIGHT);
 	}
 	
-	
-	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
+	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_pos.x), float(m_tileMapDispl.y + m_pos.y)));
 }
 
-void Player::render()
+void Player::Render()
 {
 	m_sprite->render();
 }
 
-void Player::setPosition(const glm::vec2& i_pos)
+void Player::SetPosition(const glm::vec2& i_pos)
 {
-	m_posPlayer = i_pos;
-	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posPlayer.x), float(m_tileMapDispl.y + m_posPlayer.y)));
+	m_pos = i_pos;
+	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_pos.x), float(m_tileMapDispl.y + m_pos.y)));
 }
 
-glm::ivec2 Player::getPosition()
+glm::ivec2 Player::GetPosition() const
 {
-	return m_posPlayer;
+	return m_pos;
 }
 
-glm::ivec2 Player::getSize()
+glm::ivec2 Player::GetSize() const
 {
 	return m_sizePlayer;
+}
+
+void Player::Reset(uint32_t i_currentLevel, uint32_t i_levelQuantity, uint32_t i_levelSizeY)
+{
+	m_pos = m_startingPos;
+	m_pos.y += (i_levelQuantity-1 - i_currentLevel)*i_levelSizeY;
+	SetPosition(m_pos);
 }
 
 }

@@ -71,6 +71,7 @@ private:
 	std::function<void()> m_cameraMoveDownFunction;
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> m_onBreakableBlockBroken;
 	const uint32_t m_tileSize;
+	uint32_t m_mapSizeY;
 	Player *m_player;
 };
 }
