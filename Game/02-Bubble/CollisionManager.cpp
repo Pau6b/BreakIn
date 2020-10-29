@@ -8,6 +8,7 @@
 #include "Coin.h"
 #include "Player.h"
 #include "glm\detail\func_geometric.hpp"
+#include "CheatSystem.h"
 
 namespace game
 {
@@ -21,11 +22,13 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 								   std::function<void()> i_moveDown,
-									 std::function<void()> i_moveUp)
+								   std::function<void()> i_moveUp,
+								   const core::CheatSystem& i_cheatSystem)
 	: m_tileSize(i_tileSize)
 	, m_onBreakableBlockBroken(i_onBrokenBlockFunction)
 	, m_cameraMoveDownFunction(i_moveDown)
 	, m_cameraMoveUpFunction(i_moveUp)
+	, m_cheatSystem(i_cheatSystem)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins);
 }
@@ -272,17 +275,24 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 
 		if (i_pos.y + i_size < m_player->GetPosition().y && CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
 		{
-			glm::vec2 newDirNoChange = i_dir;
-			newDirNoChange[1] = -newDirNoChange[1];
-			
-			glm::vec2 ballDownPos = glm::vec2(new_pos.x+i_size/2, new_pos.y);
-			glm::vec2 playerPos = m_player->GetPosition();
-			playerPos.x += m_player->GetSize().x / 2.f;
-			glm::vec2 playerToBall = glm::vec2(ballDownPos.x - playerPos.x, ballDownPos.y - playerPos.y);
-			playerToBall = glm::normalize(playerToBall);
-			
-			i_dir = glm::normalize(playerToBall*0.7f+newDirNoChange*0.3f);
-			i_pos.y = m_player->GetPosition().y - i_size;
+			if (m_cheatSystem.InGodMode())
+			{
+				i_dir = glm::vec2(0, -1);
+			}
+			else
+			{
+				glm::vec2 newDirNoChange = i_dir;
+				newDirNoChange[1] = -newDirNoChange[1];
+
+				glm::vec2 ballDownPos = glm::vec2(new_pos.x + i_size / 2, new_pos.y);
+				glm::vec2 playerPos = m_player->GetPosition();
+				playerPos.x += m_player->GetSize().x / 2.f;
+				glm::vec2 playerToBall = glm::vec2(ballDownPos.x - playerPos.x, ballDownPos.y - playerPos.y);
+				playerToBall = glm::normalize(playerToBall);
+
+				i_dir = glm::normalize(playerToBall*0.7f + newDirNoChange*0.3f);
+				i_pos.y = m_player->GetPosition().y - i_size;
+			}
 			return CollisionResult::CollidedWithPlayer;
 		}
 

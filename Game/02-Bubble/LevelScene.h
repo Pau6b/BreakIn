@@ -37,6 +37,14 @@ namespace physics
 }
 }
 
+namespace game
+{
+namespace core
+{
+	class CheatSystem;
+}
+}
+
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -48,7 +56,7 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath);
+	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem);
 	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
@@ -78,7 +86,7 @@ private:
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
-
+	const core::CheatSystem& m_cheatSystem;
 	uint32_t m_currentLives = 0;
 };
 }

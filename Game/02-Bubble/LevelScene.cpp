@@ -14,6 +14,7 @@
 #include "Brick.h"
 #include "Coin.h"
 #include "Ball.h"
+#include "CheatSystem.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -29,9 +30,10 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
+	, m_cheatSystem(i_cheatSystem)
 {
 
 }
@@ -52,7 +54,7 @@ void LevelScene::init()
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this));
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()) );
 

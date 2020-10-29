@@ -8,8 +8,13 @@
 #include <tuple>
 #include "Types.h"
 
-
-
+namespace game
+{
+namespace core
+{
+	class CheatSystem;
+}
+}
 
 namespace game
 {
@@ -48,8 +53,9 @@ public:
 					 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 					 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 					 std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
-				   std::function<void()> i_moveDown,
-					 std::function<void()> i_moveUp);
+					 std::function<void()> i_moveDown,
+					 std::function<void()> i_moveUp,
+					 const core::CheatSystem& i_cheatSystem);
 
 	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size);
@@ -72,7 +78,8 @@ private:
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> m_onBreakableBlockBroken;
 	const uint32_t m_tileSize;
 	uint32_t m_mapSizeY;
-	Player *m_player;
+	Player* m_player;
+	const core::CheatSystem& m_cheatSystem;
 };
 }
 }

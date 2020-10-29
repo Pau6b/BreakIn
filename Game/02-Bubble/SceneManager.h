@@ -8,10 +8,18 @@ namespace game
 {
 namespace core
 {
+	class CheatSystem;
+}
+}
+
+namespace game
+{
+namespace core
+{
 class SceneManager
 {
 public:
-	SceneManager(const std::string& i_sceneConfigFilePath);
+	SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem);
 
 	void Update(int i_deltaTime);
 	void Render();
@@ -20,6 +28,7 @@ public:
 private:
 	std::unique_ptr<Scene> m_currentScene = nullptr;
 	void ParseSceneConfigFilePath(const std::string& i_sceneConfigFilePath);
+	const CheatSystem& m_cheatSystem;
 
 	struct LevelConfig
 	{

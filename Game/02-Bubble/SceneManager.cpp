@@ -4,12 +4,14 @@
 #include <sstream>
 #include "LevelScene.h"
 #include "MainScreenScene.h"
+#include "CheatSystem.h"
 
 namespace game
 {
 namespace core
 {
-SceneManager::SceneManager(const std::string& i_sceneConfigFilePath)
+SceneManager::SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem)
+	: m_cheatSystem(i_cheatSystem)
 {
 	ParseSceneConfigFilePath(i_sceneConfigFilePath);
 }
@@ -26,7 +28,7 @@ void SceneManager::Update(int i_deltaTime)
 			break;
 		case Scene::SceneResult::GoToLevel:
 		{
-			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath);
+			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem);
 			m_currentScene->init();
 			break;
 		}

@@ -11,11 +11,11 @@ Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet
 	: m_shaderProgram(i_program)
 {
 	float vertices[24] = {0.f, 0.f, 0.f, 0.f, 
-												i_quadSize.x, 0.f, i_sizeInSpritesheet.x, 0.f, 
-												i_quadSize.x, i_quadSize.y, i_sizeInSpritesheet.x, i_sizeInSpritesheet.y, 
-												0.f, 0.f, 0.f, 0.f, 
-												i_quadSize.x, i_quadSize.y, i_sizeInSpritesheet.x, i_sizeInSpritesheet.y, 
-												0.f, i_quadSize.y, 0.f, i_sizeInSpritesheet.y};
+					  	  i_quadSize.x, 0.f, i_sizeInSpritesheet.x, 0.f, 
+						  i_quadSize.x, i_quadSize.y, i_sizeInSpritesheet.x, i_sizeInSpritesheet.y, 
+						  0.f, 0.f, 0.f, 0.f, 
+						  i_quadSize.x, i_quadSize.y, i_sizeInSpritesheet.x, i_sizeInSpritesheet.y, 
+						  0.f, i_quadSize.y, 0.f, i_sizeInSpritesheet.y};
 
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
@@ -25,6 +25,10 @@ Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet
 	m_posLocation = m_shaderProgram.bindVertexAttribute("position", 2, 4*sizeof(float), 0);
 	m_texCoordLocation = m_shaderProgram.bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
 	m_texture.loadFromFile(i_imagePath,i_pixelFormat);
+	m_texture.setWrapS(GL_CLAMP_TO_EDGE);
+	m_texture.setWrapT(GL_CLAMP_TO_EDGE);
+	m_texture.setMinFilter(GL_NEAREST);
+	m_texture.setMagFilter(GL_NEAREST);
 	m_currentAnimation = -1;
 	m_position = glm::vec2(0.f);
 }

@@ -1,6 +1,8 @@
 #pragma once
+#include <memory>
 #include "LevelScene.h"
 #include "SceneManager.h"
+#include "CheatSystem.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -44,6 +46,7 @@ public:
 
 private:
 	bool m_bPlay;                       // Continue to play game?
+	std::unique_ptr<CheatSystem> m_cheatSystem;
 	std::unique_ptr<SceneManager> m_sceneManager;
 	bool m_keys[256], m_specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time

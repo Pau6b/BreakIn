@@ -39,7 +39,7 @@ private:
 	GLuint m_vao;
 	GLuint m_vbo;
 	GLint m_posLocation, m_texCoordLocation;
-	glm::vec2 m_position;
+	glm::ivec2 m_position;
 	int m_currentAnimation, m_currentKeyframe;
 	float m_timeAnimation;
 	glm::vec2 m_texCoordDispl;

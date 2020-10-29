@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "Game.h"
+#include "CheatSystem.h"
 
 namespace game
 {
@@ -10,15 +11,18 @@ void Game::init()
 {
 	m_bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	m_sceneManager = std::make_unique<SceneManager>("scenes/SceneConfig.txt");
+	m_cheatSystem = std::make_unique<CheatSystem>();
+	m_sceneManager = std::make_unique<SceneManager>("scenes/SceneConfig.txt", *m_cheatSystem);
 }
 
 bool Game::update(int i_deltaTime)
 {
+	m_cheatSystem->Update(i_deltaTime);
 	if (m_sceneManager)
 	{
 		m_sceneManager->Update(i_deltaTime);
 	}
+
 	
 	return m_bPlay;
 }
