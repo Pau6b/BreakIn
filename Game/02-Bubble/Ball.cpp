@@ -13,23 +13,20 @@ namespace game
 	namespace gameplay
 	{
 
-		Ball::Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player)
+		Ball::Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
 			: m_map(i_collisionsManager)
 			, m_size(12)
 			, m_state(BallState::FollowingPlayer)
-			, m_dirBall(glm::vec2(0,1))
+			, m_dirBall(glm::normalize(glm::vec2(0,-3)))
 			, m_speed(2.5f)
 			, m_player(i_player)
-		{
-			
-		}
-
-		void Ball::Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
+			, m_currentMap(i_currentMap)
+			, m_tileMapDispl(i_tileMapPos)
 		{
 			m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(m_size, m_size), glm::vec2(1.0, 1.0), "images/BolaNieve.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
-			m_tileMapDispl = i_tileMapPos;
 			m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posBall.x), float(m_tileMapDispl.y + m_posBall.y)));
 		}
+
 
 		void Ball::Update(int i_deltaTime)
 		{
@@ -78,6 +75,7 @@ namespace game
 
 		void Ball::Reset()
 		{
+			//#pau_todo #dani_todo resetear la direccion del player
 			m_state = BallState::FollowingPlayer;
 		}
 

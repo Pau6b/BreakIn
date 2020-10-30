@@ -18,6 +18,7 @@ namespace physics
 {
 CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const uint32_t i_tileSize,
+								   uint32_t i_currentMap,
 								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
@@ -29,6 +30,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 	, m_cameraMoveDownFunction(i_moveDown)
 	, m_cameraMoveUpFunction(i_moveUp)
 	, m_cheatSystem(i_cheatSystem)
+	, m_currentMap(i_currentMap)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins);
 }
@@ -40,25 +42,14 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 
 CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size)
 {
-	int32_t x, y0, y1;
-
-	x = i_pos.x / m_tileSize;
-	y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
-	y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
+	int32_t x = i_pos.x / m_tileSize;
+	int32_t y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
+	int32_t y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (m_staticCollisions[m_currentMap][x][y] != "0")
+		if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
 		{
-			if (m_staticCollisions[m_currentMap][x][y] == "X"
-				|| m_staticCollisions[m_currentMap][x][y] == "I")
-			{
-				return CollisionResult::CollidedWithStaticBlock;
-			}
-			else
-			{
-				ProcessBlockCollision(x, y);
-				return CollisionResult::CollidedWithBrick;
-			}
+			return CollisionResult::CollidedWithStaticBlock;
 		}
 	}
 
@@ -67,25 +58,14 @@ CollisionResult CollisionManager::CollisionMoveLeft(const glm::ivec2& i_pos, con
 
 CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size)
 {
-	int32_t x, y0, y1;
-
-	x = (i_pos.x + i_size.x - 1) / m_tileSize;
-	y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
-	y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
+	const int32_t x = (i_pos.x + i_size.x - 1) / m_tileSize;
+	const int32_t y0 =  (i_pos.y / m_tileSize) % m_mapSizeY;
+	const int32_t y1 =  ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
 	for (int y = y0; y <= y1; y++)
 	{
-		if (m_staticCollisions[m_currentMap][x][y] != "0")
+		if (m_staticCollisions[m_currentMap][x][y] == "X" ||  m_staticCollisions[m_currentMap][x][y] == "I")
 		{
-			if (m_staticCollisions[m_currentMap][x][y] == "X"
-				|| m_staticCollisions[m_currentMap][x][y] == "I")
-			{
-				return CollisionResult::CollidedWithStaticBlock;
-			}
-			else
-			{
-				ProcessBlockCollision(x, y);
-				return CollisionResult::CollidedWithBrick;
-			}
+			return CollisionResult::CollidedWithStaticBlock;
 		}
 	}
 
@@ -94,31 +74,20 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 
 CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
-	int32_t x, y;
-	y = ((i_pos.y + i_size.y - 1) / m_tileSize) % m_mapSizeY;
-	x =  (i_pos.x + i_size.x/2) / m_tileSize;
-	if (y >= m_staticCollisions[m_currentMap][x].size())
+	
+	const int32_t originalY = ((i_pos.y + i_size.y - 1) / m_tileSize);
+	const int32_t x =  (i_pos.x + i_size.x/2) / m_tileSize;
+	const int32_t y = originalY%m_mapSizeY;
+	const int32_t map_position = 2 - (originalY / m_mapSizeY);
+	if (map_position != m_currentMap)
 	{
-		*i_posY = m_tileSize * y - i_size.y;
+		*i_posY = m_tileSize * m_mapSizeY * (3-m_currentMap) - i_size.y;
 		return CollisionResult::CollidedWithScreen;
 	}
-	else if (m_staticCollisions[m_currentMap][x][y] == "0")
-	{
-		return CollisionResult::NoCollision;
-	}
-	else
+	else if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
 	{
 		*i_posY = m_tileSize * y - i_size.y;
-		if (m_staticCollisions[m_currentMap][x][y] == "X"
-			|| m_staticCollisions[m_currentMap][x][y] == "I")
-		{
-			return CollisionResult::CollidedWithStaticBlock;
-		}
-		else
-		{
-			ProcessBlockCollision(x, y);
-			return CollisionResult::CollidedWithBrick;
-		}
+		return CollisionResult::CollidedWithStaticBlock;
 	}
 
 	return CollisionResult::NoCollision;
@@ -127,28 +96,21 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 
 CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
-	int32_t x, y;
-	y =  ((i_pos.y + 1) / m_tileSize) % m_mapSizeY;
-	x = (i_pos.x + i_size.x/2) / m_tileSize;
-	if (m_staticCollisions[m_currentMap][x][y] == "0")
+	const int32_t originalY =  ((i_pos.y + 1) / m_tileSize);
+	const int32_t x = (i_pos.x + i_size.x/2) / m_tileSize;
+	const int32_t y = originalY % m_mapSizeY;
+	const int32_t map_position = 2 - (originalY / m_mapSizeY);
+	if (map_position != m_currentMap)
 	{
+		*i_posY = m_tileSize * m_mapSizeY * (2 - m_currentMap);
+		return CollisionResult::CollidedWithScreen;
+	}
+	if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
+	{
+		*i_posY = m_tileSize * (y + 1);
+		return CollisionResult::CollidedWithStaticBlock;
+	}
 	return CollisionResult::NoCollision;
-	}
-	else
-	{
-		*i_posY = m_tileSize * (y+1);
-		if (m_staticCollisions[m_currentMap][x][y] == "X"
-			|| m_staticCollisions[m_currentMap][x][y] == "I")
-		{
-			return CollisionResult::CollidedWithStaticBlock;
-		}
-		else
-		{
-			ProcessBlockCollision(x, y);
-			return CollisionResult::CollidedWithBrick;
-		}
-	}
-
 }
 
 
@@ -156,7 +118,7 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 {
 	if (m_staticCollisions[m_currentMap][i_posX][i_posY] != "0")
 	{
-		if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "X")
+		if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "X" || m_staticCollisions[m_currentMap][i_posX][i_posY] == "Y")
 		{
 			return CollisionResult::CollidedWithStaticBlock;
 		}
@@ -220,41 +182,38 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 	glm::vec2 originalPos = i_pos;
 	for (int nstep = 1; nstep <= nsteps; nstep++)
 	{
-		float currVel = i_speed*(float(nstep) / nsteps);
-		glm::vec2 new_pos = glm::vec2(originalPos.x + i_dir.x*currVel, originalPos.y + i_dir.y*currVel);
-		uint32_t x_mid = uint32_t((i_pos.x + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-		uint32_t y_mid = uint32_t((i_pos.y + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-		uint32_t x_right = uint32_t((new_pos.x + i_size) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-		uint32_t x_left = uint32_t((new_pos.x) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-		uint32_t y_up = uint32_t(new_pos.y / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
-		uint32_t y_down = uint32_t((new_pos.y + i_size + 1) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		const float currVel = i_speed*(float(nstep) / nsteps);
+		const glm::vec2 new_pos = glm::vec2(originalPos.x + i_dir.x*currVel, originalPos.y + i_dir.y*currVel);
+		const uint32_t x_mid = uint32_t((i_pos.x + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		const uint32_t y_mid = uint32_t((i_pos.y + (i_size / 2)) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		const uint32_t x_right = uint32_t((new_pos.x + i_size) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		const uint32_t x_left = uint32_t((new_pos.x) / m_tileSize) % m_staticCollisions[m_currentMap][0].size();
+		const uint32_t y_upOriginal = uint32_t(new_pos.y / m_tileSize);
+		const uint32_t y_downOriginal = uint32_t((new_pos.y + i_size + 1) / m_tileSize);
+		const uint32_t y_up = y_upOriginal % m_staticCollisions[m_currentMap][0].size();
+		const uint32_t y_down = y_downOriginal %  m_staticCollisions[m_currentMap][0].size();
+		const uint32_t yDownMap = 2-(y_downOriginal / m_mapSizeY);
+		if (yDownMap != m_currentMap)
+		{
+			uint32_t oldMap = m_currentMap;
+			m_cameraMoveDownFunction();
+			if (oldMap > 0)
+			{
+				i_pos.y = (2 - m_currentMap)*m_mapSizeY*m_tileSize+i_size;
+			}
+			return CollisionResult::CollidedWithScreen;
+		}
+		const uint32_t yUpMap = 2-(y_upOriginal / m_mapSizeY);
+		if (yUpMap != m_currentMap)
+		{
+			m_cameraMoveUpFunction();
+			i_pos.y = (3-m_currentMap)*m_mapSizeY*m_tileSize-i_size-1;
+			return CollisionResult::CollidedWithScreen;
+		}
 
 		if (m_staticCollisions[m_currentMap][x_mid][y_up] != "0" || m_staticCollisions[m_currentMap][x_mid][y_down] != "0" ||
 			m_staticCollisions[m_currentMap][x_left][y_mid] != "0" || m_staticCollisions[m_currentMap][x_right][y_mid] != "0")
 		{
-
-			if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I" || m_staticCollisions[m_currentMap][x_mid][y_down] == "I")
-			{
-
-				if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I")
-				{
-					m_cameraMoveUpFunction();
-					m_currentMap += 1;
-					i_pos = glm::ivec2(i_pos.x, i_pos.y - m_tileSize*3);
-					return CollisionResult::CollidedWithScreen;
-				}
-				else
-				{
-					m_cameraMoveDownFunction();
-					if (m_currentMap > 0)
-					{
-						m_currentMap -= 1;
-						i_pos = glm::ivec2(i_pos.x, i_pos.y + m_tileSize * 3);
-					}
-					return CollisionResult::CollidedWithScreen;
-				}
-			}
-
 			uint32_t x, y, dir;
 			std::tie(x, y, dir) = CheckDirectionOfCollision(x_mid, y_mid, x_right, x_left, y_up, y_down);
 
@@ -306,6 +265,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 void CollisionManager::LinkPlayer(Player* i_player)
 {
 	m_player = i_player;
+}
+
+void CollisionManager::SetCurrentMap(uint32_t i_currentMap)
+{
+	m_currentMap = i_currentMap;
 }
 
 void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)

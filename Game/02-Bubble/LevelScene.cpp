@@ -19,8 +19,8 @@
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 4
-#define INIT_PLAYER_Y_TILES 10
+#define INIT_PLAYER_X_TILES 11
+#define INIT_PLAYER_Y_TILES 22
 
 #define LEVEL_SIZE_X 384
 #define LEVEL_SIZE_Y 384
@@ -34,6 +34,7 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
+	, m_currentMap(1)
 {
 
 }
@@ -54,22 +55,21 @@ void LevelScene::init()
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_currentMap, m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
-	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()) );
+	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
-	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player);
-	m_ball->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
-	m_ball->SetPosition(glm::vec2((10+INIT_PLAYER_X_TILES) * m_map->getTileSize(), ( 2 + INIT_PLAYER_Y_TILES) * m_map->getTileSize()));
+	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player, m_currentMap, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 
-	m_projection = glm::ortho(0.f, float(LEVEL_SIZE_X - 1 + 160), float(LEVEL_SIZE_Y - 1), 0.f);
+	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
 	m_traslation = glm::mat4(1.0f);
 	m_traslation[3][0] -= SCREEN_X - 10;
-	m_current_level = &m_traslation[3][1];
-	*m_current_level = -SCREEN_Y;
+	m_projectionY = &m_traslation[3][1];
+	*m_projectionY = -(SCREEN_Y);
+	*m_projectionY -= (2 - m_currentMap) * LEVEL_SIZE_Y;
 }
 
 void LevelScene::update(int i_deltaTime)
@@ -96,30 +96,30 @@ void LevelScene::render()
 	m_texProgram->setUniformMatrix4f("model", m_traslation);
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
-	m_player->Render();
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+	m_player->Render();
 	m_ball->Render();
 }
 
 void LevelScene::MoveLevelUp()
 {
-	*m_current_level += LEVEL_SIZE_Y;
-	glm::ivec2 playerNewPos = m_player->GetPosition();
-	playerNewPos.y -= LEVEL_SIZE_Y;
-	m_player->SetPosition(playerNewPos);
+	*m_projectionY += LEVEL_SIZE_Y;
+	m_currentMap++;
+	m_player->SetCurrentMap(m_currentMap);
+	m_collisionManager->SetCurrentMap(m_currentMap);
 }
 
 void LevelScene::MoveLevelDown()
 {
-	if (m_current_level > 0)
+	if (m_currentMap > 0)
 	{
-		*m_current_level -= LEVEL_SIZE_Y;
-		glm::ivec2 playerNewPos = m_player->GetPosition();
-		playerNewPos.y += LEVEL_SIZE_Y;
-		m_player->SetPosition(playerNewPos);
+		*m_projectionY -= LEVEL_SIZE_Y;
+		m_currentMap--;
+		m_player->SetCurrentMap(m_currentMap);
+		m_collisionManager->SetCurrentMap(m_currentMap);
 	}
-	else if (m_current_level == 0)
+	else if (m_currentMap == 0)
 	{
 		if (m_currentLives == 0)
 		{
@@ -177,7 +177,7 @@ void LevelScene::ParseBricks(std::string i_path)
 				}
 				else if (c == 'M')
 				{
-					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Emerald));
+					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Iron));
 				}
 			}
 			//this is to clean the /n
@@ -216,7 +216,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 void LevelScene::Reset()
 {
 	m_ball->Reset();
-	m_player->Reset(m_currentMap, m_levelQuantity, m_levelSizeY*m_map->getTileSize());
+	m_player->Reset();
 }
 
 }

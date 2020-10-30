@@ -28,13 +28,15 @@ Player::Player(physics::CollisionManager& i_collisionsManager)
 
 }
 
-void Player::Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, const glm::ivec2& i_startPos)
+void Player::Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, const glm::ivec2& i_startPos, uint32_t i_currentMap, uint32_t i_mapSizeY)
 {
 	m_bJumping = false;
 	m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(32, 12), glm::vec2(1.0, 1.0), "images/slime.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 	m_tileMapDispl = i_tileMapPos;
 	m_pos = i_startPos;
 	m_startingPos = i_startPos;
+	m_mapSizeY = i_mapSizeY;
+	m_currentMap = i_currentMap;
 	SetPosition(m_pos);
 }
 
@@ -101,7 +103,16 @@ void Player::Render()
 void Player::SetPosition(const glm::vec2& i_pos)
 {
 	m_pos = i_pos;
-	m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_pos.x), float(m_tileMapDispl.y + m_pos.y)));
+	m_pos.y %= m_mapSizeY;
+	m_pos.y += m_mapSizeY * (2 - m_currentMap);
+	glm::vec2 position = glm::vec2(float(m_tileMapDispl.x + m_pos.x), float(m_tileMapDispl.y + m_pos.y));
+	m_sprite->setPosition(position);
+}
+
+void Player::SetCurrentMap(uint32_t i_currentMap)
+{
+	m_currentMap = i_currentMap;
+	SetPosition(m_pos);
 }
 
 glm::ivec2 Player::GetPosition() const
@@ -114,11 +125,9 @@ glm::ivec2 Player::GetSize() const
 	return m_sizePlayer;
 }
 
-void Player::Reset(uint32_t i_currentLevel, uint32_t i_levelQuantity, uint32_t i_levelSizeY)
+void Player::Reset()
 {
-	m_pos = m_startingPos;
-	m_pos.y += (i_levelQuantity-1 - i_currentLevel)*i_levelSizeY;
-	SetPosition(m_pos);
+	SetPosition(m_startingPos);
 }
 
 }

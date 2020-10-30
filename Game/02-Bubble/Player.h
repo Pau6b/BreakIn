@@ -16,13 +16,14 @@ class Player
 {
 public:
 	Player(physics::CollisionManager& i_collisionsManager);
-	void Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, const glm::ivec2& i_startingPos);
+	void Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, const glm::ivec2& i_startingPos, uint32_t i_currentMap, uint32_t m_mapSizeY);
 	void Update(int i_deltaTime);
 	void Render();
 	void SetPosition(const glm::vec2& i_pos);
+	void SetCurrentMap(uint32_t i_currentMap);
 	glm::ivec2 GetPosition() const;
 	glm::ivec2 GetSize() const;
-	void Reset(uint32_t i_currentLevel, uint32_t i_levelQuantity, uint32_t i_levelSizeY);
+	void Reset();
 	
 private:
 	bool m_bJumping;
@@ -33,7 +34,8 @@ private:
 	int m_jumpAngle, m_startY;
 	std::unique_ptr<visuals::Sprite> m_sprite;
 	physics::CollisionManager& m_map;
-
+	uint32_t m_currentMap;
+	uint32_t m_mapSizeY;
 };
 }
 }

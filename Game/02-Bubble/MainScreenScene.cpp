@@ -55,7 +55,7 @@ void MainScreenScene::OnMouseButtonReleased(int32_t i_button)
 	}
 }
 
-bool MainScreenScene::IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const std::pair<int32_t, int32_t>& i_mousePosition)
+inline bool MainScreenScene::IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const std::pair<int32_t, int32_t>& i_mousePosition)
 {
 	return (i_mousePosition.first > i_buttonInfo.xPos)
 		&& (i_mousePosition.first < i_buttonInfo.xPos + i_buttonInfo.xWidth)
