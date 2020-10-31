@@ -3,9 +3,10 @@ TILEMAP
 16 16 							-- Tile size & block size
 images/tileset_1.png 	-- Tilesheet
 4 3 								-- Number of tiles in tilesheet
+1							-- Tile which will replace borders
 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 
 4 3 3 3 3 3 3 3 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 4 
-4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 4 
+4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 4  
 4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 4 
 4 1 1 1 1 1 1 1 2 1 1 1 1 1 1 3 1 1 1 1 1 1 1 4 
 4 1 1 1 1 1 1 1 1 2 1 1 1 1 3 1 1 1 1 1 1 1 1 4 

@@ -25,12 +25,12 @@ public:
 	void free();
 	
 	uint32_t getTileSize() const { return m_tileSize; }
-	
-private:
-	bool loadLevel(const std::string& i_levelFile);
-	void prepareArrays(const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program);
+	void WipeDoorPositions(const std::pair<uint32_t,uint32_t>& i_positionsToWipe, uint32_t i_map, uint32_t m_totalMapNumber);
 
 private:
+	bool loadLevel(const std::string& i_levelFile);
+	void prepareArrays(bool i_first);
+
 	GLuint m_vao;
 	GLuint m_vbo;
 	GLint m_posLocation, m_texCoordLocation;
@@ -39,7 +39,9 @@ private:
 	visuals::Texture m_tilesheet;
 	glm::vec2 m_tileTexSize;
 	int *m_map;
-
+	int32_t m_replaceTile;
+	const glm::vec2& m_minCoords;
+	visuals::ShaderProgram& m_program;
 };
 }
 }

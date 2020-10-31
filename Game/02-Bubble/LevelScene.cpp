@@ -34,7 +34,7 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
-	, m_currentMap(1)
+	, m_currentMap(0)
 {
 
 }
@@ -55,7 +55,7 @@ void LevelScene::init()
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_currentMap, m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_currentMap, m_bricks, m_coins, m_keys, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
 
@@ -98,6 +98,11 @@ void LevelScene::render()
 	m_map->render();
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+	auto it = m_keys.find(m_currentMap);
+	if (it != m_keys.end())
+	{
+		it->second->Render();
+	}
 	m_player->Render();
 	m_ball->Render();
 }
@@ -179,6 +184,23 @@ void LevelScene::ParseBricks(std::string i_path)
 				{
 					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Iron));
 				}
+				else if (c == 'K')
+				{
+					if (m_keys.size() <= m_levelQuantity-1-i)
+					{
+						m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
+															std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
+																							  glm::vec2(1, 1),
+																							  "images/Pickaxe.png",
+																							  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
+																							  *m_texProgram), 
+															glm::ivec2(SCREEN_X, SCREEN_Y)));
+					}
+					else
+					{
+						std::cerr << "There is a key for this level";
+					}
+				}
 			}
 			//this is to clean the /n
 			char temp;
@@ -210,6 +232,12 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 		{
 			//m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 		}
+	}
+	else //It's a key
+	{
+		m_keys.erase(m_currentMap);
+		std::pair<uint32_t, uint32_t> wipedPositions = m_collisionManager->WipeDoorPositions();
+		m_map->WipeDoorPositions(wipedPositions, m_currentMap, m_levelQuantity);
 	}
 }
 

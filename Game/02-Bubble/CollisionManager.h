@@ -7,6 +7,7 @@
 #include <functional>
 #include <tuple>
 #include "Types.h"
+#include <utility>
 
 namespace game
 {
@@ -53,6 +54,7 @@ public:
 					 uint32_t i_currentMap,
 					 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 					 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+					 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys,
 					 std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 					 std::function<void()> i_moveDown,
 					 std::function<void()> i_moveUp,
@@ -65,10 +67,14 @@ public:
 	CollisionResult CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float& i_speed);
 	void LinkPlayer(Player* i_player);
 	void SetCurrentMap(uint32_t i_currentMap);
+	std::pair<uint32_t,uint32_t> WipeDoorPositions();
 
 private:
 	void ProcessBlockCollision(uint32_t i_x, uint32_t i_y);
-	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath, const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks, const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins);
+	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath,
+							   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
+							   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+							   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys);
 	CollisionResult CheckCollision(const int& i_posX, const int& i_posY);
 	std::tuple<uint32_t, uint32_t, uint32_t> CheckDirectionOfCollision(const int& i_XposMid, const int& i_YposMid, const int& i_XposRight, const int& i_XposLeft, const int& i_YposUp, const int& i_YposDown);
 	bool CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const int32_t& i_Speed);

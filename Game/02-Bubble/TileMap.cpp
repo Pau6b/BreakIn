@@ -9,9 +9,11 @@ namespace game
 namespace visuals
 {
 TileMap::TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program)
+	: m_minCoords(i_minCoords)
+	, m_program(i_program)
 {
 	loadLevel(i_levelFile);
-	prepareArrays(i_minCoords, i_program);
+	prepareArrays(true);
 }
 
 TileMap::~TileMap()
@@ -35,6 +37,17 @@ void TileMap::render() const
 void TileMap::free()
 {
 	glDeleteBuffers(1, &m_vbo);
+}
+
+void TileMap::WipeDoorPositions(const std::pair<uint32_t, uint32_t>& i_positionsToWipe, uint32_t i_map, uint32_t m_totalMapNumber)
+{
+	int32_t yOffset = (m_mapSize.y / m_totalMapNumber)*m_mapSize.x*(m_totalMapNumber-1-i_map);
+	for (int i = i_positionsToWipe.first; i <= i_positionsToWipe.second; i++)
+	{
+		int32_t oldTile = m_map[yOffset + i];
+		m_map[yOffset + i] = m_replaceTile;
+	}
+	prepareArrays(false);
 }
 
 bool TileMap::loadLevel(const std::string& i_levelFile)
@@ -67,7 +80,9 @@ bool TileMap::loadLevel(const std::string& i_levelFile)
 	sstream.str(line);
 	sstream >> m_tilesheetSize.x >> m_tilesheetSize.y;
 	m_tileTexSize = glm::vec2(1.f / m_tilesheetSize.x, 1.f / m_tilesheetSize.y);
-
+	std::getline(fin, line);
+	sstream.str(line);
+	sstream >> m_replaceTile;
 	m_map = new int[m_mapSize.x * m_mapSize.y];
 	for (int j = 0; j < m_mapSize.y; j++)
 	{
@@ -83,7 +98,7 @@ bool TileMap::loadLevel(const std::string& i_levelFile)
 	return true;
 }
 
-void TileMap::prepareArrays(const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program)
+void TileMap::prepareArrays(bool i_first)
 {
 	int tile, nTiles = 0;
 	glm::vec2 posTile, texCoordTile[2], halfTexel;
@@ -100,7 +115,7 @@ void TileMap::prepareArrays(const glm::vec2& i_minCoords, visuals::ShaderProgram
 			{
 				// Non-empty tile
 				nTiles++;
-				posTile = glm::vec2(i_minCoords.x + i * m_tileSize, i_minCoords.y + j * m_tileSize);
+				posTile = glm::vec2(m_minCoords.x + i * m_tileSize, m_minCoords.y + j * m_tileSize);
 				texCoordTile[0] = glm::vec2(float((tile - 1) % m_tilesheetSize.x) / m_tilesheetSize.x, float((tile - 1) / m_tilesheetSize.x) / m_tilesheetSize.y);
 				texCoordTile[1] = texCoordTile[0] + m_tileTexSize;
 				texCoordTile[0] += halfTexel;
@@ -122,14 +137,18 @@ void TileMap::prepareArrays(const glm::vec2& i_minCoords, visuals::ShaderProgram
 			}
 		}
 	}
-
+	if (!i_first)
+	{
+		glDeleteBuffers(1, &m_vbo);
+		glDeleteVertexArrays(1, &m_vao);
+	}
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 24 * nTiles * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-	m_posLocation = i_program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
-	m_texCoordLocation = i_program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+	m_posLocation = m_program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
+	m_texCoordLocation = m_program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 }
 
 }

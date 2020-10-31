@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <memory>
+#include <map>
 #include <set>
 #include <unordered_set>
 #include "Scene.h"
@@ -73,6 +74,7 @@ private:
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
 	std::vector<std::unordered_set<std::shared_ptr<Coin>>> m_coins;
+	std::map<uint32_t,std::shared_ptr<BreakableBlock>> m_keys;
 	std::unique_ptr<visuals::TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;

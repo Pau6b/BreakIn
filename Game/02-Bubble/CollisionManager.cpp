@@ -21,6 +21,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   uint32_t i_currentMap,
 								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+								   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 								   std::function<void()> i_moveDown,
 								   std::function<void()> i_moveUp,
@@ -32,7 +33,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(i_currentMap)
 {
-	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins);
+	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins, i_keys);
 }
 
 // Collision tests for axis aligned bounding boxes.
@@ -118,7 +119,9 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 {
 	if (m_staticCollisions[m_currentMap][i_posX][i_posY] != "0")
 	{
-		if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "X" || m_staticCollisions[m_currentMap][i_posX][i_posY] == "Y")
+		if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "X" ||
+			m_staticCollisions[m_currentMap][i_posX][i_posY] == "Y" ||
+			m_staticCollisions[m_currentMap][i_posX][i_posY] == "I")
 		{
 			return CollisionResult::CollidedWithStaticBlock;
 		}
@@ -272,6 +275,29 @@ void CollisionManager::SetCurrentMap(uint32_t i_currentMap)
 	m_currentMap = i_currentMap;
 }
 
+std::pair<uint32_t, uint32_t> CollisionManager::WipeDoorPositions()
+{
+	bool m_firstPos = true;
+	std::pair<uint32_t, uint32_t> result;
+	for (uint32_t i = 0; i < m_staticCollisions[m_currentMap].size(); ++i)
+	{
+		if (m_staticCollisions[m_currentMap][i][0] == "I")
+		{
+			if (m_firstPos)
+			{
+				m_firstPos = false;
+				result.first = i;
+			}
+			else
+			{
+				result.second = i;
+			}
+			m_staticCollisions[m_currentMap][i][0] = "0";
+		}
+	}
+	return result;
+}
+
 void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 {
 	uint32_t blockPos = std::stoi(m_staticCollisions[m_currentMap][i_x][i_y]);
@@ -297,7 +323,10 @@ void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 }
 
 
-void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisionMapPath, const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks, const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins)
+void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisionMapPath,
+											 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
+											 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+											 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys)
 {
 	std::ifstream fInput;
 	fInput.open(i_staticCollisionMapPath);
@@ -323,6 +352,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	{
 		auto blocksIt = i_bricks[i].begin();
 		auto coinsIt = i_coins[i].begin();
+		const uint32_t yOffset = (2 - m_currentMap)*m_mapSizeY*m_tileSize;
 		for (int j = 0; j < m_mapSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
@@ -333,7 +363,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 				{
 					m_breakableBlocks[i].emplace(brickCounter, (*blocksIt));
 					++blocksIt;
-					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k-1)*m_tileSize, j*m_tileSize));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k-1)*m_tileSize, j*m_tileSize+yOffset));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
@@ -343,13 +373,24 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 				{
 					m_breakableBlocks[i].emplace(brickCounter, (*coinsIt));
 					++coinsIt;
-					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j-1)*m_tileSize));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j-1)*m_tileSize+yOffset));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
 					m_staticCollisions[i][k - 1][j] = pos;
  					m_staticCollisions[i][k][j-1] = pos;
  					m_staticCollisions[i][k - 1][j-1] = pos;
+				}
+				else if(c == 'K')
+				{
+					m_breakableBlocks[i].emplace(brickCounter, i_keys.at(i));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize+yOffset));
+					std::string pos = std::to_string(brickCounter);
+					brickCounter++;
+					m_staticCollisions[i][k][j] = pos;
+					m_staticCollisions[i][k - 1][j] = pos;
+					m_staticCollisions[i][k][j - 1] = pos;
+					m_staticCollisions[i][k - 1][j - 1] = pos;
 				}
 				else
 				{
