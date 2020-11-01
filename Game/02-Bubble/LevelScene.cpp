@@ -61,7 +61,7 @@ void LevelScene::init()
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
-	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player, m_currentMap, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player, m_currentMap, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,4);
 
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
@@ -74,6 +74,11 @@ void LevelScene::init()
 
 void LevelScene::update(int i_deltaTime)
 {
+	if (core::Game::instance().getKey('p'))
+	{
+		Reset();
+	}
+
 	m_currentTime += i_deltaTime;
 	m_player->Update(i_deltaTime);
 	m_ball->Update(i_deltaTime);
