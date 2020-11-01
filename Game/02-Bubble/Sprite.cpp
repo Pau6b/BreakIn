@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 #include "Sprite.h"
 
 namespace game
@@ -38,9 +39,20 @@ void Sprite::update(int i_deltaTime)
 	if(m_currentAnimation >= 0)
 	{
 		m_timeAnimation += i_deltaTime;
-		while(m_timeAnimation > m_animations[m_currentAnimation].millisecsPerKeyframe)
+		bool hasFramesToAdvance = m_animationAdvanceType == AnimationAdvanceType::Free || m_framesToAdvance > 0;
+		while(hasFramesToAdvance && m_timeAnimation > m_animations[m_currentAnimation].millisecsPerKeyframe)
 		{
 			m_timeAnimation -= m_animations[m_currentAnimation].millisecsPerKeyframe;
+			if (m_animationAdvanceType == AnimationAdvanceType::NumberOfFrames)
+			{
+				m_framesToAdvance--;
+				if (m_framesToAdvance == 0)
+				{
+					std::for_each(std::begin(m_onFramesAdvancedCallback), std::end(m_onFramesAdvancedCallback), [this](std::function<void(uint32_t i_framesAdvanced)>& i_function) { i_function(m_totalNumberOfFramesAdvanced); });
+					hasFramesToAdvance = false;
+					m_totalNumberOfFramesAdvanced = 0;
+				}
+			}
 			m_currentKeyframe = (m_currentKeyframe + 1) % m_animations[m_currentAnimation].keyframeDispl.size();
 		}
 		m_texCoordDispl = m_animations[m_currentAnimation].keyframeDispl[m_currentKeyframe];
@@ -66,6 +78,22 @@ void Sprite::free()
 	glDeleteBuffers(1, &m_vbo);
 }
 
+void Sprite::SetAnimationAdvanceType(AnimationAdvanceType i_animationAdvanceType)
+{
+	m_animationAdvanceType = i_animationAdvanceType;
+}
+
+void Sprite::SetFramesToAdvance(uint32_t i_numberOfFramesToAdvance)
+{
+	m_framesToAdvance += i_numberOfFramesToAdvance;
+	m_totalNumberOfFramesAdvanced += i_numberOfFramesToAdvance;
+}
+
+void Sprite::SetOnFramesAdvancedCallback(std::function<void(uint32_t i_numberOfAdvancedFrames)> i_onAnimationFinishedCallback)
+{
+	m_onFramesAdvancedCallback.emplace_back(i_onAnimationFinishedCallback);
+}
+
 void Sprite::setNumberAnimations(int i_nAnimations)
 {
 	m_animations.clear();
@@ -82,6 +110,11 @@ void Sprite::addKeyframe(int i_animId, const glm::vec2& i_displacement)
 {
 	if(i_animId < int(m_animations.size()))
 		m_animations[i_animId].keyframeDispl.push_back(i_displacement);
+}
+
+void Sprite::setCurrentKeyFrame(uint32_t i_keyFrame)
+{
+	m_currentKeyframe = i_keyFrame;
 }
 
 void Sprite::changeAnimation(int i_animId)

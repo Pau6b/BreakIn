@@ -66,38 +66,44 @@ void LevelScene::init()
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
 	m_traslation = glm::mat4(1.0f);
-	m_traslation[3][0] -= SCREEN_X - 10;
+	m_traslation[3][0] -= SCREEN_X - 40;
 	m_projectionY = &m_traslation[3][1];
-	*m_projectionY = -(SCREEN_Y);
+	*m_projectionY = -(SCREEN_Y)+48;
 	*m_projectionY -= (2 - m_currentMap) * LEVEL_SIZE_Y;
 }
 
 void LevelScene::update(int i_deltaTime)
 {
-	if (core::Game::instance().getKey('p'))
-	{
-		Reset();
-	}
-
 	m_currentTime += i_deltaTime;
 	m_player->Update(i_deltaTime);
 	m_ball->Update(i_deltaTime);
+	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [i_deltaTime](const std::shared_ptr<Brick>& i_brick) { i_brick->Update(i_deltaTime); });
+	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [i_deltaTime](const std::shared_ptr<Coin>& i_coin) { i_coin->Update(i_deltaTime); });
+	std::for_each(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [i_deltaTime](const std::shared_ptr<BreakableBlock>& i_breakable) { i_breakable->Update(i_deltaTime); });
+	auto it = m_keys.find(m_currentMap);
+	if (it != m_keys.end())
+	{
+		it->second->Render();
+	}
+	
 }
 
 void LevelScene::render()
 {
-	glm::mat4 modelview;
+	glm::mat4 modelview = glm::mat4(1.f);
 
 	m_texProgram->use();
 	m_texProgram->setUniformMatrix4f("projection", m_projection);
-	m_texProgram->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	modelview = glm::mat4(1.0f);
+	m_texProgram->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);;
 	m_texProgram->setUniformMatrix4f("modelview", modelview);
 	m_texProgram->setUniformMatrix4f("model", m_traslation);
 	m_texProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_map->render();
+	m_blocksToCheck.erase(std::remove_if(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [](auto& i_breakable) {return i_breakable->GetResistance() == 0; }),
+		std::end(m_blocksToCheck));
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+	std::for_each(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [](const std::shared_ptr<BreakableBlock>& i_breakable) { i_breakable->Render(); });
 	auto it = m_keys.find(m_currentMap);
 	if (it != m_keys.end())
 	{
@@ -193,7 +199,7 @@ void LevelScene::ParseBricks(std::string i_path)
 																							  glm::vec2(1, 1),
 																							  "images/Pickaxe.png",
 																							  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
-																							  *m_texProgram), 
+																							  *m_texProgram),
 															glm::ivec2(SCREEN_X, SCREEN_Y)));
 					}
 					else
@@ -218,10 +224,12 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	std::shared_ptr<Coin> coin = std::dynamic_pointer_cast<Coin>(i_brokenBlock);
 	if (brick)
 	{
+		m_blocksToCheck.emplace_back(i_brokenBlock);
 		m_bricks[m_currentMap].erase(brick);
 	}
 	else if(coin)
 	{
+		m_blocksToCheck.emplace_back(i_brokenBlock);
 		m_coins[m_currentMap].erase(coin);
 		bool anyCoinLeft = false;
 		for (uint32_t i = 0; i < m_coins.size() && !anyCoinLeft; ++i)

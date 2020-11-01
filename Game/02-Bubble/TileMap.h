@@ -38,7 +38,7 @@ private:
 	uint32_t m_tileSize, m_blockSize;
 	visuals::Texture m_tilesheet;
 	glm::vec2 m_tileTexSize;
-	int *m_map;
+	int* m_map;
 	int32_t m_replaceTile;
 	const glm::vec2& m_minCoords;
 	visuals::ShaderProgram& m_program;
