@@ -48,7 +48,7 @@ void SceneManager::Render()
 	}
 }
 
-void SceneManager::OnMouseButtonReleased(int32_t i_button)
+void SceneManager::OnMouseButtonReleased(int32_t i_button, glm::ivec2 i_mousePosition)
 {
 	m_currentScene->OnMouseButtonReleased(i_button);
 }

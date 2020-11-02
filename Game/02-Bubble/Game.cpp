@@ -61,17 +61,18 @@ void Game::specialKeyReleased(int i_key)
 
 void Game::mouseMove(int i_x, int i_y)
 {
+	m_mousePos = glm::ivec2(i_x, i_y);
 }
 
 void Game::mousePress(int i_button, int i_x, int i_y)
 {
-	m_mousePos = { i_x, i_y };
+	m_mousePos = glm::ivec2(i_x, i_y);
 }
 
 void Game::mouseRelease(int i_button, int i_x, int i_y)
 {
-	m_mousePos = { i_x, i_y };
-	m_sceneManager->OnMouseButtonReleased(i_button);
+	m_mousePos = glm::ivec2(i_x, i_y);
+	m_sceneManager->OnMouseButtonReleased(i_button, m_mousePos);
 }
 
 bool Game::getKey(int i_key) const
@@ -84,7 +85,7 @@ bool Game::getSpecialKey(int i_key) const
 	return m_specialKeys[i_key];
 }
 
-std::pair<glm::int32_t, glm::int32_t> Game::getMousePos()
+glm::ivec2 Game::getMousePos()
 {
 	return m_mousePos;
 }

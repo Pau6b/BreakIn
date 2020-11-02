@@ -29,7 +29,7 @@ private:
 		int32_t yWidth;
 	};
 
-	static inline bool IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const std::pair<int32_t, int32_t>& i_mousePosition);
+	static inline bool IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const glm::ivec2& i_mousePosition);
 	
 	core::Scene::SceneResult m_currentResult = core::Scene::SceneResult::NotFinished;
 	std::unique_ptr<visuals::Sprite> m_buttonText;

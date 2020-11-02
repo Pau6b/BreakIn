@@ -23,7 +23,7 @@ public:
 
 	void Update(int i_deltaTime);
 	void Render();
-	void OnMouseButtonReleased(int32_t i_button);
+	void OnMouseButtonReleased(int32_t i_button, glm::ivec2 i_mousePosition);
 
 private:
 	std::unique_ptr<Scene> m_currentScene = nullptr;

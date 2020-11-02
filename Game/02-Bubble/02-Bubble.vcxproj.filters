@@ -40,6 +40,12 @@
     <Filter Include="Archivos de encabezado\Core\Types">
       <UniqueIdentifier>{86c3b444-9af7-4abc-a285-0b22b794064b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\Sound">
+      <UniqueIdentifier>{0b427b3e-949d-40d4-9062-36629ef44f70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Sound">
+      <UniqueIdentifier>{42c15d68-bd83-45f2-9974-71ff021a2035}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Brick.h">
@@ -102,6 +108,12 @@
     <ClInclude Include="CheatSystem.h">
       <Filter>Archivos de encabezado\Core</Filter>
     </ClInclude>
+    <ClInclude Include="SoundSystem.h">
+      <Filter>Archivos de encabezado\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Sounds.h">
+      <Filter>Archivos de encabezado\Core\Types</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SceneManager.cpp">
@@ -157,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="CheatSystem.cpp">
       <Filter>Archivos de código fuente\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSystem.cpp">
+      <Filter>Archivos de código fuente\Sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
