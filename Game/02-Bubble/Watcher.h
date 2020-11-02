@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "Sprite.h"
+#include <math.h>
 #include "CollisionManager.h"
 
 namespace game
@@ -21,11 +22,10 @@ namespace game
 		class Watcher
 		{
 		public:
-			Watcher(const Player& i_player);
-			void Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
+			Watcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
 			void Update(int i_deltaTime);
 			void Render();
-
+			void FollowPlayer();
 			void SetPosition(const glm::vec2& i_pos);
 			void Reset();
 
@@ -34,11 +34,12 @@ namespace game
 			enum class WatcherState
 			{
 				FollowingPlayer,
+				LocatingPlayer,
 				Quiet
 			} m_state;
 
 			glm::vec2 m_tileMapDispl, m_posWatcher;
-			glm::vec2  m_dirWatcher;
+			glm::vec2  m_dirWatcher, m_destPos;
 			std::unique_ptr<visuals::Sprite> m_sprite;
 			const Player& m_player;
 			int m_size;

@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Coin.h"
 #include "Player.h"
+#include "Sensor.h"
 #include "glm\detail\func_geometric.hpp"
 #include "CheatSystem.h"
 
@@ -20,6 +21,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const uint32_t i_tileSize,
 								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+								   const std::map<uint32_t, std::shared_ptr<Sensor>>& i_sensor,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 								   std::function<void()> i_moveDown,
 								   std::function<void()> i_moveUp,
@@ -29,6 +31,8 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 	, m_cameraMoveDownFunction(i_moveDown)
 	, m_cameraMoveUpFunction(i_moveUp)
 	, m_cheatSystem(i_cheatSystem)
+	, m_sensor(i_sensor)
+
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins);
 }
@@ -161,6 +165,11 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 			return CollisionResult::CollidedWithStaticBlock;
 		}
 
+		else if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "A")
+		{
+			return CollisionResult::CollidedWithAlarm;
+		}
+
 		else
 		{
 			return CollisionResult::CollidedWithBrick;
@@ -238,6 +247,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 
 				if (m_staticCollisions[m_currentMap][x_mid][y_up] == "I")
 				{
+					auto it = m_sensor.find(m_currentMap);
+					if (it != m_sensor.end())
+					{
+						it->second->DesactivateAlarm();
+					}
 					m_cameraMoveUpFunction();
 					m_currentMap += 1;
 					i_pos = glm::ivec2(i_pos.x, i_pos.y - m_tileSize*3);
@@ -245,6 +259,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				}
 				else
 				{
+					auto it = m_sensor.find(m_currentMap);
+					if (it != m_sensor.end())
+					{
+						it->second->DesactivateAlarm();
+					}
 					m_cameraMoveDownFunction();
 					if (m_currentMap > 0)
 					{
@@ -262,6 +281,12 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			{
 				i_dir[dir] = -i_dir[dir];
 				return CollisionResult::CollidedWithStaticBlock;
+			}
+			else if (CheckCollision(x, y) == CollisionResult::CollidedWithAlarm)
+			{
+				i_dir[dir] = -i_dir[dir];
+				m_sensor.at(m_currentMap)->ActivateAlarm();
+				return CollisionResult::CollidedWithAlarm;
 			}
 			else
 			{
@@ -386,6 +411,14 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 					m_staticCollisions[i][k - 1][j] = pos;
  					m_staticCollisions[i][k][j-1] = pos;
  					m_staticCollisions[i][k - 1][j-1] = pos;
+				}
+				else if (c == 'A')
+				{
+					m_sensor.at(i)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize));
+					m_staticCollisions[i][k][j] = "A";
+					m_staticCollisions[i][k - 1][j] = "A";
+					m_staticCollisions[i][k][j - 1] = "A";
+					m_staticCollisions[i][k - 1][j - 1] = "A";
 				}
 				else
 				{

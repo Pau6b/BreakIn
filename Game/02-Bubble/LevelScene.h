@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include "Scene.h"
 #include "ShaderProgram.h"
+#include <map>
 
 namespace game
 {
@@ -15,6 +16,8 @@ namespace gameplay
 	class Coin;
 	class BreakableBlock;
 	class Ball;
+	class Watcher;
+	class Sensor;
 }
 }
 
@@ -73,6 +76,7 @@ private:
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
 	std::vector<std::unordered_set<std::shared_ptr<Coin>>> m_coins;
+	std::map<uint32_t, std::shared_ptr<Sensor>> m_sensor;
 	std::unique_ptr<visuals::TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;

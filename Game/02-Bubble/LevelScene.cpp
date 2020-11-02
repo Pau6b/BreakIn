@@ -13,7 +13,9 @@
 #include "TileMap.h"
 #include "Brick.h"
 #include "Coin.h"
+#include "Sensor.h"
 #include "Ball.h"
+#include "Watcher.h"
 #include "CheatSystem.h"
 
 #define SCREEN_X 32
@@ -54,9 +56,11 @@ void LevelScene::init()
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_bricks, m_coins, m_sensor, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()) );
+
+	std::for_each(std::begin(m_sensor), std::end(m_sensor), [Playerptr = m_player.get(), this](auto& it){  it.second->InitWatcher(*Playerptr, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram); });
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
@@ -82,6 +86,11 @@ void LevelScene::update(int i_deltaTime)
 	m_currentTime += i_deltaTime;
 	m_player->Update(i_deltaTime);
 	m_ball->Update(i_deltaTime);
+	auto it = m_sensor.find(m_currentMap);
+	if (it != m_sensor.end())
+	{
+		it->second->Update(i_deltaTime);
+	}
 }
 
 void LevelScene::render()
@@ -99,6 +108,11 @@ void LevelScene::render()
 	m_player->Render();
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+	auto it = m_sensor.find(m_currentMap);
+	if (it != m_sensor.end())
+	{
+		it->second->Render();
+	}
 	m_ball->Render();
 }
 
@@ -159,6 +173,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	sstream >> m_levelQuantity >> sizex >> m_levelSizeY;
 	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(m_levelQuantity);
 	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
+	m_sensor = std::map<uint32_t, std::shared_ptr<Sensor>>{};
 	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
 		for (int j = 0; j < m_levelSizeY; ++j)
@@ -178,6 +193,11 @@ void LevelScene::ParseBricks(std::string i_path)
 				else if (c == 'M')
 				{
 					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Emerald));
+				}
+				else if (c == 'A')
+				{
+					m_sensor.emplace(i, std::make_shared<Sensor>(std::make_unique<visuals::Sprite>(glm::vec2(32, 32), glm::vec2(1/7.f, 1), "images/luces.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB, *m_texProgram), 
+													  glm::ivec2(SCREEN_X, SCREEN_Y)));
 				}
 			}
 			//this is to clean the /n
