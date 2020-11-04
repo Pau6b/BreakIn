@@ -67,11 +67,13 @@ public:
 	std::pair<core::Scene::SceneResult, uint32_t> GetSceneResult() override;
 	void MoveLevelUp();
 	void MoveLevelDown();
+	
 
 private:
 	void ParseBricks(std::string i_path);
 	void OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_brokenBlock);
 	void Reset();
+	void LoseHP();
 
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
 	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
@@ -91,7 +93,7 @@ private:
 	std::string m_physicsMapPath;
 	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
 	const core::CheatSystem& m_cheatSystem;
-	uint32_t m_currentLives = 0;
+	uint32_t m_currentLives = 2;
 };
 }
 }

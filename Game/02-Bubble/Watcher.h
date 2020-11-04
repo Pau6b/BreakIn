@@ -22,12 +22,19 @@ namespace game
 		class Watcher
 		{
 		public:
-			Watcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
+			enum ResultMovement
+			{
+				PlayerHit,
+				None
+			};
+
+			Watcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, std::function<void()> i_LoseHP);
 			void Update(int i_deltaTime);
 			void Render();
-			void FollowPlayer();
+			ResultMovement FollowPlayer();
 			void SetPosition(const glm::vec2& i_pos);
 			void Reset();
+
 
 		private:
 
@@ -38,6 +45,8 @@ namespace game
 				Quiet
 			} m_state;
 
+			ResultMovement m_player_state;
+
 			glm::vec2 m_tileMapDispl, m_posWatcher;
 			glm::vec2  m_dirWatcher, m_destPos;
 			std::unique_ptr<visuals::Sprite> m_sprite;
@@ -46,6 +55,7 @@ namespace game
 			float m_speed;
 			const uint32_t k_timeToStartMoving = 30000;
 			uint32_t m_currentTimeElapsed = 0;
+			std::function<void()> m_LoseHp;
 		};
 	}
 }

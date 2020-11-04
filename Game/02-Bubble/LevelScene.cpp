@@ -60,7 +60,7 @@ void LevelScene::init()
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()) );
 
-	std::for_each(std::begin(m_sensor), std::end(m_sensor), [Playerptr = m_player.get(), this](auto& it){  it.second->InitWatcher(*Playerptr, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram); });
+	std::for_each(std::begin(m_sensor), std::end(m_sensor), [Playerptr = m_player.get(), this](auto& it){  it.second->InitWatcher(*Playerptr, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram, std::bind(&LevelScene::LoseHP, this)); });
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
@@ -135,15 +135,7 @@ void LevelScene::MoveLevelDown()
 	}
 	else if (m_current_level == 0)
 	{
-		if (m_currentLives == 0)
-		{
-			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
-		}
-		else
-		{
-			Reset();
-			m_currentLives--;
-		}
+		LoseHP();
 	}
 }
 
@@ -237,6 +229,19 @@ void LevelScene::Reset()
 {
 	m_ball->Reset();
 	m_player->Reset(m_currentMap, m_levelQuantity, m_levelSizeY*m_map->getTileSize());
+}
+
+void LevelScene::LoseHP()
+{
+	if (m_currentLives == 0)
+	{
+		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+	}
+	else
+	{
+		Reset();
+		m_currentLives--;
+	}
 }
 
 }

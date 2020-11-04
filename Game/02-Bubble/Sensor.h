@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <memory>
 #include <glm/glm.hpp>
+#include <functional>
 
 namespace game
 {
@@ -31,13 +32,14 @@ namespace game
 			void SetPosition(glm::vec2 i_position);
 			void ActivateAlarm();
 			void DesactivateAlarm();
-			void InitWatcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
+			void InitWatcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, std::function<void()> i_loseHP);
 		private:
 			enum SensorState
 			{
 				ON,
 				OFF
 			} m_state;
+
 			glm::vec2 m_position;
 			const glm::ivec2 m_tileMapDisplay;
 			std::unique_ptr<Watcher> m_watcher;

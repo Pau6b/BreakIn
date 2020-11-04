@@ -3,7 +3,7 @@
 #include "Watcher.h"
 
 #define WATCHER_INITIAL_POS_X 1
-#define WATCHER_INITIAL_POS_Y 21
+#define WATCHER_INITIAL_POS_Y 1
 
 namespace game
 {
@@ -31,7 +31,10 @@ namespace game
 		{
 			if (m_state == SensorState::ON)
 			{
-				m_watcher->FollowPlayer();
+				Watcher::ResultMovement resultado =  m_watcher->FollowPlayer();
+				if (resultado == Watcher::ResultMovement::PlayerHit) {
+					DesactivateAlarm();
+				}
 			}
 			m_sprite->update(i_deltaTime);
 			m_watcher->Update(i_deltaTime);
@@ -51,9 +54,12 @@ namespace game
 
 		void Sensor::ActivateAlarm()
 		{
-			m_sprite->changeAnimation(ON);
-			m_state = SensorState::ON;
-			m_watcher->FollowPlayer();
+			if (m_state == SensorState::OFF)
+			{
+				m_sprite->changeAnimation(ON);
+				m_state = SensorState::ON;
+				m_watcher->FollowPlayer();
+			}
 		}
 
 		void Sensor::DesactivateAlarm()
@@ -63,9 +69,9 @@ namespace game
 			m_watcher->Reset();
 		}
 
-		void Sensor::InitWatcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram)
+		void Sensor::InitWatcher(const Player& i_player, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, std::function<void()> LoseHp)
 		{
-			m_watcher = std::make_unique<Watcher>(i_player, i_tileMapPos, i_shaderProgram);
+			m_watcher = std::make_unique<Watcher>(i_player, i_tileMapPos, i_shaderProgram, LoseHp);
 			m_watcher->SetPosition(glm::vec2(WATCHER_INITIAL_POS_X* 16, WATCHER_INITIAL_POS_Y * 16));
 		}
 
