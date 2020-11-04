@@ -15,6 +15,7 @@
 #include "Coin.h"
 #include "Ball.h"
 #include "CheatSystem.h"
+#include "Log.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -160,11 +161,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	std::ifstream fInput;
 	fInput.open(i_path);
 
-	if (!fInput.is_open())
-	{
-		std::cerr << "Physics static collisions wrong path, path is : " << i_path;
-		return;
-	}
+	BreakIf(!fInput.is_open(), "Physics static collisions wrong path, path is : " + i_path);
 
 	int sizex;
 
@@ -197,20 +194,14 @@ void LevelScene::ParseBricks(std::string i_path)
 				}
 				else if (c == 'K')
 				{
-					if (m_keys.size() <= m_levelQuantity-1-i)
-					{
-						m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
-															std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
-																							  glm::vec2(1, 1),
-																							  "images/Pickaxe.png",
-																							  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
-																							  *m_texProgram),
-															glm::ivec2(SCREEN_X, SCREEN_Y)));
-					}
-					else
-					{
-						std::cerr << "There is a key for this level";
-					}
+					BreakIf(m_keys.find(i) != m_keys.end(), "There is already a key for this level");
+					m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
+														std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
+																						  glm::vec2(1, 1),
+																						  "images/Pickaxe.png",
+																						  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
+																						  *m_texProgram),
+														glm::ivec2(SCREEN_X, SCREEN_Y)));
 				}
 			}
 			//this is to clean the /n

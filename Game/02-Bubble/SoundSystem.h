@@ -9,15 +9,17 @@ namespace sound
 {
 class SoundSystem
 {
+public:
 	SoundSystem();
 	~SoundSystem();
 
-	void PlayBackgroundSounds(BackgroundSounds i_backgroundSounds);
+	void PlayBackgroundMusic(BackgroundMusic i_backgroundSound);
 	void PlayGameplaySounds(GameplaySounds i_gameplaySounds);
 	void PlayMenuSounds(MenuSounds i_menuSounds);
 
 private:
 	irrklang::ISoundEngine* m_soundEngine;
+	BackgroundMusic m_currentBackgroundSound;
 };
 }
 }

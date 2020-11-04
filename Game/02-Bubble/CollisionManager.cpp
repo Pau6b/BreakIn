@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "glm\detail\func_geometric.hpp"
 #include "CheatSystem.h"
+#include "Log.h"
 
 namespace game
 {
@@ -379,11 +380,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	std::ifstream fInput;
 	fInput.open(i_staticCollisionMapPath);
 
-	if (!fInput.is_open())
-	{
-		std::cerr << "Physics static collisions wrong path, path is : " << i_staticCollisionMapPath;
-		return;
-	}
+	BreakIf(!fInput.is_open(), "Physics static collisions wrong path, path is : " + i_staticCollisionMapPath);
 
 	int levelQuantity;
 	int sizex;

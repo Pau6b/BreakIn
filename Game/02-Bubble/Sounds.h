@@ -4,12 +4,14 @@ namespace game
 {
 namespace sound
 {
-enum class BackgroundSounds
+enum class BackgroundMusic
 {
-	MenuMusic,
-	CaveMusic,
-	NetherMusic,
-	EndMusic
+	MainMenu,
+	CreditsScreen,
+	Cave,
+	Nether,
+	End,
+	WinScreen
 };
 
 enum class GameplaySounds

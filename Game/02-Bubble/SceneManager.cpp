@@ -2,16 +2,20 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "Log.h"
 #include "LevelScene.h"
 #include "MainScreenScene.h"
 #include "CheatSystem.h"
+#include "SoundSystem.h"
+#include "SoundHelpers.h"
 
 namespace game
 {
 namespace core
 {
-SceneManager::SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem)
+SceneManager::SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
 	: m_cheatSystem(i_cheatSystem)
+	, m_soundSystem(i_soundSystem)
 {
 	ParseSceneConfigFilePath(i_sceneConfigFilePath);
 }
@@ -30,11 +34,14 @@ void SceneManager::Update(int i_deltaTime)
 		{
 			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem);
 			m_currentScene->init();
+			m_config.levels.at(sceneResult.second);
+			m_soundSystem.PlayBackgroundMusic(m_config.levels.at(sceneResult.second).backgroundSound);
 			break;
 		}
 		case Scene::SceneResult::GoToMainMenu:
 			m_currentScene = std::make_unique<gui::MainScreenScene>();
 			m_currentScene->init();
+			m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 			break;
 		}
 	}
@@ -57,14 +64,17 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 {
 	std::ifstream file;
 	file.open(i_sceneConfigFilePath);
-	if (!file.is_open())
-	{
-		std::cerr << "No scene config file with path [" << i_sceneConfigFilePath << "] exists.\n";
-	}
+	BreakIf(!file.is_open(), "No scene config file with path [" + i_sceneConfigFilePath + "] exists.\n");
 	std::string line;
 	while (std::getline(file, line))
 	{
-		if (line.rfind("Level",0) == 0)
+		if (line.rfind("MainMenu",0) == 0)
+		{
+			std::string backgroundSound;
+			getline(file, backgroundSound);
+			m_config.mainMenu = std::make_unique<SceneConfig>(sound::helpers::StringToBackgroundSound(backgroundSound));
+		}
+		else if (line.rfind("Level",0) == 0)
 		{
 			std::istringstream sstream(line);
 			std::string levelText;
@@ -73,21 +83,37 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 			uint32_t levelNumber = std::stoi(levelText);
 			std::string tilemapPath;
 			std::string physicsPath;
+			std::string backgroundSound;
 			std::getline(file, tilemapPath);
 			std::getline(file, physicsPath);
-			m_config.levels.emplace(levelNumber, LevelConfig(tilemapPath, physicsPath));
+			std::getline(file, backgroundSound);
+			m_config.levels.emplace(levelNumber, LevelConfig(tilemapPath, physicsPath, sound::helpers::StringToBackgroundSound(backgroundSound)));
 		}
+		else
+		{
+			BreakIf(true, "Scene configuration file is not configured correctly, maybe an endl extra is missing?");
+		}
+		std::string blankLine;
+		getline(file, blankLine);
 	}
 
 	m_currentScene = std::make_unique<gui::MainScreenScene>();
 	m_currentScene->init();
+	m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 	
 }
 
-SceneManager::LevelConfig::LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap)
-	: visualTilemapPath(i_visualTilemapPath)
+SceneManager::LevelConfig::LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap, sound::BackgroundMusic i_backgroundMusic)
+	: SceneConfig(i_backgroundMusic)
+	, visualTilemapPath(i_visualTilemapPath)
 	, physicsMapPath(i_physicsTilemap)
 {
+}
+
+SceneManager::SceneConfig::SceneConfig(sound::BackgroundMusic i_backgroundSound)
+	: backgroundSound(i_backgroundSound)
+{
+
 }
 
 }

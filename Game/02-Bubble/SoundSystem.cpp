@@ -20,18 +20,33 @@ SoundSystem::~SoundSystem()
 	m_soundEngine->drop();
 }
 
-void SoundSystem::PlayBackgroundSounds(BackgroundSounds i_backgroundSounds)
+void SoundSystem::PlayBackgroundMusic(BackgroundMusic i_backgroundSound)
 {
-	switch (i_backgroundSounds)
+	if (i_backgroundSound != m_currentBackgroundSound)
 	{
-	case BackgroundSounds::MenuMusic:
-		break;
-	case BackgroundSounds::CaveMusic:
-		break;
-	case BackgroundSounds::NetherMusic:
-		break;
-	case BackgroundSounds::EndMusic:
-		break;
+		m_currentBackgroundSound = i_backgroundSound;
+		m_soundEngine->stopAllSounds();
+		switch (i_backgroundSound)
+		{
+		case BackgroundMusic::MainMenu:
+			m_soundEngine->play2D("sounds/background/Calm_1.mp3",true);
+			break;
+		case BackgroundMusic::CreditsScreen:
+			m_soundEngine->play2D("sounds/background/Cat.mp3",true);
+			break;
+		case BackgroundMusic::WinScreen:
+			m_soundEngine->play2D("sounds/background/piano2.mp3",true);
+			break;
+		case BackgroundMusic::Cave:
+			m_soundEngine->play2D("sounds/background/Blocks.mp3",true);
+			break;
+		case BackgroundMusic::Nether:
+			m_soundEngine->play2D("sounds/background/Pigstep.mp3",true);
+			break;
+		case BackgroundMusic::End:
+			m_soundEngine->play2D("sounds/background/creative4.mp3",true);
+			break;
+		}
 	}
 }
 
@@ -69,6 +84,5 @@ void SoundSystem::PlayMenuSounds(MenuSounds i_menuSounds)
 
 	}
 }
-
 }
 }

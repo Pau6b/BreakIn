@@ -2,6 +2,8 @@
 #include <GL/glut.h>
 #include "Game.h"
 #include "CheatSystem.h"
+#include "SoundSystem.h"
+#include "SoundHelpers.h"
 
 namespace game
 {
@@ -12,7 +14,8 @@ void Game::init()
 	m_bPlay = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	m_cheatSystem = std::make_unique<CheatSystem>();
-	m_sceneManager = std::make_unique<SceneManager>("scenes/SceneConfig.txt", *m_cheatSystem);
+	m_soundSystem = std::make_unique<sound::SoundSystem>();
+	m_sceneManager = std::make_unique<SceneManager>("scenes/SceneConfig.txt", *m_cheatSystem, *m_soundSystem);
 }
 
 bool Game::update(int i_deltaTime)

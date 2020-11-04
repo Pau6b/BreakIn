@@ -147,11 +147,9 @@ void TileMap::prepareArrays(bool i_first)
 	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 24 * nTiles * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-	if (!i_first)
-	{
-		m_posLocation = m_program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
-		m_texCoordLocation = m_program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void *)(2 * sizeof(float)));
-	}
+	m_posLocation = m_program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
+	m_texCoordLocation = m_program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+
 }
 
 }
