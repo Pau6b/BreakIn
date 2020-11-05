@@ -32,14 +32,14 @@ void SceneManager::Update(int i_deltaTime)
 			break;
 		case Scene::SceneResult::GoToLevel:
 		{
-			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem);
+			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem);
 			m_currentScene->init();
 			m_config.levels.at(sceneResult.second);
 			m_soundSystem.PlayBackgroundMusic(m_config.levels.at(sceneResult.second).backgroundSound);
 			break;
 		}
 		case Scene::SceneResult::GoToMainMenu:
-			m_currentScene = std::make_unique<gui::MainScreenScene>();
+			m_currentScene = std::make_unique<gui::MainScreenScene>(m_soundSystem);
 			m_currentScene->init();
 			m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 			break;
@@ -97,7 +97,7 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 		getline(file, blankLine);
 	}
 
-	m_currentScene = std::make_unique<gui::MainScreenScene>();
+	m_currentScene = std::make_unique<gui::MainScreenScene>(m_soundSystem);
 	m_currentScene->init();
 	m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 	

@@ -6,11 +6,20 @@
 
 namespace game
 {
+namespace sound
+{
+	class SoundSystem;
+}
+}
+
+namespace game
+{
 namespace gui
 {
 class MainScreenScene : public core::Scene
 {
 public:
+	MainScreenScene(sound::SoundSystem& i_soundSystem);
 	void init() override;
 	void update(int i_deltaTime) override;
 	void render() override;
@@ -37,6 +46,8 @@ private:
 	glm::mat4 m_projection;
 	
 	ButtonInfo m_playButtonInfo;
+
+	sound::SoundSystem& m_soundSystem;
 };
 }
 }

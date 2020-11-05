@@ -24,7 +24,8 @@ enum class GameplaySounds
 	BallKey,
 	LiveLost,
 	Died,
-	AlarmAcivated
+	AlarmAcivated,
+	LevelMoved
 };
 
 enum class MenuSounds

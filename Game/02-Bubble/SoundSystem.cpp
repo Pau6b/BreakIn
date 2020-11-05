@@ -72,6 +72,8 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 		break;
 	case GameplaySounds::AlarmAcivated:
 		break;
+	case GameplaySounds::LevelMoved:
+		break;
 	}
 }
 
@@ -80,6 +82,7 @@ void SoundSystem::PlayMenuSounds(MenuSounds i_menuSounds)
 	switch (i_menuSounds)
 	{
 	case MenuSounds::ButtonPressed:
+		m_soundEngine->play2D("sounds/menuSounds/Click.ogg");
 		break;
 
 	}

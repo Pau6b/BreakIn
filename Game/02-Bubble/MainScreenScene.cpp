@@ -3,11 +3,18 @@
 #include <GL/glut.h>
 #include "Game.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "SoundSystem.h"
 
 namespace game
 {
 namespace gui
 {
+
+	MainScreenScene::MainScreenScene(sound::SoundSystem& i_soundSystem)
+		: m_soundSystem(i_soundSystem)
+	{
+
+	}
 
 void MainScreenScene::init()
 {
@@ -51,6 +58,7 @@ void MainScreenScene::OnMouseButtonReleased(int32_t i_button)
 	glm::ivec2 mousePos = core::Game::instance().getMousePos();
 	if (IsMouseIsInButton(m_playButtonInfo, mousePos))
 	{
+		m_soundSystem.PlayMenuSounds(sound::MenuSounds::ButtonPressed);
 		m_currentResult = core::Scene::SceneResult::GoToLevel;
 	}
 }

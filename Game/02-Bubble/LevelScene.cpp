@@ -16,6 +16,7 @@
 #include "Ball.h"
 #include "CheatSystem.h"
 #include "Log.h"
+#include "SoundSystem.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -31,11 +32,12 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(0)
+	, m_soundSystem(i_soundSystem)
 {
 
 }
@@ -56,7 +58,17 @@ void LevelScene::init()
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_currentMap, m_bricks, m_coins, m_keys, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath,
+																	 m_map->getTileSize(),
+																	 m_currentMap,
+																	 m_bricks,
+																	 m_coins,
+																	 m_keys,
+																	 onBreakableBlockBroken,
+																	 std::bind(&LevelScene::MoveLevelDown, this),
+																	 std::bind(&LevelScene::MoveLevelUp, this),
+																	 m_cheatSystem,
+																	 m_soundSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
 
@@ -141,11 +153,13 @@ void LevelScene::MoveLevelDown()
 		if (m_currentLives == 0)
 		{
 			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
 		}
 		else
 		{
 			Reset();
 			m_currentLives--;
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LiveLost);
 		}
 	}
 }
