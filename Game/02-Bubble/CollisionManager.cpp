@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Coin.h"
 #include "Player.h"
+#include "Sensor.h"
 #include "glm\detail\func_geometric.hpp"
 #include "CheatSystem.h"
 #include "Log.h"
@@ -26,6 +27,7 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 								   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys,
+								   const std::map<uint32_t, std::shared_ptr<Sensor>>& i_sensor,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 								   std::function<void()> i_moveDown,
 								   std::function<void()> i_moveUp,
@@ -38,6 +40,8 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(i_currentMap)
 	, m_soundSystem(i_soundSystem)
+	, m_sensor(i_sensor)
+
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins, i_keys);
 }
@@ -81,7 +85,7 @@ CollisionResult CollisionManager::CollisionMoveRight(const glm::ivec2& i_pos, co
 
 CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
-	
+
 	const int32_t originalY = ((i_pos.y + i_size.y - 1) / m_tileSize);
 	const int32_t x =  (i_pos.x + i_size.x/2) / m_tileSize;
 	const int32_t y = originalY%m_mapSizeY;
@@ -130,6 +134,11 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 			m_staticCollisions[m_currentMap][i_posX][i_posY] == "I")
 		{
 			return CollisionResult::CollidedWithStaticBlock;
+		}
+
+		else if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "A")
+		{
+			return CollisionResult::CollidedWithAlarm;
 		}
 
 		else
@@ -207,6 +216,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 		if (yDownMap != m_currentMap)
 		{
 			uint32_t oldMap = m_currentMap;
+			auto it = m_sensor.find(m_currentMap);
+			if (it != m_sensor.end())
+			{
+				it->second->DesactivateAlarm();
+			}
 			m_cameraMoveDownFunction();
 			if (oldMap > 0)
 			{
@@ -218,6 +232,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 		const uint32_t yUpMap = 2-(y_upRaw / m_mapSizeY);
 		if (yUpMap != m_currentMap)
 		{
+			auto it = m_sensor.find(m_currentMap);
+			if (it != m_sensor.end())
+			{
+				it->second->DesactivateAlarm();
+			}
 			m_cameraMoveUpFunction();
 			i_pos.y = (3-m_currentMap)*m_mapSizeY*m_tileSize-i_size-1;
 			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
@@ -235,6 +254,12 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				i_dir[dir] = -i_dir[dir];
 				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
 				return CollisionResult::CollidedWithStaticBlock;
+			}
+			else if (CheckCollision(x, y) == CollisionResult::CollidedWithAlarm)
+			{
+				i_dir[dir] = -i_dir[dir];
+				m_sensor.at(m_currentMap)->ActivateAlarm();
+				return CollisionResult::CollidedWithAlarm;
 			}
 			else
 			{
@@ -476,6 +501,13 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 					m_staticCollisions[i][k - 1][j] = pos;
 					m_staticCollisions[i][k][j - 1] = pos;
 					m_staticCollisions[i][k - 1][j - 1] = pos;
+				else if (c == 'A')
+				{
+					m_sensor.at(i)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize));
+					m_staticCollisions[i][k][j] = "A";
+					m_staticCollisions[i][k - 1][j] = "A";
+					m_staticCollisions[i][k][j - 1] = "A";
+					m_staticCollisions[i][k - 1][j - 1] = "A";
 				}
 				else
 				{

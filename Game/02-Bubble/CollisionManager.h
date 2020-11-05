@@ -25,6 +25,7 @@ namespace gameplay
 	class BreakableBlock;
 	class Coin;
 	class Player;
+	class Sensor;
 }
 }
 
@@ -51,7 +52,8 @@ enum class CollisionResult
 	CollidedWithBrick,
 	CollidedWithBarLeft,
 	CollidedWithBarRight,
-	CollidedWithPlayer
+	CollidedWithPlayer,
+	CollidedWithAlarm
 };
 
 class CollisionManager
@@ -63,6 +65,7 @@ public:
 					 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 					 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 					 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys,
+					 const std::map<uint32_t, std::shared_ptr<Sensor>>& i_sensor,
 					 std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 					 std::function<void()> i_moveDown,
 					 std::function<void()> i_moveUp,
@@ -93,6 +96,7 @@ private:
 	uint32_t m_currentMap;
 	std::vector<Matrix<std::string>> m_staticCollisions;
 	std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>> m_breakableBlocks;
+	std::map<uint32_t, std::shared_ptr<Sensor>> m_sensor;
 	std::function<void()> m_cameraMoveUpFunction;
 	std::function<void()> m_cameraMoveDownFunction;
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> m_onBreakableBlockBroken;

@@ -13,7 +13,9 @@
 #include "TileMap.h"
 #include "Brick.h"
 #include "Coin.h"
+#include "Sensor.h"
 #include "Ball.h"
+#include "Watcher.h"
 #include "CheatSystem.h"
 #include "Log.h"
 #include "SoundSystem.h"
@@ -66,6 +68,7 @@ void LevelScene::init()
 																	 m_bricks,
 																	 m_coins,
 																	 m_keys,
+																	 m_sensor,
 																	 onBreakableBlockBroken,
 																	 std::bind(&LevelScene::MoveLevelDown, this),
 																	 std::bind(&LevelScene::MoveLevelUp, this),
@@ -73,6 +76,8 @@ void LevelScene::init()
 																	 m_soundSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
+
+	std::for_each(std::begin(m_sensor), std::end(m_sensor), [Playerptr = m_player.get(), this](auto& it){  it.second->InitWatcher(*Playerptr, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram, std::bind(&LevelScene::LoseHP, this)); });
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
@@ -105,7 +110,12 @@ void LevelScene::update(int i_deltaTime)
 	{
 		it->second->Render();
 	}
-	
+
+	auto it = m_sensor.find(m_currentMap);
+	if (it != m_sensor.end())
+	{
+		it->second->Update(i_deltaTime);
+	}
 }
 
 void LevelScene::render()
@@ -130,6 +140,11 @@ void LevelScene::render()
 		it->second->Render();
 	}
 	m_player->Render();
+	auto it = m_sensor.find(m_currentMap);
+	if (it != m_sensor.end())
+	{
+		it->second->Render();
+	}
 	m_ball->Render();
 }
 
@@ -154,17 +169,7 @@ void LevelScene::MoveLevelDown()
 	}
 	else if (m_currentMap == 0)
 	{
-		if (m_currentLives == 0)
-		{
-			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
-			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
-		}
-		else
-		{
-			Reset();
-			m_currentLives--;
-			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LiveLost);
-		}
+		LoseHP();
 	}
 }
 
@@ -190,6 +195,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	sstream >> m_levelQuantity >> sizex >> m_levelSizeY;
 	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(m_levelQuantity);
 	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
+	m_sensor = std::map<uint32_t, std::shared_ptr<Sensor>>{};
 	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
 		glm::ivec2 doorPositions(-1,-1);
@@ -214,7 +220,7 @@ void LevelScene::ParseBricks(std::string i_path)
 				else if (c == 'K')
 				{
 					BreakIf(m_keys.find(i) != m_keys.end(), "There is already a key for this level");
-					m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
+					m_keys.emplace( i,	std::make_shared<BreakableBlock>(1,
 														std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
 																						  glm::vec2(1, 1),
 																						  "images/Pickaxe.png",
@@ -233,6 +239,11 @@ void LevelScene::ParseBricks(std::string i_path)
 					{
 						doorPositions.y = k;
 					}
+				}
+				else if (c == 'A')
+				{
+					m_sensor.emplace(i, std::make_shared<Sensor>(std::make_unique<visuals::Sprite>(glm::vec2(32, 32), glm::vec2(1/7.f, 1), "images/luces.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB, *m_texProgram),
+													  glm::ivec2(SCREEN_X, SCREEN_Y)));
 				}
 			}
 			//this is to clean the /n
@@ -289,6 +300,21 @@ void LevelScene::Reset()
 {
 	m_ball->Reset();
 	m_player->Reset();
+}
+
+void LevelScene::LoseHP()
+{
+	if (m_currentLives == 0)
+	{
+		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
+	}
+	else
+	{
+		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LiveLost);
+		Reset();
+		m_currentLives--;
+	}
 }
 
 }
