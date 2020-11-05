@@ -17,6 +17,7 @@
 #include "CheatSystem.h"
 #include "Log.h"
 #include "SoundSystem.h"
+#include "Sprite.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -51,8 +52,9 @@ void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
-	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<visuals::TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_map->SetCurrentMap(m_currentMap);
+	ParseBricks(m_physicsMapPath);
 
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
 		OnBreakableBlockBroken(i_brokenBlock);
@@ -137,6 +139,7 @@ void LevelScene::MoveLevelUp()
 	m_currentMap++;
 	m_player->SetCurrentMap(m_currentMap);
 	m_collisionManager->SetCurrentMap(m_currentMap);
+	m_map->SetCurrentMap(m_currentMap);
 }
 
 void LevelScene::MoveLevelDown()
@@ -147,6 +150,7 @@ void LevelScene::MoveLevelDown()
 		m_currentMap--;
 		m_player->SetCurrentMap(m_currentMap);
 		m_collisionManager->SetCurrentMap(m_currentMap);
+		m_map->SetCurrentMap(m_currentMap);
 	}
 	else if (m_currentMap == 0)
 	{
@@ -188,6 +192,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
 	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
+		glm::ivec2 doorPositions(-1,-1);
 		for (int j = 0; j < m_levelSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
@@ -217,6 +222,18 @@ void LevelScene::ParseBricks(std::string i_path)
 																						  *m_texProgram),
 														glm::ivec2(SCREEN_X, SCREEN_Y)));
 				}
+				else if (c == 'I')
+				{
+					if (doorPositions.x == -1)
+					{
+						doorPositions.x = k;
+						doorPositions.y = k;
+					}
+					else
+					{
+						doorPositions.y = k;
+					}
+				}
 			}
 			//this is to clean the /n
 			char temp;
@@ -224,6 +241,15 @@ void LevelScene::ParseBricks(std::string i_path)
 #ifndef _WIN32
 			fin.get(temp);
 #endif
+		}
+		if (doorPositions.x != -1)
+		{
+			int32_t nblocks = (doorPositions.y - doorPositions.x + 1);
+			visuals::TileMap::BorderBlockInfo borderBlockInfo = m_map->GetBorderBlockInfo();
+			std::unique_ptr<visuals::Sprite> doorSprite = std::make_unique<visuals::Sprite>(glm::vec2(16*nblocks,16),glm::vec2(nblocks,1),borderBlockInfo.texturePath,borderBlockInfo.texturePixelFormat, *m_texProgram);
+			glm::vec2 doorPos(doorPositions.x * 16 + SCREEN_X, (2 - i)*m_levelSizeY * 16 + SCREEN_Y);
+			doorSprite->setPosition(doorPos);
+			m_map->SetDoorSprite(i, std::move(doorSprite));
 		}
 	}
 }
@@ -255,7 +281,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	{
 		m_keys.erase(m_currentMap);
 		std::pair<uint32_t, uint32_t> wipedPositions = m_collisionManager->WipeDoorPositions();
-		m_map->WipeDoorPositions(wipedPositions, m_currentMap, m_levelQuantity);
+		m_map->WipeDoorPositions(m_currentMap);
 	}
 }
 

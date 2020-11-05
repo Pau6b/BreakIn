@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "TileMap.h"
+#include "Sprite.h"
 
 namespace game
 {
@@ -32,6 +33,11 @@ void TileMap::render() const
 	glEnableVertexAttribArray(m_texCoordLocation);
 	glDrawArrays(GL_TRIANGLES, 0, 6 * m_mapSize.x * m_mapSize.y);
 	glDisable(GL_TEXTURE_2D);
+	auto it = m_doorSprites.find(m_currentMap);
+	if (it != m_doorSprites.end())
+	{
+		it->second->render();
+	}
 }
 
 void TileMap::free()
@@ -39,15 +45,24 @@ void TileMap::free()
 	glDeleteBuffers(1, &m_vbo);
 }
 
-void TileMap::WipeDoorPositions(const std::pair<uint32_t, uint32_t>& i_positionsToWipe, uint32_t i_map, uint32_t m_totalMapNumber)
+void TileMap::WipeDoorPositions(uint32_t i_map)
 {
-	int32_t yOffset = (m_mapSize.y / m_totalMapNumber)*m_mapSize.x*(m_totalMapNumber-1-i_map);
-	for (int i = i_positionsToWipe.first; i <= i_positionsToWipe.second; i++)
-	{
-		int32_t oldTile = m_map[yOffset + i];
-		m_map[yOffset + i] = m_replaceTile;
-	}
-	prepareArrays(false);
+	m_doorSprites.erase(i_map);
+}
+
+void TileMap::SetDoorSprite(uint32_t i_map, std::unique_ptr<visuals::Sprite> i_sprite)
+{
+	m_doorSprites.emplace(i_map, std::move(i_sprite));
+}
+
+TileMap::BorderBlockInfo TileMap::GetBorderBlockInfo()
+{
+	return m_borderBlockInfo;
+}
+
+void TileMap::SetCurrentMap(uint32_t i_currentMap)
+{
+	m_currentMap = i_currentMap;
 }
 
 bool TileMap::loadLevel(const std::string& i_levelFile)
@@ -82,7 +97,21 @@ bool TileMap::loadLevel(const std::string& i_levelFile)
 	m_tileTexSize = glm::vec2(1.f / m_tilesheetSize.x, 1.f / m_tilesheetSize.y);
 	std::getline(fin, line);
 	sstream.str(line);
-	sstream >> m_replaceTile;
+	sstream >> m_borderBlockTile;
+	//It's horrible but i will work
+	m_borderBlockInfo.texturePixelFormat = visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB;
+	if (m_borderBlockTile == 4)
+	{
+		m_borderBlockInfo.texturePath = "images/Border1.png";
+	}
+	else if (m_borderBlockTile == 8)
+	{
+		m_borderBlockInfo.texturePath = "images/Border2.png";
+	}
+	else if (m_borderBlockTile == 12)
+	{
+		m_borderBlockInfo.texturePath = "images/Border3.png";
+	}
 	m_map = new int[m_mapSize.x * m_mapSize.y];
 	for (int j = 0; j < m_mapSize.y; j++)
 	{
@@ -118,7 +147,7 @@ void TileMap::prepareArrays(bool i_first)
 				posTile = glm::vec2(m_minCoords.x + i * m_tileSize, m_minCoords.y + j * m_tileSize);
 				texCoordTile[0] = glm::vec2(float((tile - 1) % m_tilesheetSize.x) / m_tilesheetSize.x, float((tile - 1) / m_tilesheetSize.x) / m_tilesheetSize.y);
 				texCoordTile[1] = texCoordTile[0] + m_tileTexSize;
-				texCoordTile[0] += halfTexel;
+				//texCoordTile[0] += halfTexel;
 				//texCoordTile[1] -= halfTexel;
 				// First triangle
 				vertices.push_back(posTile.x); vertices.push_back(posTile.y);

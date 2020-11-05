@@ -26,8 +26,8 @@ Sprite::Sprite(const glm::vec2& i_quadSize, const glm::vec2& i_sizeInSpritesheet
 	m_posLocation = m_shaderProgram.bindVertexAttribute("position", 2, 4*sizeof(float), 0);
 	m_texCoordLocation = m_shaderProgram.bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
 	m_texture.loadFromFile(i_imagePath,i_pixelFormat);
-	m_texture.setWrapS(GL_CLAMP_TO_EDGE);
-	m_texture.setWrapT(GL_CLAMP_TO_EDGE);
+	m_texture.setWrapS(GL_REPEAT);
+	m_texture.setWrapT(GL_REPEAT);
 	m_texture.setMinFilter(GL_NEAREST);
 	m_texture.setMagFilter(GL_NEAREST);
 	m_currentAnimation = -1;
