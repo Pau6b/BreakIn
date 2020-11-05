@@ -46,6 +46,14 @@ namespace core
 }
 }
 
+namespace game
+{
+namespace sound
+{
+	class SoundSystem;
+}
+}
+
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -57,7 +65,7 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem);
+	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem);
 	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
@@ -80,6 +88,7 @@ private:
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
 	std::unique_ptr<Player> m_player;
 	std::unique_ptr<Ball> m_ball;
+	sound::SoundSystem& m_soundSystem;
 	float m_currentTime;
 	glm::mat4 m_projection, m_traslation;
 	uint32_t m_levelQuantity;

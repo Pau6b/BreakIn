@@ -9,6 +9,10 @@
 #include "Player.h"
 #include "glm\detail\func_geometric.hpp"
 #include "CheatSystem.h"
+#include "Log.h"
+#include "SoundSystem.h"
+#include "Sounds.h"
+#include <memory>
 
 namespace game
 {
@@ -25,13 +29,15 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 								   std::function<void()> i_moveDown,
 								   std::function<void()> i_moveUp,
-								   const core::CheatSystem& i_cheatSystem)
+								   const core::CheatSystem& i_cheatSystem,
+								   sound::SoundSystem& i_soundSystem)
 	: m_tileSize(i_tileSize)
 	, m_onBreakableBlockBroken(i_onBrokenBlockFunction)
 	, m_cameraMoveDownFunction(i_moveDown)
 	, m_cameraMoveUpFunction(i_moveUp)
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(i_currentMap)
+	, m_soundSystem(i_soundSystem)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins, i_keys);
 }
@@ -205,6 +211,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			if (oldMap > 0)
 			{
 				i_pos.y = (2 - m_currentMap)*m_mapSizeY*m_tileSize+i_size;
+				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
 			}
 			return CollisionResult::CollidedWithScreen;
 		}
@@ -213,6 +220,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 		{
 			m_cameraMoveUpFunction();
 			i_pos.y = (3-m_currentMap)*m_mapSizeY*m_tileSize-i_size-1;
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
 			return CollisionResult::CollidedWithScreen;
 		}
 		//Check up, down, left and right
@@ -225,6 +233,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			if (CheckCollision(x, y) == CollisionResult::CollidedWithStaticBlock)
 			{
 				i_dir[dir] = -i_dir[dir];
+				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
 				return CollisionResult::CollidedWithStaticBlock;
 			}
 			else
@@ -273,10 +282,14 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 					{
 						i_dir.y = -i_dir.y;
 					}
-		
+
 					if (collisionResult != CollisionResult::CollidedWithStaticBlock)
 					{
 						ProcessBlockCollision(xDiag, yDiag);
+					}
+					else if (collisionResult == CollisionResult::CollidedWithStaticBlock)
+					{
+						m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
 					}
 					return CollisionResult::CollidedWithStaticBlock;
 				}
@@ -303,6 +316,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				i_dir = glm::normalize(playerToBall*0.7f + newDirNoChange*0.3f);
 				i_pos.y = m_player->GetPosition().y - i_size;
 			}
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallBarCollision);
 			return CollisionResult::CollidedWithPlayer;
 		}
 
@@ -346,11 +360,38 @@ std::pair<uint32_t, uint32_t> CollisionManager::WipeDoorPositions()
 	return result;
 }
 
+void CollisionManager::PlayBreakableBlockSound(std::shared_ptr<BreakableBlock> i_breakableBlock)
+{
+	Coin* coin = dynamic_cast<Coin*>(i_breakableBlock.get());
+	Brick* brick = dynamic_cast<Brick*>(i_breakableBlock.get());
+	if (coin)
+	{
+		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallCoin);
+	}
+	else if (brick)
+	{
+		uint32_t resistanceLeft = i_breakableBlock->GetResistance();
+		if (resistanceLeft > 0)
+		{
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BlockHit);
+		}
+		else if (resistanceLeft == 0)
+		{
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BlockBroken);
+		}
+	}
+	else //It's a key
+	{
+		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallKey);
+	}
+}
+
 void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 {
 	uint32_t blockPos = std::stoi(m_staticCollisions[m_currentMap][i_x][i_y]);
 	uint32_t brickResistance = m_breakableBlocks[m_currentMap].at(blockPos)->GetResistance() - 1;
 	m_breakableBlocks[m_currentMap].at(blockPos)->SetResistance(brickResistance);
+	PlayBreakableBlockSound(m_breakableBlocks[m_currentMap].at(blockPos));
 	if (brickResistance == 0)
 	{
 		m_onBreakableBlockBroken(m_breakableBlocks[m_currentMap].at(blockPos));
@@ -379,11 +420,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	std::ifstream fInput;
 	fInput.open(i_staticCollisionMapPath);
 
-	if (!fInput.is_open())
-	{
-		std::cerr << "Physics static collisions wrong path, path is : " << i_staticCollisionMapPath;
-		return;
-	}
+	BreakIf(!fInput.is_open(), "Physics static collisions wrong path, path is : " + i_staticCollisionMapPath);
 
 	int levelQuantity;
 	int sizex;

@@ -30,6 +30,14 @@ namespace gameplay
 
 namespace game
 {
+namespace sound
+{
+	class SoundSystem;
+}
+}
+
+namespace game
+{
 namespace gameplay
 {
 namespace physics
@@ -58,7 +66,8 @@ public:
 					 std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
 					 std::function<void()> i_moveDown,
 					 std::function<void()> i_moveUp,
-					 const core::CheatSystem& i_cheatSystem);
+					 const core::CheatSystem& i_cheatSystem,
+					 sound::SoundSystem& i_soundSystem);
 
 	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size);
@@ -70,6 +79,9 @@ public:
 	std::pair<uint32_t,uint32_t> WipeDoorPositions();
 
 private:
+	//#pau_todo i know this won't be fixed, but it is the result of a disastrous collision manager
+	void PlayBreakableBlockSound( std::shared_ptr<BreakableBlock> i_breakableBlock );
+
 	void ProcessBlockCollision(uint32_t i_x, uint32_t i_y);
 	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath,
 							   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
@@ -88,6 +100,7 @@ private:
 	uint32_t m_mapSizeY;
 	Player* m_player;
 	const core::CheatSystem& m_cheatSystem;
+	sound::SoundSystem& m_soundSystem;
 };
 }
 }

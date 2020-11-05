@@ -15,6 +15,9 @@
 #include "Coin.h"
 #include "Ball.h"
 #include "CheatSystem.h"
+#include "Log.h"
+#include "SoundSystem.h"
+#include "Sprite.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -30,11 +33,12 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(0)
+	, m_soundSystem(i_soundSystem)
 {
 
 }
@@ -48,14 +52,25 @@ void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
-	ParseBricks(m_physicsMapPath);
 	m_map = std::make_unique<visuals::TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
+	m_map->SetCurrentMap(m_currentMap);
+	ParseBricks(m_physicsMapPath);
 
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
 
-	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath, m_map->getTileSize(), m_currentMap, m_bricks, m_coins, m_keys, onBreakableBlockBroken, std::bind(&LevelScene::MoveLevelDown, this), std::bind(&LevelScene::MoveLevelUp, this), m_cheatSystem);
+	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath,
+																	 m_map->getTileSize(),
+																	 m_currentMap,
+																	 m_bricks,
+																	 m_coins,
+																	 m_keys,
+																	 onBreakableBlockBroken,
+																	 std::bind(&LevelScene::MoveLevelDown, this),
+																	 std::bind(&LevelScene::MoveLevelUp, this),
+																	 m_cheatSystem,
+																	 m_soundSystem);
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
 
@@ -124,6 +139,7 @@ void LevelScene::MoveLevelUp()
 	m_currentMap++;
 	m_player->SetCurrentMap(m_currentMap);
 	m_collisionManager->SetCurrentMap(m_currentMap);
+	m_map->SetCurrentMap(m_currentMap);
 }
 
 void LevelScene::MoveLevelDown()
@@ -134,17 +150,20 @@ void LevelScene::MoveLevelDown()
 		m_currentMap--;
 		m_player->SetCurrentMap(m_currentMap);
 		m_collisionManager->SetCurrentMap(m_currentMap);
+		m_map->SetCurrentMap(m_currentMap);
 	}
 	else if (m_currentMap == 0)
 	{
 		if (m_currentLives == 0)
 		{
 			m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
 		}
 		else
 		{
 			Reset();
 			m_currentLives--;
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LiveLost);
 		}
 	}
 }
@@ -160,11 +179,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	std::ifstream fInput;
 	fInput.open(i_path);
 
-	if (!fInput.is_open())
-	{
-		std::cerr << "Physics static collisions wrong path, path is : " << i_path;
-		return;
-	}
+	BreakIf(!fInput.is_open(), "Physics static collisions wrong path, path is : " + i_path);
 
 	int sizex;
 
@@ -177,6 +192,7 @@ void LevelScene::ParseBricks(std::string i_path)
 	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
 	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
+		glm::ivec2 doorPositions(-1,-1);
 		for (int j = 0; j < m_levelSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
@@ -197,19 +213,25 @@ void LevelScene::ParseBricks(std::string i_path)
 				}
 				else if (c == 'K')
 				{
-					if (m_keys.size() <= m_levelQuantity-1-i)
+					BreakIf(m_keys.find(i) != m_keys.end(), "There is already a key for this level");
+					m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
+														std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
+																						  glm::vec2(1, 1),
+																						  "images/Pickaxe.png",
+																						  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
+																						  *m_texProgram),
+														glm::ivec2(SCREEN_X, SCREEN_Y)));
+				}
+				else if (c == 'I')
+				{
+					if (doorPositions.x == -1)
 					{
-						m_keys.emplace( i,	std::make_shared<BreakableBlock>(1, 
-															std::make_unique<visuals::Sprite>(glm::vec2(32, 32),
-																							  glm::vec2(1, 1),
-																							  "images/Pickaxe.png",
-																							  visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,
-																							  *m_texProgram),
-															glm::ivec2(SCREEN_X, SCREEN_Y)));
+						doorPositions.x = k;
+						doorPositions.y = k;
 					}
 					else
 					{
-						std::cerr << "There is a key for this level";
+						doorPositions.y = k;
 					}
 				}
 			}
@@ -219,6 +241,15 @@ void LevelScene::ParseBricks(std::string i_path)
 #ifndef _WIN32
 			fin.get(temp);
 #endif
+		}
+		if (doorPositions.x != -1)
+		{
+			int32_t nblocks = (doorPositions.y - doorPositions.x + 1);
+			visuals::TileMap::BorderBlockInfo borderBlockInfo = m_map->GetBorderBlockInfo();
+			std::unique_ptr<visuals::Sprite> doorSprite = std::make_unique<visuals::Sprite>(glm::vec2(16*nblocks,16),glm::vec2(nblocks,1),borderBlockInfo.texturePath,borderBlockInfo.texturePixelFormat, *m_texProgram);
+			glm::vec2 doorPos(doorPositions.x * 16 + SCREEN_X, (2 - i)*m_levelSizeY * 16 + SCREEN_Y);
+			doorSprite->setPosition(doorPos);
+			m_map->SetDoorSprite(i, std::move(doorSprite));
 		}
 	}
 }
@@ -250,7 +281,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	{
 		m_keys.erase(m_currentMap);
 		std::pair<uint32_t, uint32_t> wipedPositions = m_collisionManager->WipeDoorPositions();
-		m_map->WipeDoorPositions(wipedPositions, m_currentMap, m_levelQuantity);
+		m_map->WipeDoorPositions(m_currentMap);
 	}
 }
 

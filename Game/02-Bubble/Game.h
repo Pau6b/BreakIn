@@ -3,6 +3,7 @@
 #include "LevelScene.h"
 #include "SceneManager.h"
 #include "CheatSystem.h"
+#include "SoundSystem.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -42,15 +43,16 @@ public:
 	
 	bool getKey(int i_key) const;
 	bool getSpecialKey(int i_key) const;
-	std::pair<int32_t, int32_t> getMousePos();
+	glm::ivec2 getMousePos();
 
 private:
 	bool m_bPlay;                       // Continue to play game?
 	std::unique_ptr<CheatSystem> m_cheatSystem;
 	std::unique_ptr<SceneManager> m_sceneManager;
+	std::unique_ptr<sound::SoundSystem> m_soundSystem;
 	bool m_keys[256], m_specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time
-	std::pair<int32_t, int32_t> m_mousePos = { 0,0 };
+	glm::ivec2 m_mousePos = glm::ivec2(0,0);
 };
 }
 }

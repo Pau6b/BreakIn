@@ -1,7 +1,17 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <map>
+#include <memory>
 #include "Texture.h"
 #include "ShaderProgram.h"
+
+namespace game
+{
+namespace visuals
+{
+	class Sprite;
+}
+}
 
 namespace game
 {
@@ -18,6 +28,12 @@ class TileMap
 
 public:
 
+	struct BorderBlockInfo
+	{
+		visuals::PixelFormat texturePixelFormat;
+		std::string texturePath;
+	};
+
 	TileMap(const std::string& i_levelFile, const glm::vec2& i_minCoords, visuals::ShaderProgram& i_program);
 	~TileMap();
 
@@ -25,8 +41,11 @@ public:
 	void free();
 	
 	uint32_t getTileSize() const { return m_tileSize; }
-	void WipeDoorPositions(const std::pair<uint32_t,uint32_t>& i_positionsToWipe, uint32_t i_map, uint32_t m_totalMapNumber);
-
+	void WipeDoorPositions(uint32_t i_map);
+	void SetDoorSprite(uint32_t i_map, std::unique_ptr<visuals::Sprite> i_sprite);
+	BorderBlockInfo GetBorderBlockInfo();
+	void SetCurrentMap(uint32_t i_currentMap);
+	
 private:
 	bool loadLevel(const std::string& i_levelFile);
 	void prepareArrays(bool i_first);
@@ -39,9 +58,12 @@ private:
 	visuals::Texture m_tilesheet;
 	glm::vec2 m_tileTexSize;
 	int* m_map;
-	int32_t m_replaceTile;
+	int32_t m_borderBlockTile;
 	const glm::vec2& m_minCoords;
 	visuals::ShaderProgram& m_program;
+	std::map<uint32_t, std::unique_ptr<visuals::Sprite>> m_doorSprites;
+	BorderBlockInfo m_borderBlockInfo;
+	uint32_t m_currentMap;
 };
 }
 }
