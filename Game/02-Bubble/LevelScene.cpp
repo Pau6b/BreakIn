@@ -106,15 +106,18 @@ void LevelScene::update(int i_deltaTime)
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [i_deltaTime](const std::shared_ptr<Coin>& i_coin) { i_coin->Update(i_deltaTime); });
 	std::for_each(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [i_deltaTime](const std::shared_ptr<BreakableBlock>& i_breakable) { i_breakable->Update(i_deltaTime); });
 	auto it = m_keys.find(m_currentMap);
-	if (it != m_keys.end())
 	{
-		it->second->Render();
+		if (it != m_keys.end())
+		{
+			it->second->Render();
+		}
 	}
-
-	auto it = m_sensor.find(m_currentMap);
-	if (it != m_sensor.end())
 	{
-		it->second->Update(i_deltaTime);
+		auto it = m_sensor.find(m_currentMap);
+		if (it != m_sensor.end())
+		{
+			it->second->Update(i_deltaTime);
+		}
 	}
 }
 
@@ -135,16 +138,20 @@ void LevelScene::render()
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
 	std::for_each(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [](const std::shared_ptr<BreakableBlock>& i_breakable) { i_breakable->Render(); });
 	auto it = m_keys.find(m_currentMap);
-	if (it != m_keys.end())
 	{
-		it->second->Render();
+		if (it != m_keys.end())
+		{
+			it->second->Render();
+		}
+	}
+	{
+		auto it = m_sensor.find(m_currentMap);
+		if (it != m_sensor.end())
+		{
+			it->second->Render();
+		}
 	}
 	m_player->Render();
-	auto it = m_sensor.find(m_currentMap);
-	if (it != m_sensor.end())
-	{
-		it->second->Render();
-	}
 	m_ball->Render();
 }
 

@@ -126,6 +126,12 @@
     <ClInclude Include="Log.h">
       <Filter>Archivos de encabezado\Core\Debugging</Filter>
     </ClInclude>
+    <ClInclude Include="Sensor.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Watcher.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SceneManager.cpp">
@@ -190,6 +196,12 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Archivos de código fuente\Core\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="Sensor.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Watcher.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

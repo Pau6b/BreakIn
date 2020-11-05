@@ -491,16 +491,17 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
  					m_staticCollisions[i][k][j-1] = pos;
  					m_staticCollisions[i][k - 1][j-1] = pos;
 				}
-				else if(c == 'K')
+				else if (c == 'K')
 				{
 					m_breakableBlocks[i].emplace(brickCounter, i_keys.at(i));
-					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize+yOffset));
+					m_breakableBlocks[i].at(brickCounter)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize + yOffset));
 					std::string pos = std::to_string(brickCounter);
 					brickCounter++;
 					m_staticCollisions[i][k][j] = pos;
 					m_staticCollisions[i][k - 1][j] = pos;
 					m_staticCollisions[i][k][j - 1] = pos;
 					m_staticCollisions[i][k - 1][j - 1] = pos;
+				}
 				else if (c == 'A')
 				{
 					m_sensor.at(i)->SetPosition(glm::vec2((k - 1)*m_tileSize, (j - 1)*m_tileSize));
