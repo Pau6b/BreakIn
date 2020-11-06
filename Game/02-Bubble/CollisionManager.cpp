@@ -462,7 +462,7 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 	{
 		auto blocksIt = i_bricks[i].begin();
 		auto coinsIt = i_coins[i].begin();
-		const uint32_t yOffset = (2 - m_currentMap)*m_mapSizeY*m_tileSize;
+		const uint32_t yOffset = (2 - i)*m_mapSizeY*m_tileSize;
 		for (int j = 0; j < m_mapSizeY; ++j)
 		{
 			for (int k = 0; k < sizex; ++k)
