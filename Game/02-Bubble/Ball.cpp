@@ -27,7 +27,7 @@ namespace game
 			, m_size(12)
 			, m_state(BallState::FollowingPlayer)
 			//, m_dirBall(CreateRandomStartDirection())
-			, m_dirBall(glm::vec2(0,-1))
+			, m_dirBall(glm::vec2(1,0))
 			, m_speed(2.5f)
 			, m_player(i_player)
 			, m_currentMap(i_currentMap)

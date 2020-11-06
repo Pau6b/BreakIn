@@ -87,7 +87,8 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 {
 
 	const int32_t originalY = ((i_pos.y + i_size.y - 1) / m_tileSize);
-	const int32_t x =  (i_pos.x + i_size.x/2) / m_tileSize;
+	const int32_t xini =  (i_pos.x) / m_tileSize;
+	const int32_t xfin = (i_pos.x + i_size.x-1) / m_tileSize;
 	const int32_t y = originalY%m_mapSizeY;
 	const int32_t map_position = 2 - (originalY / m_mapSizeY);
 	if (map_position != m_currentMap)
@@ -95,10 +96,13 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 		*i_posY = m_tileSize * m_mapSizeY * (3-m_currentMap) - i_size.y;
 		return CollisionResult::CollidedWithScreen;
 	}
-	else if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
+	for (int32_t x = xini; x <= xfin; ++x)
 	{
-		*i_posY = m_tileSize * y - i_size.y;
-		return CollisionResult::CollidedWithStaticBlock;
+		if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
+		{
+			*i_posY =  m_tileSize * m_mapSizeY * (2-m_currentMap) + m_tileSize * y - i_size.y;
+			return CollisionResult::CollidedWithStaticBlock;
+		}
 	}
 
 	return CollisionResult::NoCollision;
@@ -108,7 +112,8 @@ CollisionResult CollisionManager::CollisionMoveDown(const glm::ivec2& i_pos, con
 CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY)
 {
 	const int32_t originalY =  ((i_pos.y + 1) / m_tileSize);
-	const int32_t x = (i_pos.x + i_size.x/2) / m_tileSize;
+	const int32_t xini = (i_pos.x) / m_tileSize;
+	const int32_t xfin = (i_pos.x + i_size.x-1) / m_tileSize;
 	const int32_t y = originalY % m_mapSizeY;
 	const int32_t map_position = 2 - (originalY / m_mapSizeY);
 	if (map_position != m_currentMap)
@@ -116,10 +121,13 @@ CollisionResult CollisionManager::CollisionMoveUp(const glm::ivec2& i_pos, const
 		*i_posY = m_tileSize * m_mapSizeY * (2 - m_currentMap);
 		return CollisionResult::CollidedWithScreen;
 	}
-	if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
+	for(int32_t x = xini; x <= xfin; ++x)
 	{
-		*i_posY = m_tileSize * (y + 1);
-		return CollisionResult::CollidedWithStaticBlock;
+		if (m_staticCollisions[m_currentMap][x][y] == "X" || m_staticCollisions[m_currentMap][x][y] == "I")
+		{
+			*i_posY = m_tileSize * m_mapSizeY * (2 - m_currentMap) + m_tileSize * (y + 1);
+			return CollisionResult::CollidedWithStaticBlock;
+		}
 	}
 	return CollisionResult::NoCollision;
 }
