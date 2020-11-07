@@ -304,34 +304,22 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				yDiag--;
 			}
 			glm::vec2 distBallCorner = glm::ivec2(x_modInTile - xSquare, y_modInTile - ySquare);
-			std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
+			//std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
 			float distBallCornerLength = glm::length(distBallCorner);
 			if ( distBallCornerLength < i_size/2)
 			{
 				CollisionResult collisionResult = CheckCollision(xDiag, yDiag);
 				if (collisionResult != CollisionResult::NoCollision)
 				{
-					std::cout << "block content is : [" << m_staticCollisions[m_currentMap][xDiag][yDiag] << "]\n";
-					std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
+					//std::cout << "block content is : [" << m_staticCollisions[m_currentMap][xDiag][yDiag] << "]\n";
+					//std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
 					CollisionResult yPartialCollision = CheckCollision(x_mid, yDiag);
 					CollisionResult xPartialCollision = CheckCollision(xDiag, y_mid);
-					if (xPartialCollision != CollisionResult::NoCollision)
-					{
-						i_dir.x = -i_dir.x;
-					}
-					else if (yPartialCollision != CollisionResult::NoCollision)
-					{
-						i_dir.y = -i_dir.y;
-					}
-					else
-					{
-						i_dir = -i_dir;
-						std::swap(i_dir.x,i_dir.y);
-					}
-					std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
+					i_dir = glm::normalize(distBallCorner);
+					//std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
 					const float overPercentage = distBallCornerLength - (i_size / 2);
-					const glm::vec2 correctingVector = glm::normalize(-distBallCorner) * ((overPercentage+0.1f) / (i_size / 2));
-					i_pos = i_pos + correctingVector;
+					const glm::vec2 correctingVector = -i_dir * (1.f / nsteps)* i_speed;
+					i_pos = originalPos;
 					if (collisionResult != CollisionResult::CollidedWithStaticBlock)
 					{
 						ProcessBlockCollision(xDiag, yDiag);

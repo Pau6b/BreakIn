@@ -21,7 +21,7 @@ void MainScreenScene::init()
 {
 	m_shaderProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_shaderProgram, "shaders/menu.vert", "shaders/menu.frag");
-	m_playButton = std::make_unique<Button>(200, 200, 200, 100, *m_shaderProgram);
+	m_playButton = std::make_unique<Button>(200, 200, 200, 30, *m_shaderProgram);
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 }
 
