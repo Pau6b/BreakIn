@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Sprite.h"
 #include "ShaderProgram.h"
+#include "Button.h"
 
 namespace game
 {
@@ -16,6 +17,8 @@ namespace game
 {
 namespace gui
 {
+class Button;
+
 class MainScreenScene : public core::Scene
 {
 public:
@@ -30,22 +33,12 @@ public:
 private:
 
 	//#pau_todo move this to a button class or something like this if needed
-	struct ButtonInfo
-	{
-		int32_t xPos;
-		int32_t yPos;
-		int32_t xWidth;
-		int32_t yWidth;
-	};
-
-	static inline bool IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const glm::ivec2& i_mousePosition);
 	
 	core::Scene::SceneResult m_currentResult = core::Scene::SceneResult::NotFinished;
-	std::unique_ptr<visuals::Sprite> m_buttonText;
 	std::unique_ptr<visuals::ShaderProgram> m_shaderProgram;
 	glm::mat4 m_projection;
 	
-	ButtonInfo m_playButtonInfo;
+	std::unique_ptr<Button> m_playButton;
 
 	sound::SoundSystem& m_soundSystem;
 };

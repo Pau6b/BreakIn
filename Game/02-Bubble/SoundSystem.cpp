@@ -39,6 +39,7 @@ void SoundSystem::PlayBackgroundMusic(BackgroundMusic i_backgroundSound)
 			break;
 		case BackgroundMusic::Cave:
 			m_soundEngine->play2D("sounds/background/Blocks.mp3",true);
+			m_soundEngine->setSoundVolume(0.5);
 			break;
 		case BackgroundMusic::Nether:
 			m_soundEngine->play2D("sounds/background/Pigstep.mp3",true);

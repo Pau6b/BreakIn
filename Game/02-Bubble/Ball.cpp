@@ -5,6 +5,7 @@
 #include "Ball.h"
 #include "Game.h"
 #include "Player.h"
+#include "CollisionManager.h"
 
 
 
@@ -27,7 +28,7 @@ namespace game
 			, m_size(12)
 			, m_state(BallState::FollowingPlayer)
 			//, m_dirBall(CreateRandomStartDirection())
-			, m_dirBall(glm::vec2(0,-1))
+			, m_dirBall(glm::normalize(glm::vec2(0,-1)))
 			, m_speed(2.5f)
 			, m_player(i_player)
 			, m_currentMap(i_currentMap)
@@ -44,7 +45,7 @@ namespace game
 			m_sprite->update(i_deltaTime);
 			if (m_state == BallState::Free)
 			{
-				m_map.CollisionBall(m_posBall, m_dirBall, m_size, m_speed);
+				physics::CollisionResult collisionResult = m_map.CollisionBall(m_posBall, m_dirBall, m_size, m_speed);
 				SetPosition(m_posBall);
 			}
 			else if (m_state == BallState::FollowingPlayer)
@@ -88,7 +89,8 @@ namespace game
 		{
 			//#pau_todo #dani_todo resetear la direccion del player
 			m_state = BallState::FollowingPlayer;
-			m_dirBall = CreateRandomStartDirection();
+			//m_dirBall = CreateRandomStartDirection();
+			m_dirBall = glm::normalize(glm::vec2(0, 1));
 		}
 
 	}

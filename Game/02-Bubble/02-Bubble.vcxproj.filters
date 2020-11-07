@@ -132,6 +132,9 @@
     <ClInclude Include="Watcher.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SceneManager.cpp">
@@ -202,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="Watcher.cpp">
       <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
