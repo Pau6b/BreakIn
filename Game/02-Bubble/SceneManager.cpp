@@ -32,7 +32,7 @@ void SceneManager::Update(int i_deltaTime)
 			break;
 		case Scene::SceneResult::GoToLevel:
 		{
-			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem);
+			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
 			m_currentScene->init();
 			m_config.levels.at(sceneResult.second);
 			m_soundSystem.PlayBackgroundMusic(m_config.levels.at(sceneResult.second).backgroundSound);

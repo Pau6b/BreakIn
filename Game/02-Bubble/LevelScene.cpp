@@ -20,6 +20,7 @@
 #include "Log.h"
 #include "SoundSystem.h"
 #include "Sprite.h"
+#include "Text.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
@@ -27,20 +28,23 @@
 #define INIT_PLAYER_X_TILES 11
 #define INIT_PLAYER_Y_TILES 22
 
-#define LEVEL_SIZE_X 384
+#define LEVEL_SIZE_X 456
 #define LEVEL_SIZE_Y 384
+
+#define FONT_SIZE 16
 
 namespace game
 {
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(0)
 	, m_soundSystem(i_soundSystem)
+	, m_currentMine(i_currentMine)
 {
 
 }
@@ -61,7 +65,10 @@ void LevelScene::init()
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
-
+	m_text = std::make_unique<gui::Text>("fonts/Minecraft-Regular.otf", FONT_SIZE);
+	m_text->linkStr("LIVES: ", &m_currentLives);
+	m_text->linkStr("ROOM: ", &m_currentMap);
+	m_text->linkStr("MINE: ", &m_currentMine);
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath,
 																	 m_map->getTileSize(),
 																	 m_currentMap,
@@ -90,6 +97,8 @@ void LevelScene::init()
 	m_projectionY = &m_traslation[3][1];
 	*m_projectionY = -(SCREEN_Y)+48;
 	*m_projectionY -= (2 - m_currentMap) * LEVEL_SIZE_Y;
+	
+
 }
 
 void LevelScene::update(int i_deltaTime)
@@ -119,6 +128,7 @@ void LevelScene::update(int i_deltaTime)
 			it->second->Update(i_deltaTime);
 		}
 	}
+
 }
 
 void LevelScene::render()
@@ -153,6 +163,8 @@ void LevelScene::render()
 	}
 	m_player->Render();
 	m_ball->Render();
+
+	m_text->render();
 }
 
 void LevelScene::MoveLevelUp()
@@ -278,11 +290,13 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	std::shared_ptr<Coin> coin = std::dynamic_pointer_cast<Coin>(i_brokenBlock);
 	if (brick)
 	{
+		m_text->UpdatePoints();
 		m_blocksToCheck.emplace_back(i_brokenBlock);
 		m_bricks[m_currentMap].erase(brick);
 	}
 	else if(coin)
 	{
+		m_text->UpdateCoins();
 		m_blocksToCheck.emplace_back(i_brokenBlock);
 		m_coins[m_currentMap].erase(coin);
 		bool anyCoinLeft = false;

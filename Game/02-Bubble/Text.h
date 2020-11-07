@@ -7,6 +7,8 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include <string>
+#include "TexturedQuad.h"
+#include <vector>
 
 
 #define NUM_CHARACTERS (128 - 32)
@@ -33,16 +35,19 @@ namespace game
 		{
 
 		public:
-			Text();
+			Text(const char *i_filename, int i_size);
 			~Text();
 
-			bool init(const char *filename);
 			void destroy();
 
 			visuals::ShaderProgram &getProgram();
 			int getSize() const;
-			void render(char c, const glm::vec2 &pixel, int size, const glm::vec4 &color);
-			void render(const std::string &str, const glm::vec2 &pixel, int size, const glm::vec4 &color);
+			void render(char c, const glm::vec2 &pixel, const glm::vec4 &color);
+			void printAllinfo(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color);
+			void UpdateCoins();
+			void UpdatePoints();
+			void render();
+			void linkStr(std::string i_text, uint32_t* value);
 
 		private:
 			void initShaders();
@@ -50,15 +55,18 @@ namespace game
 			void createTextureAtlas();
 
 		private:
-			int fontSize, textureSize, maxCharWidth, maxCharHeight;
-			FT_Face face;
-			CharMetrics chars[NUM_CHARACTERS];
-			visuals::Texture textureAtlas;
-			visuals::ShaderProgram program;
-			//TexturedQuad *quad;
-
-			static bool bLibInit;
-			static FT_Library library;
+			int m_fontSize, m_textureSize, m_maxCharWidth, m_maxCharHeight;
+			FT_Face m_face;
+			CharMetrics m_chars[NUM_CHARACTERS];
+			visuals::Texture n_textureAtlas;
+			visuals::ShaderProgram m_program;
+			TexturedQuad *m_quad;
+			int m_size;
+			static bool m_bLibInit;
+			static FT_Library m_library;
+			uint32_t m_points;
+			uint32_t m_coins;
+			std::vector<std::pair<std::string, uint32_t*>> m_texts;
 
 		};
 	}
