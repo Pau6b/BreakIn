@@ -87,7 +87,6 @@ namespace game
 
 		void Ball::Reset()
 		{
-			//#pau_todo #dani_todo resetear la direccion del player
 			m_state = BallState::FollowingPlayer;
 			//m_dirBall = CreateRandomStartDirection();
 			m_dirBall = glm::normalize(glm::vec2(0, 1));
