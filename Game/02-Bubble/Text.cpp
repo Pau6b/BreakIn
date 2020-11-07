@@ -4,10 +4,12 @@
 #include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Text.h"
+#include "Log.h"
+#include <algorithm>
 
 
 #define ATLAS_FONT_SIZE 64
-
+#define INIT_TEXT 456
 
 namespace game
 {
@@ -15,77 +17,72 @@ namespace game
 	{
 
 
-		bool Text::bLibInit = false;
-		FT_Library Text::library;
+		bool Text::m_bLibInit = false;
+		FT_Library Text::m_library;
 
 
-		Text::Text()
+		Text::Text(const char *filename, int i_size)
+			:m_size(i_size)
+			,m_coins(0)
+			,m_points(0)
 		{
-			//quad = NULL;
-		}
-
-		Text::~Text()
-		{
-			destroy();
-			/*if (quad != NULL)
-			{
-				quad->free();
-				delete quad;
-			}*/
-		}
-
-
-		bool Text::init(const char *filename)
-		{
+			m_texts.push_back(std::make_pair("COINS: ", &m_coins));
+			m_texts.push_back(std::make_pair("POINTS: ", &m_points));
+			m_quad = NULL;
 			FT_Error error;
 
-			if (!bLibInit)
+			if (!m_bLibInit)
 			{
-				error = FT_Init_FreeType(&Text::library);
-				if (error)
-					return false;
-				bLibInit = true;
+				error = FT_Init_FreeType(&Text::m_library);
+				BreakIf(error, "Error Init FreeType");
+				m_bLibInit = true;
 			}
-			error = FT_New_Face(Text::library, filename, 0, &face);
-			if (error)
-				return false;
-			FT_Set_Pixel_Sizes(face, ATLAS_FONT_SIZE, ATLAS_FONT_SIZE);
+			error = FT_New_Face(Text::m_library, filename, 0, &m_face);
+			BreakIf(error, "Error Init New Face");
+			FT_Set_Pixel_Sizes(m_face, ATLAS_FONT_SIZE, ATLAS_FONT_SIZE);
 
-			if (!extractCharSizes(&maxCharWidth, &maxCharHeight))
-				return false;
-			fontSize = maxCharHeight;
-			textureSize = 512;
-			if (floor(float(textureSize) / maxCharWidth) * floor(float(textureSize) / maxCharHeight) < (128 - 32))
-				textureSize = 1024;
-			if (floor(float(textureSize) / maxCharWidth) * floor(float(textureSize) / maxCharHeight) < (128 - 32))
-				return false;
+			BreakIf(!extractCharSizes(&m_maxCharWidth, &m_maxCharHeight), "No size found");
+			m_fontSize = m_maxCharHeight;
+			m_textureSize = 256;
+			if (floor(float(m_textureSize) / m_fontSize) * floor(float(m_textureSize) / m_fontSize) < (128 - 32))
+				m_textureSize = 512;
+			if (floor(float(m_textureSize) / m_fontSize) * floor(float(m_textureSize) / m_fontSize) < (128 - 32))
+				BreakIf(true, "Error Init New Face");
 			createTextureAtlas();
 			initShaders();
 
 			glm::vec2 geom[2] = { glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f) };
 			glm::vec2 texCoords[2] = { glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f) };
 
-			//quad = TexturedQuad::createTexturedQuad(geom, texCoords, program);
+			m_quad = TexturedQuad::createTexturedQuad(geom, texCoords, m_program);
+		}
 
-			return true;
+		Text::~Text()
+		{
+			destroy();
+			if (m_quad != NULL)
+			{
+				m_quad->free();
+				delete m_quad;
+			}
 		}
 
 		void Text::destroy()
 		{
-			FT_Done_Face(face);
+			FT_Done_Face(m_face);
 		}
 
 		visuals::ShaderProgram &Text::getProgram()
 		{
-			return program;
+			return m_program;
 		}
 
 		int Text::getSize() const
 		{
-			return fontSize;
+			return m_fontSize;
 		}
 
-		void Text::render(char c, const glm::vec2 &pixel, int size, const glm::vec4 &color)
+		void Text::render(char c, const glm::vec2 &pixel, const glm::vec4 &color)
 		{
 			int vp[4];
 			glm::mat4 projection, modelview;
@@ -93,24 +90,40 @@ namespace game
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			program.use();
+			m_program.use();
 			glGetIntegerv(GL_VIEWPORT, vp);
 			projection = glm::ortho(0.f, float(vp[2] - 1), float(vp[3] - 1), 0.f);
-			program.setUniformMatrix4f("projection", projection);
-			program.setUniform4f("color", color.r, color.g, color.b, color.a);
+			m_program.setUniformMatrix4f("projection", projection);
+			m_program.setUniform4f("color", color.r, color.g, color.b, color.a);
 			modelview = glm::mat4(1.0f);
-			modelview = glm::translate(modelview, glm::vec3(pixel.x, pixel.y - size, 0.f));
-			modelview = glm::scale(modelview, (float(size) / fontSize) * glm::vec3(chars[c - 32].sx, chars[c - 32].sy, 0.f));
-			program.setUniformMatrix4f("modelview", modelview);
-			minTexCoord = glm::vec2(float(chars[c - 32].tx) / textureSize, float(chars[c - 32].ty) / textureSize);
-			maxTexCoord = glm::vec2(float(chars[c - 32].tx + chars[c - 32].sx) / textureSize, float(chars[c - 32].ty + chars[c - 32].sy) / textureSize);
-			program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
-			program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
-			//quad->render(textureAtlas);
+			modelview = glm::translate(modelview, glm::vec3(pixel.x, pixel.y - m_size, 0.f));
+			modelview = glm::scale(modelview, (float(m_size) / m_fontSize) * glm::vec3(m_chars[c - 32].sx, m_chars[c - 32].sy, 0.f));
+			m_program.setUniformMatrix4f("modelview", modelview);
+			minTexCoord = glm::vec2(float(m_chars[c - 32].tx) / m_textureSize, float(m_chars[c - 32].ty) / m_textureSize);
+			maxTexCoord = glm::vec2(float(m_chars[c - 32].tx + m_chars[c - 32].sx) / m_textureSize, float(m_chars[c - 32].ty + m_chars[c - 32].sy) / m_textureSize);
+			m_program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
+			m_program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
+			m_quad->render(n_textureAtlas);
 			glDisable(GL_BLEND);
 		}
 
-		void Text::render(const std::string &str, const glm::vec2 &pixel, int size, const glm::vec4 &color)
+
+		void Text::render()
+		{
+			int n = 0;
+			std::for_each(std::begin(m_texts), std::end(m_texts), [&n, this](auto it) {printAllinfo(it.first + std::to_string(*it.second),
+																				  glm::vec2(INIT_TEXT, 100 + 70 * n),
+																				  glm::vec4(1, 1, 1, 1));
+																				  ++n; });
+		}
+
+
+		void Text::linkStr(std::string i_text, uint32_t* value)
+		{
+			m_texts.push_back(std::make_pair(i_text, value));
+		}
+
+		void Text::printAllinfo(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color)
 		{
 			int vp[4];
 			glm::mat4 projection, modelview;
@@ -118,27 +131,39 @@ namespace game
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
-			program.use();
+			m_program.use();
 			glGetIntegerv(GL_VIEWPORT, vp);
 			projection = glm::ortho(0.f, float(vp[2] - 1), float(vp[3] - 1), 0.f);
-			program.setUniformMatrix4f("projection", projection);
-			program.setUniform4f("color", color.r, color.g, color.b, color.a);
+			m_program.setUniformMatrix4f("projection", projection);
+			m_program.setUniform4f("color", color.r, color.g, color.b, color.a);
 
 			for (unsigned int i = 0; i < str.length(); i++)
 			{
 				modelview = glm::mat4(1.0f);
-				modelview = glm::translate(modelview, glm::vec3(pos.x + (float(size) / fontSize) * chars[str[i] - 32].bl, pos.y - (float(size) / fontSize) * chars[str[i] - 32].bt, 0.f));
-				modelview = glm::scale(modelview, (float(size) / fontSize) * glm::vec3(chars[str[i] - 32].sx, chars[str[i] - 32].sy, 0.f));
-				program.setUniformMatrix4f("modelview", modelview);
-				minTexCoord = glm::vec2(float(chars[str[i] - 32].tx) / textureSize, float(chars[str[i] - 32].ty) / textureSize);
-				maxTexCoord = glm::vec2(float(chars[str[i] - 32].tx + chars[str[i] - 32].sx) / textureSize, float(chars[str[i] - 32].ty + chars[str[i] - 32].sy) / textureSize);
-				program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
-				program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
-				//quad->render(textureAtlas);
-				pos.x += (float(size) / fontSize) * chars[str[i] - 32].ax;
+				modelview = glm::translate(modelview, glm::vec3(pos.x + (float(m_size) / m_fontSize) * m_chars[str[i] - 32].bl, pos.y - (float(m_size) / m_fontSize) * m_chars[str[i] - 32].bt, 0.f));
+				modelview = glm::scale(modelview, (float(m_size) / m_fontSize) * glm::vec3(m_chars[str[i] - 32].sx, m_chars[str[i] - 32].sy, 0.f));
+				m_program.setUniformMatrix4f("modelview", modelview);
+				minTexCoord = glm::vec2(float(m_chars[str[i] - 32].tx) / m_textureSize, float(m_chars[str[i] - 32].ty) / m_textureSize);
+				maxTexCoord = glm::vec2(float(m_chars[str[i] - 32].tx + m_chars[str[i] - 32].sx) / m_textureSize, float(m_chars[str[i] - 32].ty + m_chars[str[i] - 32].sy) / m_textureSize);
+				m_program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
+				m_program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
+				m_quad->render(n_textureAtlas);
+				pos.x += (float(m_size) / m_fontSize) * m_chars[str[i] - 32].ax;
 			}
 
 			glDisable(GL_BLEND);
+		}
+
+
+		void Text::UpdateCoins()
+		{
+			m_coins = m_coins + 50;
+		}
+
+
+		void Text::UpdatePoints()
+		{
+			m_points = m_points + 100;
 		}
 
 		void Text::initShaders()
@@ -159,16 +184,16 @@ namespace game
 				std::cout << "Fragment Shader Error" << std::endl;
 				std::cout << "" << fShader.log() << std::endl << std::endl;
 			}
-			program.init();
-			program.addShader(vShader);
-			program.addShader(fShader);
-			program.link();
-			if (!program.isLinked())
+			m_program.init();
+			m_program.addShader(vShader);
+			m_program.addShader(fShader);
+			m_program.link();
+			if (!m_program.isLinked())
 			{
 				std::cout << "Shader Linking Error" << std::endl;
-				std::cout << "" << program.log() << std::endl << std::endl;
+				std::cout << "" << m_program.log() << std::endl << std::endl;
 			}
-			program.bindFragmentOutput("outColor");
+			m_program.bindFragmentOutput("outColor");
 		}
 
 		bool Text::extractCharSizes(int *maxCharWidth, int *maxCharHeight)
@@ -179,10 +204,10 @@ namespace game
 			*maxCharHeight = 0;
 			for (c = 32; c < 128; c++)
 			{
-				if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+				if (FT_Load_Char(m_face, c, FT_LOAD_RENDER))
 					return false;
-				*maxCharWidth = glm::max(*maxCharWidth, (int)face->glyph->bitmap.width);
-				*maxCharHeight = glm::max(*maxCharHeight, (int)face->glyph->bitmap.rows);
+				*maxCharWidth = glm::max(*maxCharWidth, (int)m_face->glyph->bitmap.width);
+				*maxCharHeight = glm::max(*maxCharHeight, (int)m_face->glyph->bitmap.rows);
 			}
 
 			return true;
@@ -193,29 +218,29 @@ namespace game
 			unsigned char c;
 			int x = 0, y = 0;
 
-			textureAtlas.createEmptyTexture(textureSize, textureSize);
+			n_textureAtlas.createEmptyTexture(m_textureSize, m_textureSize);
 			for (c = 32; c < 128; c++)
 			{
-				FT_Load_Char(face, c, FT_LOAD_RENDER);
-				chars[c - 32].tx = x;
-				chars[c - 32].ty = y;
-				chars[c - 32].sx = face->glyph->bitmap.width;
-				chars[c - 32].sy = face->glyph->bitmap.rows;
-				chars[c - 32].ax = face->glyph->advance.x >> 6;
-				chars[c - 32].ay = face->glyph->advance.y >> 6;
-				chars[c - 32].bl = face->glyph->bitmap_left;
-				chars[c - 32].bt = face->glyph->bitmap_top;
-				textureAtlas.loadSubtextureFromGlyphBuffer(face->glyph->bitmap.buffer, x, y, face->glyph->bitmap.width, face->glyph->bitmap.rows);
-				x += maxCharWidth;
-				if ((x + maxCharWidth) >= textureSize)
+				FT_Load_Char(m_face, c, FT_LOAD_RENDER);
+				m_chars[c - 32].tx = x;
+				m_chars[c - 32].ty = y;
+				m_chars[c - 32].sx = m_face->glyph->bitmap.width;
+				m_chars[c - 32].sy = m_face->glyph->bitmap.rows;
+				m_chars[c - 32].ax = m_face->glyph->advance.x >> 6;
+				m_chars[c - 32].ay = m_face->glyph->advance.y >> 6;
+				m_chars[c - 32].bl = m_face->glyph->bitmap_left;
+				m_chars[c - 32].bt = m_face->glyph->bitmap_top;
+				n_textureAtlas.loadSubtextureFromGlyphBuffer(m_face->glyph->bitmap.buffer, x, y, m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows);
+				x += m_maxCharWidth;
+				if ((x + m_maxCharWidth) >= m_textureSize)
 				{
 					x = 0;
-					y += maxCharHeight;
+					y += m_maxCharHeight;
 				}
 			}
-			textureAtlas.generateMipmap();
-			textureAtlas.setWrapS(GL_CLAMP_TO_EDGE);
-			textureAtlas.setWrapT(GL_CLAMP_TO_EDGE);
+			n_textureAtlas.generateMipmap();
+			n_textureAtlas.setWrapS(GL_CLAMP_TO_EDGE);
+			n_textureAtlas.setWrapT(GL_CLAMP_TO_EDGE);
 		}
 	}
 }

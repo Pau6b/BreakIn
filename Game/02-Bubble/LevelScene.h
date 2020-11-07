@@ -32,6 +32,14 @@ namespace visuals
 
 namespace game
 {
+	namespace gui
+	{
+		class Text;
+	}
+}
+
+namespace game
+{
 namespace gameplay
 {
 namespace physics
@@ -68,7 +76,7 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem);
+	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine);
 	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
@@ -106,6 +114,8 @@ private:
 	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
 	const core::CheatSystem& m_cheatSystem;
 	uint32_t m_currentLives = 3;
+	std::unique_ptr<gui::Text> m_text;
+	uint32_t m_currentMine;
 };
 }
 }

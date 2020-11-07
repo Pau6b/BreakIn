@@ -103,6 +103,7 @@ private:
 	const uint32_t m_tileSize;
 	uint32_t m_mapSizeY;
 	Player* m_player;
+	uint32_t m_coins, m_points;
 	const core::CheatSystem& m_cheatSystem;
 	sound::SoundSystem& m_soundSystem;
 };
