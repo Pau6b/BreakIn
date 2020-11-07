@@ -76,7 +76,7 @@ public:
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY);
 	CollisionResult CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY);
-	CollisionResult CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float& i_speed);
+	CollisionResult CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed);
 	void LinkPlayer(Player* i_player);
 	void SetCurrentMap(uint32_t i_currentMap);
 	std::pair<uint32_t,uint32_t> WipeDoorPositions();
@@ -92,7 +92,7 @@ private:
 							   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys);
 	CollisionResult CheckCollision(const int& i_posX, const int& i_posY);
 	std::tuple<uint32_t, uint32_t, uint32_t> CheckDirectionOfCollision(const int& i_XposMid, const int& i_YposMid, const int& i_XposRight, const int& i_XposLeft, const int& i_YposUp, const int& i_YposDown);
-	bool CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const int32_t& i_Speed);
+	bool CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const float& i_Speed);
 	uint32_t m_currentMap;
 	std::vector<Matrix<std::string>> m_staticCollisions;
 	std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>> m_breakableBlocks;

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="BreakableBlock.h" />
     <ClInclude Include="Brick.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="BreakableBlock.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="CheatSystem.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionManager.cpp" />

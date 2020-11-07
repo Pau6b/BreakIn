@@ -39,7 +39,7 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
-	, m_currentMap(0)
+	, m_currentMap(2)
 	, m_soundSystem(i_soundSystem)
 {
 
