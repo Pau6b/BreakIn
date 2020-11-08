@@ -29,7 +29,7 @@ namespace core
 class SceneManager
 {
 public:
-	SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem);
+	SceneManager(const std::string& i_sceneConfigFilePath, CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem);
 
 	void Update(int i_deltaTime);
 	void Render();
@@ -38,7 +38,7 @@ public:
 private:
 	std::unique_ptr<Scene> m_currentScene = nullptr;
 	void ParseSceneConfigFilePath(const std::string& i_sceneConfigFilePath);
-	const CheatSystem& m_cheatSystem;
+	CheatSystem& m_cheatSystem;
 	sound::SoundSystem& m_soundSystem;
 
 	struct SceneConfig
