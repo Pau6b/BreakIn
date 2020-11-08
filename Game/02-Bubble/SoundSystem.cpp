@@ -59,10 +59,10 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 		m_soundEngine->play2D("sounds/gameplaySounds/Wood.mp3", false);
 		break;
 	case GameplaySounds::BlockBroken:
-		m_soundEngine->play2D("sounds/gameplaySounds/break.mp3", false);
+		m_soundEngine->play2D("sounds/gameplaySounds/block.mp3", false);
 		break;
 	case GameplaySounds::BallStaticBlockCollision:
-		m_soundEngine->play2D("sounds/gameplaySounds/block.mp3", false);
+		m_soundEngine->play2D("sounds/gameplaySounds/hitblock.mp3", false);
 		break;
 	case GameplaySounds::BallBarCollision:
 		m_soundEngine->play2D("sounds/gameplaySounds/slime.mp3", false);

@@ -234,7 +234,8 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			if (oldMap > 0)
 			{
 				i_pos.y = (2 - m_currentMap)*m_mapSizeY*m_tileSize+i_size;
-				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
+				//#dani_pau_todo quitar linea si no hay sonido
+				//m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
 			}
 			return CollisionResult::CollidedWithScreen;
 		}
@@ -248,7 +249,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			}
 			m_cameraMoveUpFunction();
 			i_pos.y = (3-m_currentMap)*m_mapSizeY*m_tileSize-i_size-1;
-			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
+			//m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
 			return CollisionResult::CollidedWithScreen;
 		}
 		//Check up, down, left and right
