@@ -37,13 +37,24 @@ bool Button::IsMousePressed(const glm::ivec2& i_mousePosition) const
 	return IsMouseIsInButton(m_info, i_mousePosition);
 }
 
-void Button::Render() const
+void Button::Render()
 {
 	m_buttonSprite.render();
 	if (m_buttonState == ButtonState::Hovered)
 	{
 		m_hoveredSprite.render();
 	}
+
+}
+
+void Button::SetPlainText(std::string i_text)
+{
+	m_buttonText = i_text;
+}
+
+void Button::SetTextMargin(glm::vec2 i_textMargin)
+{
+	m_textMargin = i_textMargin;
 }
 
 bool Button::IsMouseIsInButton(const ButtonInfo& i_buttonInfo, const glm::ivec2& i_mousePosition)

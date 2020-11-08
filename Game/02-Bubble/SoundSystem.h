@@ -18,7 +18,9 @@ public:
 	void PlayMenuSounds(MenuSounds i_menuSounds);
 
 private:
-	irrklang::ISoundEngine* m_soundEngine;
+	irrklang::ISoundEngine* m_backgroundEngine;
+	irrklang::ISoundEngine* m_gameplayEngine;
+	irrklang::ISoundEngine* m_menuSoundEngine;
 	BackgroundMusic m_currentBackgroundSound;
 };
 }

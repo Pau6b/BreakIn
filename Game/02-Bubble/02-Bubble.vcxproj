@@ -14,6 +14,8 @@
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="ControlsMenu.h" />
+    <ClInclude Include="CreditsMenu.h" />
     <ClInclude Include="GameplayHelpers.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="BreakableBlock.h" />
@@ -23,7 +25,8 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="MainScreenScene.h" />
+    <ClInclude Include="MainScreenMenu.h" />
+    <ClInclude Include="PasswordsMenu.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
@@ -51,11 +54,14 @@
     <ClCompile Include="CheatSystem.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="ControlsMenu.cpp" />
+    <ClCompile Include="CreditsMenu.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameplayHelpers.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainScreenScene.cpp" />
+    <ClCompile Include="MainScreenMenu.cpp" />
+    <ClCompile Include="PasswordsMenu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="LevelScene.cpp" />
     <ClCompile Include="Portal.cpp" />

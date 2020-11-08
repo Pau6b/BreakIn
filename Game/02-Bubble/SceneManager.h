@@ -58,6 +58,9 @@ private:
 	{
 		std::map<int32_t,LevelConfig> levels;
 		std::unique_ptr<SceneConfig> mainMenu;
+		std::unique_ptr<SceneConfig> controlsMenu;
+		std::unique_ptr<SceneConfig> creditsMenu;
+		std::unique_ptr<SceneConfig> passwordsMenu;
 	} m_config;
 };
 

@@ -1,5 +1,4 @@
-#ifndef _TEXT_INCLUDE
-#define _TEXT_INCLUDE
+#pragma once
 
 
 #include <ft2build.h>
@@ -7,20 +6,10 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include <string>
-#include "TexturedQuad.h"
 #include <vector>
-
+#include "TexturedQuad.h"
 
 #define NUM_CHARACTERS (128 - 32)
-
-
-struct CharMetrics
-{
-	int tx, ty; 		// Pos x, y inside texture in pixels
-	int sx, sy; 		// Size of char in pixels
-	int ax, ay; 		// Advance for each character in a string sequence
-	int bl, bt; 		// Bitmap left and top adjusting
-};
 
 
 // Using Freetype the Text class is capable of building a texture atlas
@@ -41,12 +30,14 @@ namespace game
 			void destroy();
 
 			visuals::ShaderProgram &getProgram();
-			int getSize() const;
+			void SetSize(int32_t i_size);
+			int getFontSize() const;
 			void render(char c, const glm::vec2 &pixel, const glm::vec4 &color);
-			void printAllinfo(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color);
+			void RenderString(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color);
 			void UpdateCoins();
 			void UpdatePoints();
 			void render();
+
 			void linkStr(std::string i_text, uint32_t* value);
 
 		private:
@@ -55,6 +46,13 @@ namespace game
 			void createTextureAtlas();
 
 		private:
+			struct CharMetrics
+			{
+				int tx, ty; 		// Pos x, y inside texture in pixels
+				int sx, sy; 		// Size of char in pixels
+				int ax, ay; 		// Advance for each character in a string sequence
+				int bl, bt; 		// Bitmap left and top adjusting
+			};
 			int m_fontSize, m_textureSize, m_maxCharWidth, m_maxCharHeight;
 			FT_Face m_face;
 			CharMetrics m_chars[NUM_CHARACTERS];
@@ -72,6 +70,4 @@ namespace game
 	}
 
 }
-#endif // _TEXT_INCLUDE
-
 

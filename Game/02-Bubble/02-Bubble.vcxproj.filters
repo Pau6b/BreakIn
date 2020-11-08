@@ -81,9 +81,6 @@
     <ClInclude Include="Shader.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
-    <ClInclude Include="MainScreenScene.h">
-      <Filter>Archivos de encabezado\Gui</Filter>
-    </ClInclude>
     <ClInclude Include="AnimKeyframes.h">
       <Filter>Archivos de encabezado\Visuals</Filter>
     </ClInclude>
@@ -135,9 +132,6 @@
     <ClInclude Include="Button.h">
       <Filter>Archivos de encabezado\Gui</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Archivos de encabezado\Gui</Filter>
-    </ClInclude>
     <ClInclude Include="TexturedQuad.h">
       <Filter>Archivos de encabezado\Gui</Filter>
     </ClInclude>
@@ -146,6 +140,21 @@
     </ClInclude>
     <ClInclude Include="GameplayHelpers.h">
       <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScreenMenu.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsMenu.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlsMenu.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordsMenu.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -188,9 +197,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Archivos de código fuente\Visuals</Filter>
     </ClCompile>
-    <ClCompile Include="MainScreenScene.cpp">
-      <Filter>Archivos de código fuente\Gui</Filter>
-    </ClCompile>
     <ClCompile Include="Coin.cpp">
       <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
@@ -221,9 +227,6 @@
     <ClCompile Include="Button.cpp">
       <Filter>Archivos de código fuente\Gui</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Archivos de código fuente\Gui</Filter>
-    </ClCompile>
     <ClCompile Include="TexturedQuad.cpp">
       <Filter>Archivos de código fuente\Gui</Filter>
     </ClCompile>
@@ -232,6 +235,21 @@
     </ClCompile>
     <ClCompile Include="GameplayHelpers.cpp">
       <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScreenMenu.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlsMenu.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsMenu.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="PasswordsMenu.cpp">
+      <Filter>Archivos de código fuente\Gui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

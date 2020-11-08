@@ -4,10 +4,13 @@
 #include <sstream>
 #include "Log.h"
 #include "LevelScene.h"
-#include "MainScreenScene.h"
+#include "MainScreenMenu.h"
 #include "CheatSystem.h"
 #include "SoundSystem.h"
 #include "SoundHelpers.h"
+#include "ControlsMenu.h"
+#include "CreditsMenu.h"
+#include "PasswordsMenu.h"
 
 namespace game
 {
@@ -39,9 +42,24 @@ void SceneManager::Update(int i_deltaTime)
 			break;
 		}
 		case Scene::SceneResult::GoToMainMenu:
-			m_currentScene = std::make_unique<gui::MainScreenScene>(m_soundSystem);
+			m_currentScene = std::make_unique<gui::MainScreenMenu>(m_soundSystem);
 			m_currentScene->init();
 			m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
+			break;
+		case Scene::SceneResult::GoToControlsScene:
+			m_currentScene = std::make_unique<gui::ControlsMenu>(m_soundSystem);
+			m_currentScene->init();
+			m_soundSystem.PlayBackgroundMusic(m_config.controlsMenu->backgroundSound);
+			break;
+		case Scene::SceneResult::GoToCreditsScene:
+			m_currentScene = std::make_unique<gui::CreditsMenu>(m_soundSystem);
+			m_currentScene->init();
+			m_soundSystem.PlayBackgroundMusic(m_config.creditsMenu->backgroundSound);
+			break;
+		case Scene::SceneResult::GoToPasswordsMenu:
+			m_currentScene = std::make_unique<gui::PasswordsMenu>(m_soundSystem);
+			m_currentScene->init();
+			m_soundSystem.PlayBackgroundMusic(m_config.passwordsMenu->backgroundSound);
 			break;
 		}
 	}
@@ -74,6 +92,24 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 			getline(file, backgroundSound);
 			m_config.mainMenu = std::make_unique<SceneConfig>(sound::helpers::StringToBackgroundSound(backgroundSound));
 		}
+		else if (line.rfind("ControlsMenu", 0) == 0)
+		{
+			std::string backgroundSound;
+			getline(file, backgroundSound);
+			m_config.controlsMenu = std::make_unique<SceneConfig>(sound::helpers::StringToBackgroundSound(backgroundSound));
+		}
+		else if (line.rfind("CreditsMenu", 0) == 0)
+		{
+			std::string backgroundSound;
+			getline(file, backgroundSound);
+			m_config.creditsMenu = std::make_unique<SceneConfig>(sound::helpers::StringToBackgroundSound(backgroundSound));
+		}
+		else if (line.rfind("PasswordsMenu", 0) == 0)
+		{
+			std::string backgroundSound;
+			getline(file, backgroundSound);
+			m_config.passwordsMenu = std::make_unique<SceneConfig>(sound::helpers::StringToBackgroundSound(backgroundSound));
+		}
 		else if (line.rfind("Level",0) == 0)
 		{
 			std::istringstream sstream(line);
@@ -97,7 +133,7 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 		getline(file, blankLine);
 	}
 
-	m_currentScene = std::make_unique<gui::MainScreenScene>(m_soundSystem);
+	m_currentScene = std::make_unique<gui::MainScreenMenu>(m_soundSystem);
 	m_currentScene->init();
 	m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 	

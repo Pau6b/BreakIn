@@ -15,7 +15,11 @@ public:
 	{
 		NotFinished,
 		GoToLevel,
-		GoToMainMenu
+		GoToNextLevel,
+		GoToMainMenu,
+		GoToControlsScene,
+		GoToCreditsScene,
+		GoToPasswordsMenu
 	};
 
 	virtual void init() = 0;

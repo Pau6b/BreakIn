@@ -77,7 +77,12 @@ namespace game
 			return m_program;
 		}
 
-		int Text::getSize() const
+		void Text::SetSize(int32_t i_size)
+		{
+			m_size = i_size;
+		}
+
+		int Text::getFontSize() const
 		{
 			return m_fontSize;
 		}
@@ -124,7 +129,7 @@ namespace game
 			m_texts.push_back(std::make_pair(i_text, value));
 		}
 
-		void Text::printAllinfo(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color)
+		void Text::RenderString(const std::string &str, const glm::vec2 &pixel, const glm::vec4 &color)
 		{
 			int vp[4];
 			glm::mat4 projection, modelview;

@@ -2,6 +2,8 @@
 #include <GL/glut.h>
 #include "Game.h"
 
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 
 //Remove console (only works in Visual Studio)
 #pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
@@ -65,6 +67,11 @@ static void drawCallback()
 	glutSwapBuffers();
 }
 
+static void resizeCallback(int width, int height)
+{
+	glutReshapeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
 static void idleCallback()
 {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
@@ -99,6 +106,7 @@ int main(int argc, char **argv)
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(motionCallback);
 	glutPassiveMotionFunc(motionCallback);
+	glutReshapeFunc(resizeCallback);
 
 
 	// GLEW will take care of OpenGL extension functions
