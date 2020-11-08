@@ -141,6 +141,12 @@
     <ClInclude Include="TexturedQuad.h">
       <Filter>Archivos de encabezado\Gui</Filter>
     </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayHelpers.h">
+      <Filter>Archivos de encabezado\Gameplay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SceneManager.cpp">
@@ -220,6 +226,12 @@
     </ClCompile>
     <ClCompile Include="TexturedQuad.cpp">
       <Filter>Archivos de código fuente\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayHelpers.cpp">
+      <Filter>Archivos de código fuente\Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,6 +15,13 @@
 #include "Sounds.h"
 #include <memory>
 #include <map>
+#include "Portal.h"
+#include "GameplayHelpers.h"
+#include "Ball.h"
+
+//This is copied in LevelScene
+#define SCREEN_X 32
+#define SCREEN_Y 16
 
 namespace game
 {
@@ -25,6 +32,7 @@ namespace physics
 CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const uint32_t i_tileSize,
 								   uint32_t i_currentMap,
+								   const uint32_t i_currentMine,
 								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 								   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys,
@@ -33,7 +41,8 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   std::function<void()> i_moveDown,
 								   std::function<void()> i_moveUp,
 								   const core::CheatSystem& i_cheatSystem,
-								   sound::SoundSystem& i_soundSystem)
+								   sound::SoundSystem& i_soundSystem,
+								   visuals::ShaderProgram& i_shaderProgram)
 	: m_tileSize(i_tileSize)
 	, m_onBreakableBlockBroken(i_onBrokenBlockFunction)
 	, m_cameraMoveDownFunction(i_moveDown)
@@ -42,7 +51,8 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 	, m_currentMap(i_currentMap)
 	, m_soundSystem(i_soundSystem)
 	, m_sensor(i_sensor)
-
+	, m_currentMine(i_currentMine)
+	, m_shaderProgram(i_shaderProgram)
 {
 	SetUpStaticCollisions(i_staticCollisionsPath, i_bricks, i_coins, i_keys);
 }
@@ -138,6 +148,7 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 {
 	if (m_staticCollisions[m_currentMap][i_posX][i_posY] != "0")
 	{
+		auto it = m_portalIds.find(m_staticCollisions[m_currentMap][i_posX][i_posY]);
 		if (m_staticCollisions[m_currentMap][i_posX][i_posY] == "X" ||
 			m_staticCollisions[m_currentMap][i_posX][i_posY] == "Y" ||
 			m_staticCollisions[m_currentMap][i_posX][i_posY] == "I")
@@ -149,7 +160,10 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 		{
 			return CollisionResult::CollidedWithAlarm;
 		}
-
+		else if(it != m_portalIds.end())
+		{
+			return CollisionResult::CollidedWithPortal;
+		}
 		else
 		{
 			return CollisionResult::CollidedWithBrick;
@@ -203,12 +217,13 @@ bool CollisionManager::CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, 
 	return (ballDown >= y_ini && ballDown <= y_end && (ballMid >= posPlayer.x) && ballMid <= (posPlayer.x + sizePlayer.x+i_size/2) && i_dirY > 0);
 }
 
-CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed)
+CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed, Ball* i_ball)
 {
 	int nsteps = 10;
 	glm::vec2 originalPos = i_pos;
 	for (int nstep = 1; nstep <= nsteps; nstep++)
 	{
+		bool isInPortal = false;
 		const float currVel = i_speed*(float(nstep) / nsteps);
 		const glm::vec2 new_pos = glm::vec2(originalPos.x + i_dir.x*currVel, originalPos.y + i_dir.y*currVel);
 		const uint32_t x_modInTile = uint32_t((i_pos.x + (i_size / 2))) % m_tileSize;
@@ -270,6 +285,20 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				m_sensor.at(m_currentMap)->ActivateAlarm();
 				return CollisionResult::CollidedWithAlarm;
 			}
+			else if (collResult == CollisionResult::CollidedWithPortal)
+			{
+				isInPortal = true;
+				if (!i_ball->IsInPortal())
+				{
+					i_ball->SetInPortal(true);
+					std::string portalId = m_staticCollisions[m_currentMap][x][y];
+					Portal* enteringPortal = m_portalIds.at(portalId).get();
+					Portal* exitingPortal = m_portals.at(enteringPortal);
+					i_pos = exitingPortal->GetPos();
+					i_dir = helpers::CalculateExitingPortalDirection(i_dir, enteringPortal->GetReferenceVector(), exitingPortal->GetReferenceVector());
+					return CollisionResult::CollidedWithPortal;
+				}
+			}
 			else
 			{
 				i_dir[dir] = -i_dir[dir];
@@ -311,29 +340,47 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				CollisionResult collisionResult = CheckCollision(xDiag, yDiag);
 				if (collisionResult != CollisionResult::NoCollision)
 				{
-					//std::cout << "block content is : [" << m_staticCollisions[m_currentMap][xDiag][yDiag] << "]\n";
-					//std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
-					CollisionResult yPartialCollision = CheckCollision(x_mid, yDiag);
-					CollisionResult xPartialCollision = CheckCollision(xDiag, y_mid);
-					i_dir = glm::normalize(distBallCorner);
-					//std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
-					const float overPercentage = distBallCornerLength - (i_size / 2);
-					const glm::vec2 correctingVector = -i_dir * (1.f / nsteps)* i_speed;
-					i_pos = originalPos;
-					if (collisionResult != CollisionResult::CollidedWithStaticBlock)
+					if (collisionResult == CollisionResult::CollidedWithPortal)
 					{
-						ProcessBlockCollision(xDiag, yDiag);
+						isInPortal = true;
+						if (!i_ball->IsInPortal())
+						{
+							i_ball->SetInPortal(true);
+							std::string portalId = m_staticCollisions[m_currentMap][xDiag][yDiag];
+							Portal* enteringPortal = m_portalIds.at(portalId).get();
+							Portal* exitingPortal = m_portals.at(enteringPortal);
+							i_pos = exitingPortal->GetPos();
+							i_dir = helpers::CalculateExitingPortalDirection(i_dir, enteringPortal->GetReferenceVector(), exitingPortal->GetReferenceVector());
+							return CollisionResult::CollidedWithPortal;
+						}
 					}
-					else if (collisionResult == CollisionResult::CollidedWithAlarm)
+					else
 					{
-						m_sensor.at(m_currentMap)->ActivateAlarm();
-						return CollisionResult::CollidedWithAlarm;
+						//std::cout << "block content is : [" << m_staticCollisions[m_currentMap][xDiag][yDiag] << "]\n";
+						//std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
+						CollisionResult yPartialCollision = CheckCollision(x_mid, yDiag);
+						CollisionResult xPartialCollision = CheckCollision(xDiag, y_mid);
+						i_dir = glm::normalize(distBallCorner);
+						//std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
+						const float overPercentage = distBallCornerLength - (i_size / 2);
+						const glm::vec2 correctingVector = -i_dir * (1.f / nsteps)* i_speed;
+						i_pos = originalPos;
+						if (collisionResult == CollisionResult::CollidedWithAlarm)
+						{
+							m_sensor.at(m_currentMap)->ActivateAlarm();
+							return CollisionResult::CollidedWithAlarm;
+						}
+						else if (collisionResult == CollisionResult::CollidedWithStaticBlock)
+						{
+							m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
+						}
+						else
+						{
+							ProcessBlockCollision(xDiag, yDiag);
+							return collisionResult;
+						}
+						return CollisionResult::CollidedWithStaticBlock;
 					}
-					else if (collisionResult == CollisionResult::CollidedWithStaticBlock)
-					{
-						m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
-					}
-					return CollisionResult::CollidedWithStaticBlock;
 				}
 			}
 		}
@@ -363,8 +410,11 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 		}
 
 		i_pos = new_pos;
+		if (!isInPortal)
+		{
+			i_ball->SetInPortal(false);
+		}
 	}
-
 	return CollisionResult::NoCollision;
 
 }
@@ -400,6 +450,16 @@ std::pair<uint32_t, uint32_t> CollisionManager::WipeDoorPositions()
 		}
 	}
 	return result;
+}
+
+std::vector<Portal*> CollisionManager::GetPortals() const
+{
+	std::vector<Portal*> portals;
+	for (const auto& portal : m_portals)
+	{
+		portals.emplace_back(portal.first);
+	}
+	return portals;
 }
 
 void CollisionManager::PlayBreakableBlockSound(std::shared_ptr<BreakableBlock> i_breakableBlock)
@@ -540,7 +600,36 @@ void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisio
 #endif
 		}
 	}
-
+	uint32_t portalQuantity;
+	fInput >> portalQuantity;
+	uint32_t portalNum = 0;
+	for (int i = 0; i < portalQuantity; ++i)
+	{
+		uint32_t portal1Map, portal1x, portal1y;
+		char portal1Dir;
+		fInput >> portal1Map >> portal1x >> portal1y >> portal1Dir;
+		std::unique_ptr<Portal> portal1 = std::make_unique<Portal>(m_currentMine, helpers::CharToDirVector(portal1Dir), m_shaderProgram, glm::ivec2(SCREEN_X, SCREEN_Y));
+		const uint32_t yOffset1 = (2 - portal1Map)*m_mapSizeY*m_tileSize;
+		portal1->SetPosition(glm::vec2(portal1x*m_tileSize, portal1y*m_tileSize + yOffset1));
+		uint32_t portal2Map, portal2x, portal2y;
+		char portal2Dir;
+		fInput >> portal2Map >> portal2x >> portal2y >> portal2Dir;
+		std::unique_ptr<Portal> portal2 = std::make_unique<Portal>(m_currentMine, helpers::CharToDirVector(portal2Dir), m_shaderProgram, glm::ivec2(SCREEN_X, SCREEN_Y));
+		const uint32_t yOffset2 = (2 - portal2Map)*m_mapSizeY*m_tileSize;
+		portal2->SetPosition(glm::vec2(portal2x*m_tileSize, portal2y*m_tileSize + yOffset2));
+		Portal* portal1Copy = portal1.get();
+		Portal* portal2Copy = portal2.get();
+		m_portals.emplace(portal1Copy, portal2Copy);
+		m_portals.emplace(portal2Copy, portal1Copy);
+		std::string p1Id = "P" + std::to_string(portalNum);
+		portalNum++;
+		m_portalIds.emplace(p1Id, std::move(portal1));
+		m_staticCollisions[portal1Map][portal1x][portal1y] = p1Id;
+		std::string p2Id = "P" + std::to_string(portalNum);
+		portalNum++;
+		m_portalIds.emplace(p2Id, std::move(portal2));
+		m_staticCollisions[portal2Map][portal2x][portal2y] = p2Id;
+	}
 }
 
 }

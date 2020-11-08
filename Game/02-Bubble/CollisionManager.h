@@ -8,6 +8,15 @@
 #include <tuple>
 #include "Types.h"
 #include <utility>
+#include <unordered_map>
+
+namespace game
+{
+namespace visuals
+{
+class ShaderProgram;
+}
+}
 
 namespace game
 {
@@ -26,6 +35,8 @@ namespace gameplay
 	class Coin;
 	class Player;
 	class Sensor;
+	class Portal;
+	class Ball;
 }
 }
 
@@ -53,7 +64,8 @@ enum class CollisionResult
 	CollidedWithBarLeft,
 	CollidedWithBarRight,
 	CollidedWithPlayer,
-	CollidedWithAlarm
+	CollidedWithAlarm,
+	CollidedWithPortal
 };
 
 class CollisionManager
@@ -62,6 +74,7 @@ public:
 	CollisionManager(const std::string& i_staticCollisionMap,
 					 const uint32_t i_tileSize,
 					 uint32_t i_currentMap,
+					 const uint32_t i_currentMine,
 					 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
 					 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
 					 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys,
@@ -70,16 +83,18 @@ public:
 					 std::function<void()> i_moveDown,
 					 std::function<void()> i_moveUp,
 					 const core::CheatSystem& i_cheatSystem,
-					 sound::SoundSystem& i_soundSystem);
+					 sound::SoundSystem& i_soundSystem,
+					 visuals::ShaderProgram& i_shaderProgram);
 
 	CollisionResult CollisionMoveLeft(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveRight(const glm::ivec2& i_pos, const glm::ivec2& i_size);
 	CollisionResult CollisionMoveDown(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY);
 	CollisionResult CollisionMoveUp(const glm::ivec2& i_pos, const glm::ivec2& i_size, int* i_posY);
-	CollisionResult CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed);
+	CollisionResult CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed, Ball* i_ball);
 	void LinkPlayer(Player* i_player);
 	void SetCurrentMap(uint32_t i_currentMap);
 	std::pair<uint32_t,uint32_t> WipeDoorPositions();
+	std::vector<Portal*> GetPortals() const;
 
 private:
 	//#pau_todo i know this won't be fixed, but it is the result of a disastrous collision manager
@@ -96,6 +111,8 @@ private:
 	uint32_t m_currentMap;
 	std::vector<Matrix<std::string>> m_staticCollisions;
 	std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>> m_breakableBlocks;
+	std::map<Portal*, Portal*> m_portals;
+	std::unordered_map<std::string, std::unique_ptr<Portal>> m_portalIds;
 	std::map<uint32_t, std::shared_ptr<Sensor>> m_sensor;
 	std::function<void()> m_cameraMoveUpFunction;
 	std::function<void()> m_cameraMoveDownFunction;
@@ -106,6 +123,8 @@ private:
 	uint32_t m_coins, m_points;
 	const core::CheatSystem& m_cheatSystem;
 	sound::SoundSystem& m_soundSystem;
+	const uint32_t m_currentMine;
+	visuals::ShaderProgram& m_shaderProgram;
 };
 }
 }

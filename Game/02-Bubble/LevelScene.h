@@ -19,6 +19,7 @@ namespace gameplay
 	class Ball;
 	class Watcher;
 	class Sensor;
+	class Portal;
 }
 }
 
@@ -100,6 +101,7 @@ private:
 	std::map<uint32_t, std::shared_ptr<Sensor>> m_sensor;
 	std::unique_ptr<visuals::TileMap> m_map;
 	std::unique_ptr<physics::CollisionManager> m_collisionManager;
+	std::vector<Portal*> m_portals;
 	std::unique_ptr<Player> m_player;
 	std::unique_ptr<Ball> m_ball;
 	sound::SoundSystem& m_soundSystem;

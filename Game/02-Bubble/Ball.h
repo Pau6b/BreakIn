@@ -27,6 +27,9 @@ public:
 	void Update(int i_deltaTime);
 	void Render();
 
+	void SetInPortal(bool i_inPortal);
+	bool IsInPortal() const;
+
 	void SetPosition(const glm::vec2& i_pos);
 	void Reset();
 
@@ -47,6 +50,7 @@ private:
 	float m_speed;
 	float m_maxSpeed;
 	const uint32_t k_timeToStartMoving = 3000000000;
+	bool m_inPortal = false;
 	uint32_t m_currentTimeElapsed = 0;
 	uint32_t m_currentMap;
 };

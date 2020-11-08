@@ -21,7 +21,10 @@
 #include "SoundSystem.h"
 #include "Sprite.h"
 #include "Text.h"
+#include "Portal.h"
+#include "GameplayHelpers.h"
 
+//This is copied in collisionManager
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
@@ -42,7 +45,7 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
-	, m_currentMap(2)
+	, m_currentMap(0)
 	, m_soundSystem(i_soundSystem)
 	, m_currentMine(i_currentMine)
 {
@@ -72,6 +75,7 @@ void LevelScene::init()
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath,
 																	 m_map->getTileSize(),
 																	 m_currentMap,
+																	 m_currentMine,
 																	 m_bricks,
 																	 m_coins,
 																	 m_keys,
@@ -80,7 +84,9 @@ void LevelScene::init()
 																	 std::bind(&LevelScene::MoveLevelDown, this),
 																	 std::bind(&LevelScene::MoveLevelUp, this),
 																	 m_cheatSystem,
-																	 m_soundSystem);
+																	 m_soundSystem,
+																	 *m_texProgram);
+	m_portals = m_collisionManager->GetPortals();
 	m_player = std::make_unique<Player>(*m_collisionManager);
 	m_player->Init(glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,glm::vec2(INIT_PLAYER_X_TILES * m_map->getTileSize(), INIT_PLAYER_Y_TILES * m_map->getTileSize()), m_currentMap, LEVEL_SIZE_Y );
 
@@ -128,6 +134,7 @@ void LevelScene::update(int i_deltaTime)
 			it->second->Update(i_deltaTime);
 		}
 	}
+	std::for_each(std::begin(m_portals), std::end(m_portals), [i_deltaTime](Portal* i_portal) { i_portal->Update(i_deltaTime); });
 
 }
 
@@ -161,6 +168,8 @@ void LevelScene::render()
 			it->second->Render();
 		}
 	}
+	//Sure there is a better way to do this, but we assume that there are only a few portals
+	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
 	m_player->Render();
 	m_ball->Render();
 
