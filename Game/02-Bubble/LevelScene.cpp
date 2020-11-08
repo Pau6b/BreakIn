@@ -327,8 +327,9 @@ void LevelScene::LoseHP()
 {
 	if (m_currentLives == 0)
 	{
-		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 	}
 	else
 	{

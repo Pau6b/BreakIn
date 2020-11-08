@@ -77,12 +77,14 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 		m_soundEngine->play2D("sounds/gameplaySounds/classic_hurt.mp3", false);
 		break;
 	case GameplaySounds::Died:
+		m_soundEngine->stopAllSounds();
+		m_soundEngine->play2D("sounds/gameplaySounds/gta.mp3", false);
 		break;
 	case GameplaySounds::AlarmAcivated:
 		m_soundEngine->play2D("sounds/gameplaySounds/alarm.mp3", false);
 		break;
 	case GameplaySounds::LevelMoved:
-		m_soundEngine->play2D("sounds/gameplaySounds/cave21.mp3", false);
+		m_soundEngine->play2D("sounds/gameplaySounds/vwoop.mp3", false);
 		break;
 	}
 }
