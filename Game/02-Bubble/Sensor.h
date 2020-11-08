@@ -21,12 +21,20 @@ namespace game
 
 namespace game
 {
+	namespace sound
+	{
+		class SoundSystem;
+	}
+}
+
+namespace game
+{
 	namespace gameplay
 	{
 		class Sensor : public Entity
 		{
 		public:
-			Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay);
+			Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay, sound::SoundSystem& i_soundSystem);
 			void Update(int i_deltaTime) override;
 			void Render() override;
 			void SetPosition(glm::vec2 i_position);
@@ -44,6 +52,7 @@ namespace game
 			const glm::ivec2 m_tileMapDisplay;
 			std::unique_ptr<Watcher> m_watcher;
 			std::unique_ptr<visuals::Sprite> m_sprite;
+			sound::SoundSystem& m_soundSystem;
 		};
 	}
 }

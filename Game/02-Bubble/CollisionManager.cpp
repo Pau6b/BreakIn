@@ -413,11 +413,11 @@ void CollisionManager::PlayBreakableBlockSound(std::shared_ptr<BreakableBlock> i
 	else if (brick)
 	{
 		uint32_t resistanceLeft = i_breakableBlock->GetResistance();
-		if (resistanceLeft > 0)
+		if (resistanceLeft > 1)
 		{
 			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BlockHit);
 		}
-		else if (resistanceLeft == 0)
+		else if (resistanceLeft == 1)
 		{
 			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BlockBroken);
 		}

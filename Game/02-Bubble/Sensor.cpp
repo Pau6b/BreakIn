@@ -1,6 +1,8 @@
 #include "Sensor.h"
 #include "Sprite.h"
 #include "Watcher.h"
+#include "Sounds.h"
+#include "SoundSystem.h"
 
 #define WATCHER_INITIAL_POS_X 1
 #define WATCHER_INITIAL_POS_Y 1
@@ -9,10 +11,11 @@ namespace game
 {
 	namespace gameplay
 	{
-		Sensor::Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay)
+		Sensor::Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay, sound::SoundSystem& i_soundSystem)
 			: m_sprite(std::move(i_sprite))
 			, m_state(SensorState::OFF)
 			, m_tileMapDisplay(i_tileMapDisplay)
+			, m_soundSystem(i_soundSystem)
 		{
 			m_sprite->setNumberAnimations(2);
 			m_sprite->setAnimationSpeed(ON, 8);
@@ -56,6 +59,7 @@ namespace game
 		{
 			if (m_state == SensorState::OFF)
 			{
+				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::AlarmAcivated);
 				m_sprite->changeAnimation(ON);
 				m_state = SensorState::ON;
 				m_watcher->FollowPlayer();
