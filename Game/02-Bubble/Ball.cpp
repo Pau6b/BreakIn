@@ -27,7 +27,8 @@ namespace game
 			: m_map(i_collisionsManager)
 			, m_size(12)
 			, m_state(BallState::FollowingPlayer)
-			, m_dirBall(CreateRandomStartDirection())
+			, m_dirBall(0, -1)
+			//, m_dirBall(CreateRandomStartDirection())
 			, m_speed(2.5f)
 			, m_player(i_player)
 			, m_currentMap(i_currentMap)
@@ -44,7 +45,7 @@ namespace game
 			m_sprite->update(i_deltaTime);
 			if (m_state == BallState::Free)
 			{
-				physics::CollisionResult collisionResult = m_map.CollisionBall(m_posBall, m_dirBall, m_size, m_speed);
+				physics::CollisionResult collisionResult = m_map.CollisionBall(m_posBall, m_dirBall, m_size, m_speed, this);
 				SetPosition(m_posBall);
 			}
 			else if (m_state == BallState::FollowingPlayer)
@@ -78,6 +79,16 @@ namespace game
 			m_sprite->render();
 		}
 
+		void Ball::SetInPortal(bool i_inPortal)
+		{
+			m_inPortal = i_inPortal;
+		}
+
+		bool Ball::IsInPortal() const
+		{
+			return m_inPortal;
+		}
+
 		void Ball::SetPosition(const glm::vec2& i_pos)
 		{
 			m_posBall = i_pos;
@@ -87,7 +98,8 @@ namespace game
 		void Ball::Reset()
 		{
 			m_state = BallState::FollowingPlayer;
-			m_dirBall = CreateRandomStartDirection();
+			m_dirBall = glm::vec2(0, -1);
+			//m_dirBall = CreateRandomStartDirection();
 		}
 
 	}
