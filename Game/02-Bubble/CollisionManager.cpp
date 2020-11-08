@@ -162,6 +162,7 @@ CollisionResult CollisionManager::CheckCollision(const int& i_posX, const int& i
 		}
 		else if(it != m_portalIds.end())
 		{
+			m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Portal);
 			return CollisionResult::CollidedWithPortal;
 		}
 		else
@@ -297,6 +298,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 					Portal* exitingPortal = m_portals.at(enteringPortal);
 					i_pos = exitingPortal->GetPos();
 					i_dir = helpers::CalculateExitingPortalDirection(i_dir, enteringPortal->GetReferenceVector(), exitingPortal->GetReferenceVector());
+					m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Portal);
 					return CollisionResult::CollidedWithPortal;
 				}
 			}

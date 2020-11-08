@@ -25,7 +25,8 @@ enum class GameplaySounds
 	LiveLost,
 	Died,
 	AlarmAcivated,
-	LevelMoved
+	LevelMoved,
+	Portal
 };
 
 enum class MenuSounds

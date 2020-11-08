@@ -83,7 +83,7 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 	case GameplaySounds::AlarmAcivated:
 		m_soundEngine->play2D("sounds/gameplaySounds/alarm.mp3", false);
 		break;
-	case GameplaySounds::LevelMoved:
+	case GameplaySounds::Portal:
 		m_soundEngine->play2D("sounds/gameplaySounds/vwoop.mp3", false);
 		break;
 	}
