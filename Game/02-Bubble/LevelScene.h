@@ -78,7 +78,7 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine);
+	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine);
 	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
@@ -115,7 +115,7 @@ private:
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
 	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
-	const core::CheatSystem& m_cheatSystem;
+	core::CheatSystem& m_cheatSystem;
 	uint32_t m_currentLives = 3;
 	std::unique_ptr<gui::Text> m_text;
 	uint32_t m_currentMine;

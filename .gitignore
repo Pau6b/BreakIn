@@ -66,3 +66,5 @@ Game/02-Bubble/sounds/gameplaySounds/Lista3.pdf
 *.tlog
 
 *.log
+
+*.pdb

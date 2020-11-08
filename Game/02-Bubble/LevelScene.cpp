@@ -7,6 +7,7 @@
 #include <memory>
 #include <functional>
 #include "LevelScene.h"
+#include <GL/glut.h>
 #include "Game.h"
 #include "CollisionManager.h"
 #include "Player.h"
@@ -41,7 +42,7 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, const core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
@@ -109,6 +110,24 @@ void LevelScene::init()
 
 void LevelScene::update(int i_deltaTime)
 {
+
+	if (m_cheatSystem.CheckUp()) 
+	{
+		if (m_currentMap < 2)
+		{
+			Reset();
+			MoveLevelUp();
+		}
+	}
+	else if (m_cheatSystem.CheckDown())
+	{
+		if (m_currentMap > 0)
+		{
+			Reset();
+			MoveLevelDown();
+		}
+	}
+
 	if (core::Game::instance().getKey('p'))
 	{
 		Reset();
@@ -181,7 +200,6 @@ void LevelScene::MoveLevelUp()
 	*m_projectionY += LEVEL_SIZE_Y;
 	m_currentMap++;
 	m_player->SetCurrentMap(m_currentMap);
-	m_collisionManager->SetCurrentMap(m_currentMap);
 	m_map->SetCurrentMap(m_currentMap);
 }
 
@@ -192,7 +210,6 @@ void LevelScene::MoveLevelDown()
 		*m_projectionY -= LEVEL_SIZE_Y;
 		m_currentMap--;
 		m_player->SetCurrentMap(m_currentMap);
-		m_collisionManager->SetCurrentMap(m_currentMap);
 		m_map->SetCurrentMap(m_currentMap);
 	}
 	else if (m_currentMap == 0)
