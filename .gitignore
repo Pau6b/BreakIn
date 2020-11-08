@@ -60,3 +60,9 @@ Game/02-Bubble/Debug/02-Bubble.Build.CppClean.log
 Game/02-Bubble/Debug/02-Bubble.tlog/02-Bubble.lastbuildstate
 
 Game/02-Bubble/sounds/gameplaySounds/Lista3.pdf
+
+*.idb
+
+*.tlog
+
+*.log
