@@ -13,7 +13,7 @@ namespace game
 {
 namespace core
 {
-SceneManager::SceneManager(const std::string& i_sceneConfigFilePath, const CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
+SceneManager::SceneManager(const std::string& i_sceneConfigFilePath, CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem)
 	: m_cheatSystem(i_cheatSystem)
 	, m_soundSystem(i_soundSystem)
 {
