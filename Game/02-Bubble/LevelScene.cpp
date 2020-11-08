@@ -262,7 +262,7 @@ void LevelScene::ParseBricks(std::string i_path)
 				else if (c == 'A')
 				{
 					m_sensor.emplace(i, std::make_shared<Sensor>(std::make_unique<visuals::Sprite>(glm::vec2(32, 32), glm::vec2(1/7.f, 1), "images/luces.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB, *m_texProgram),
-													  glm::ivec2(SCREEN_X, SCREEN_Y)));
+													  glm::ivec2(SCREEN_X, SCREEN_Y), m_soundSystem));
 				}
 			}
 			//this is to clean the /n
@@ -327,8 +327,9 @@ void LevelScene::LoseHP()
 {
 	if (m_currentLives == 0)
 	{
-		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
 	}
 	else
 	{

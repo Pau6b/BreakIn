@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "ShaderProgram.h"
 #include <map>
+#include <thread>
 
 namespace game
 {
