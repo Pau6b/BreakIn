@@ -22,14 +22,14 @@ void MainScreenMenu::init()
 {
 	m_shaderProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_shaderProgram, "shaders/menu.vert", "shaders/menu.frag");
-	std::unique_ptr<Button> playButton = std::make_unique<Button>(170, 200, 300, 33, *m_shaderProgram);
+	std::unique_ptr<Button> playButton = std::make_unique<Button>(170, 200, 300, 33, *m_shaderProgram, Button::ButtonText::Play);
 	m_buttons.emplace_back(std::move(playButton), core::Scene::SceneResult::GoToLevel);
-	std::unique_ptr<Button> controlsButton = std::make_unique<Button>(170, 260, 300, 33, *m_shaderProgram);
+	std::unique_ptr<Button> controlsButton = std::make_unique<Button>(170, 260, 300, 33, *m_shaderProgram, Button::ButtonText::Controls);
 	m_buttons.emplace_back(std::move(controlsButton), core::Scene::SceneResult::GoToControlsScene);
-	std::unique_ptr<Button> creditsButton = std::make_unique<Button>(170, 320, 300, 33, *m_shaderProgram);
-	m_buttons.emplace_back(std::move(creditsButton), core::Scene::SceneResult::GoToCreditsScene);
-	std::unique_ptr<Button> passwordsButton = std::make_unique<Button>(170, 380, 300, 33, *m_shaderProgram);
+	std::unique_ptr<Button> passwordsButton = std::make_unique<Button>(170, 320, 300, 33, *m_shaderProgram, Button::ButtonText::Passwords);
 	m_buttons.emplace_back(std::move(passwordsButton), core::Scene::SceneResult::GoToPasswordsMenu);
+	std::unique_ptr<Button> creditsButton = std::make_unique<Button>(170, 380, 300, 33, *m_shaderProgram, Button::ButtonText::Credits);
+	m_buttons.emplace_back(std::move(creditsButton), core::Scene::SceneResult::GoToCreditsScene);
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 
 	m_backgroundSprite = std::make_unique<visuals::Sprite>(glm::vec2(640,480), glm::vec2(1,1),"images/UI/MainMenuBackgroung.jpg",visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB,*m_shaderProgram);

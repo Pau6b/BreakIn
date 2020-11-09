@@ -22,7 +22,7 @@ namespace game
 		{
 			m_shaderProgram = std::make_unique<visuals::ShaderProgram>();
 			InitShaders(*m_shaderProgram, "shaders/menu.vert", "shaders/menu.frag");
-			std::unique_ptr<Button> controlsButton = std::make_unique<Button>(170, 380, 300, 33, *m_shaderProgram);
+			std::unique_ptr<Button> controlsButton = std::make_unique<Button>(170, 380, 300, 33, *m_shaderProgram, Button::ButtonText::Back);
 			m_buttons.emplace_back(std::move(controlsButton), core::Scene::SceneResult::GoToMainMenu);
 			m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 		}
