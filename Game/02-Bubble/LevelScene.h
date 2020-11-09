@@ -29,6 +29,7 @@ namespace game
 namespace visuals
 {
 	class TileMap;
+	class Sprite;
 }
 }
 
@@ -119,6 +120,7 @@ private:
 	uint32_t m_currentLives = 3;
 	std::unique_ptr<gui::Text> m_text;
 	uint32_t m_currentMine;
+	std::unique_ptr<visuals::Sprite> m_mask;
 };
 }
 }
