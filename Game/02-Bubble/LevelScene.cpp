@@ -24,6 +24,7 @@
 #include "Text.h"
 #include "Portal.h"
 #include "GameplayHelpers.h"
+#include "Sprite.h"
 
 //This is copied in collisionManager
 #define SCREEN_X 32
@@ -62,6 +63,8 @@ void LevelScene::init()
 {
 	m_texProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_texProgram, "shaders/texture.vert", "shaders/texture.frag");
+	m_mask = std::make_unique<visuals::Sprite>(glm::vec2(656, SCREEN_HEIGHT), glm::vec2(1,1), "images/mask_" + std::to_string(m_currentMine) + ".png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, *m_texProgram);
+	m_mask->setPosition(glm::vec2(-16, -32 + (2-m_currentMap)*LEVEL_SIZE_Y));
 	m_map = std::make_unique<visuals::TileMap>(m_visualTilemapPath, glm::vec2(SCREEN_X, SCREEN_Y), *m_texProgram);
 	m_map->SetCurrentMap(m_currentMap);
 	ParseBricks(m_physicsMapPath);
@@ -191,7 +194,7 @@ void LevelScene::render()
 	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
 	m_player->Render();
 	m_ball->Render();
-
+	m_mask->render();
 	m_text->render();
 }
 
@@ -199,6 +202,8 @@ void LevelScene::MoveLevelUp()
 {
 	*m_projectionY += LEVEL_SIZE_Y;
 	m_currentMap++;
+	int currentmap_temp = m_currentMap;
+	m_mask->setPosition(glm::vec2(-16, -32 +  (2 -currentmap_temp)*LEVEL_SIZE_Y));
 	m_player->SetCurrentMap(m_currentMap);
 	m_map->SetCurrentMap(m_currentMap);
 }
@@ -209,6 +214,7 @@ void LevelScene::MoveLevelDown()
 	{
 		*m_projectionY -= LEVEL_SIZE_Y;
 		m_currentMap--;
+		m_mask->setPosition(glm::vec2(-16, -32 +  (2 - m_currentMap)*LEVEL_SIZE_Y));
 		m_player->SetCurrentMap(m_currentMap);
 		m_map->SetCurrentMap(m_currentMap);
 	}
