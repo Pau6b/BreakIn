@@ -4,12 +4,18 @@
 #include "Sprite.h"
 #include "ShaderProgram.h"
 #include "Button.h"
+#include <string>
 
 namespace game
 {
 	namespace sound
 	{
 		class SoundSystem;
+	}
+
+	namespace gui
+	{
+		class Text;
 	}
 }
 
@@ -44,8 +50,18 @@ namespace game
 			glm::mat4 m_projection;
 
 			std::vector<ButtonAction> m_buttons;
-
+			std::unique_ptr<visuals::Sprite> m_background;
+			std::unique_ptr<visuals::Sprite> m_limit;
 			sound::SoundSystem& m_soundSystem;
+
+			std::unique_ptr<gui::Text> m_text;
+			uint32_t m_finalMap;
+
+			float m_timeElapsed;
+			bool m_printLimit;
+			char m_pressKey;
+			std::string m_userText;
+
 		};
 	}
 }

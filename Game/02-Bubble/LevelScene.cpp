@@ -202,8 +202,8 @@ void LevelScene::MoveLevelUp()
 {
 	*m_projectionY += LEVEL_SIZE_Y;
 	m_currentMap++;
-	int currentmap_temp = m_currentMap;
-	m_mask->setPosition(glm::vec2(-16, -32 +  (2 -currentmap_temp)*LEVEL_SIZE_Y));
+	int32_t currentmap_temp = m_currentMap;
+	m_mask->setPosition(glm::vec2(-16, -32 +  (2 - currentmap_temp)*LEVEL_SIZE_Y));
 	m_player->SetCurrentMap(m_currentMap);
 	m_map->SetCurrentMap(m_currentMap);
 }
