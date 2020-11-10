@@ -32,7 +32,7 @@ void MainScreenMenu::init()
 	m_buttons.emplace_back(std::move(creditsButton), core::Scene::SceneResult::GoToCreditsScene);
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 
-	m_backgroundSprite = std::make_unique<visuals::Sprite>(glm::vec2(640,480), glm::vec2(1,1),"images/UI/MainMenuBackgroung.jpg",visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB,*m_shaderProgram);
+	m_backgroundSprite = std::make_unique<visuals::Sprite>(glm::vec2(640,480), glm::vec2(1,1),"images/UI/MainMenuBackgroung.png",visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,*m_shaderProgram);
 }
 
 void MainScreenMenu::update(int i_deltaTime)
