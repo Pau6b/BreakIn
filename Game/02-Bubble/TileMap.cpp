@@ -147,7 +147,7 @@ void TileMap::prepareArrays(bool i_first)
 				posTile = glm::vec2(m_minCoords.x + i * m_tileSize, m_minCoords.y + j * m_tileSize);
 				texCoordTile[0] = glm::vec2(float((tile - 1) % m_tilesheetSize.x) / m_tilesheetSize.x, float((tile - 1) / m_tilesheetSize.x) / m_tilesheetSize.y);
 				texCoordTile[1] = texCoordTile[0] + m_tileTexSize;
-				//texCoordTile[0] += halfTexel;
+				texCoordTile[0] += halfTexel;
 				//texCoordTile[1] -= halfTexel;
 				// First triangle
 				vertices.push_back(posTile.x); vertices.push_back(posTile.y);

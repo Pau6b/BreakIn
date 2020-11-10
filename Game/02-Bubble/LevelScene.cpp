@@ -227,7 +227,7 @@ void LevelScene::MoveLevelDown()
 
 std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
 {
-	return{ m_currentSceneResult, 0 };
+	return m_currentSceneResult;
 }
 
 void LevelScene::ParseBricks(std::string i_path)
@@ -338,7 +338,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 		}
 		if (!anyCoinLeft)
 		{
-			//m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+			m_currentSceneResult = { core::Scene::SceneResult::GoToNextLevel, m_currentMine+1 };
 		}
 	}
 	else //It's a key
@@ -361,7 +361,7 @@ void LevelScene::LoseHP()
 	{
 		m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::Died);
 		std::this_thread::sleep_for(std::chrono::seconds(5));
-		m_currentSceneResult = core::Scene::SceneResult::GoToMainMenu;
+		m_currentSceneResult = { core::Scene::SceneResult::GoToMainMenu, 0 };
 	}
 	else
 	{

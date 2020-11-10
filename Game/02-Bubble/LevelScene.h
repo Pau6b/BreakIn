@@ -115,7 +115,7 @@ private:
 	float* m_projectionY;
 	std::string m_visualTilemapPath;
 	std::string m_physicsMapPath;
-	core::Scene::SceneResult m_currentSceneResult = core::Scene::SceneResult::NotFinished;
+	std::pair<core::Scene::SceneResult, glm::uint32_t> m_currentSceneResult = { core::Scene::SceneResult::NotFinished, 0 };
 	core::CheatSystem& m_cheatSystem;
 	uint32_t m_currentLives = 3;
 	std::unique_ptr<gui::Text> m_text;
