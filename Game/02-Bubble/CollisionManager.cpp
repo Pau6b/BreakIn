@@ -391,7 +391,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			}
 		}
 
-		if (i_pos.y + i_size < m_player->GetPosition().y && CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
+		if (CollisionPlayer(new_pos, i_size, i_dir[1], i_speed))
 		{
 			if (m_cheatSystem.InGodMode())
 			{
