@@ -33,8 +33,8 @@ CollisionManager::CollisionManager(const std::string& i_staticCollisionsPath,
 								   const uint32_t i_tileSize,
 								   uint32_t& i_currentMap,
 								   const uint32_t i_currentMine,
-								   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
-								   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+								   const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks,
+								   const std::vector<std::vector<std::shared_ptr<Coin>>>& i_coins,
 								   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys,
 								   const std::map<uint32_t, std::shared_ptr<Sensor>>& i_sensor,
 								   std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
@@ -344,7 +344,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				if (collisionResult != CollisionResult::NoCollision)
 				{
 					
-					std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
+					//std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
 					if (collisionResult == CollisionResult::CollidedWithPortal)
 					{
 						isInPortal = true;
@@ -362,12 +362,12 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 					}
 					else
 					{
-						std::cout << "block content is : [" << m_staticCollisions[*m_currentMap][xDiag][yDiag] << "]\n";
-						std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
+						//std::cout << "block content is : [" << m_staticCollisions[*m_currentMap][xDiag][yDiag] << "]\n";
+						//std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
 						CollisionResult yPartialCollision = CheckCollision(x_mid, yDiag);
 						CollisionResult xPartialCollision = CheckCollision(xDiag, y_mid);
 						i_dir = glm::normalize(distBallCorner);
-						std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
+						//std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
 						const float overPercentage = distBallCornerLength - (i_size / 2);
 						const glm::vec2 correctingVector = -i_dir * (1.f / nsteps)* i_speed;
 						i_pos = new_pos + 2.f*i_dir;
@@ -516,8 +516,8 @@ void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 
 
 void CollisionManager::SetUpStaticCollisions(const std::string& i_staticCollisionMapPath,
-											 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
-											 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+											 const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks,
+											 const std::vector<std::vector<std::shared_ptr<Coin>>>& i_coins,
 											 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys)
 {
 	std::ifstream fInput;

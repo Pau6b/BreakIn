@@ -96,8 +96,8 @@ private:
 	void LoseHP();
 
 	std::unique_ptr<visuals::ShaderProgram> m_texProgram;
-	std::vector<std::unordered_set<std::shared_ptr<Brick>>> m_bricks;
-	std::vector<std::unordered_set<std::shared_ptr<Coin>>> m_coins;
+	std::vector<std::vector<std::shared_ptr<Brick>>> m_bricks;
+	std::vector<std::vector<std::shared_ptr<Coin>>> m_coins;
 	std::map<uint32_t,std::shared_ptr<BreakableBlock>> m_keys;
 	std::vector<std::shared_ptr<BreakableBlock>> m_blocksToCheck;
 	std::map<uint32_t, std::shared_ptr<Sensor>> m_sensor;

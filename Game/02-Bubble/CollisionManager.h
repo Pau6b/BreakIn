@@ -75,8 +75,8 @@ public:
 					 const uint32_t i_tileSize,
 					 uint32_t& i_currentMap,
 					 const uint32_t i_currentMine,
-					 const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
-					 const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+					 const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks,
+					 const std::vector<std::vector<std::shared_ptr<Coin>>>& i_coins,
 					 const std::map<uint32_t, std::shared_ptr<BreakableBlock>>& i_keys,
 					 const std::map<uint32_t, std::shared_ptr<Sensor>>& i_sensor,
 					 std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> i_onBrokenBlockFunction,
@@ -101,12 +101,13 @@ private:
 
 	void ProcessBlockCollision(uint32_t i_x, uint32_t i_y);
 	void SetUpStaticCollisions(const std::string& i_staticCollisionMapPath,
-							   const std::vector<std::unordered_set<std::shared_ptr<Brick>>>& i_bricks,
-							   const std::vector<std::unordered_set<std::shared_ptr<Coin>>>& i_coins,
+							   const std::vector<std::vector<std::shared_ptr<Brick>>>& i_bricks,
+							   const std::vector<std::vector<std::shared_ptr<Coin>>>& i_coins,
 							   const std::map<uint32_t,std::shared_ptr<BreakableBlock>>& i_keys);
 	CollisionResult CheckCollision(const int& i_posX, const int& i_posY);
 	std::tuple<uint32_t, uint32_t, uint32_t> CheckDirectionOfCollision(const int& i_XposMid, const int& i_YposMid, const int& i_XposRight, const int& i_XposLeft, const int& i_YposUp, const int& i_YposDown);
 	bool CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, float i_dirY, const float& i_Speed);
+	
 	uint32_t* m_currentMap;
 	std::vector<Matrix<std::string>> m_staticCollisions;
 	std::vector<std::map<uint32_t,std::shared_ptr<BreakableBlock>>> m_breakableBlocks;

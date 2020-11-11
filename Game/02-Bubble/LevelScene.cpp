@@ -244,8 +244,8 @@ void LevelScene::ParseBricks(std::string i_path)
 	getline(fInput, line);
 	sstream.str(line);
 	sstream >> m_levelQuantity >> sizex >> m_levelSizeY;
-	m_bricks = std::vector<std::unordered_set<std::shared_ptr<Brick>>>(m_levelQuantity);
-	m_coins = std::vector<std::unordered_set<std::shared_ptr<Coin>>>(m_levelQuantity);
+	m_bricks = std::vector<std::vector<std::shared_ptr<Brick>>>(m_levelQuantity);
+	m_coins = std::vector<std::vector<std::shared_ptr<Coin>>>(m_levelQuantity);
 	m_sensor = std::map<uint32_t, std::shared_ptr<Sensor>>{};
 	for (int i = m_levelQuantity - 1; i >= 0; --i)
 	{
@@ -258,15 +258,15 @@ void LevelScene::ParseBricks(std::string i_path)
 				fInput.get(c);
 				if (c == '1' || c == '2' || c == '3')
 				{
-					m_bricks[i].emplace(std::make_shared<Brick>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), c - '0'));
+					m_bricks[i].emplace_back(std::make_shared<Brick>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), c - '0'));
 				}
 				else if (c == 'N')
 				{
-					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Diamond));
+					m_coins[i].emplace_back(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Diamond));
 				}
 				else if (c == 'M')
 				{
-					m_coins[i].emplace(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Iron));
+					m_coins[i].emplace_back(std::make_shared<Coin>(*m_texProgram, glm::ivec2(SCREEN_X, SCREEN_Y), CoinType::Iron));
 				}
 				else if (c == 'K')
 				{
@@ -324,13 +324,15 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 	{
 		m_text->UpdatePoints();
 		m_blocksToCheck.emplace_back(i_brokenBlock);
-		m_bricks[m_currentMap].erase(brick);
+		auto it = std::find(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), i_brokenBlock);
+		m_bricks[m_currentMap].erase(it);
 	}
 	else if(coin)
 	{
 		m_text->UpdateCoins();
 		m_blocksToCheck.emplace_back(i_brokenBlock);
-		m_coins[m_currentMap].erase(coin);
+		auto it = std::find(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), coin);
+		m_coins[m_currentMap].erase(it);
 		bool anyCoinLeft = false;
 		for (uint32_t i = 0; i < m_coins.size() && !anyCoinLeft; ++i)
 		{
