@@ -46,7 +46,8 @@ namespace game
 			glm::mat4 m_projection;
 
 			std::vector<ButtonAction> m_buttons;
-
+			std::unique_ptr<visuals::Sprite> m_background;
+			std::unique_ptr<visuals::Sprite> m_keys;
 			sound::SoundSystem& m_soundSystem;
 		};
 	}

@@ -43,6 +43,8 @@ namespace game
 			std::unique_ptr<visuals::ShaderProgram> m_shaderProgram;
 			glm::mat4 m_projection;
 
+			std::unique_ptr<visuals::Sprite> m_background;
+			std::unique_ptr<visuals::Sprite> m_credits;
 			std::vector<ButtonAction> m_buttons;
 
 			sound::SoundSystem& m_soundSystem;

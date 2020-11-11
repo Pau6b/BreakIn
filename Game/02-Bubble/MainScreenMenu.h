@@ -45,7 +45,8 @@ private:
 	
 	std::vector<ButtonAction> m_buttons;
 	sound::SoundSystem& m_soundSystem;
-
+	
+	std::unique_ptr<visuals::Sprite> m_titleSprite;
 	std::unique_ptr<visuals::Sprite> m_backgroundSprite;
 };
 }

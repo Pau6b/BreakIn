@@ -22,6 +22,8 @@ void CreditsMenu::init()
 {
 	m_shaderProgram = std::make_unique<visuals::ShaderProgram>();
 	InitShaders(*m_shaderProgram, "shaders/menu.vert", "shaders/menu.frag");
+	m_background = std::make_unique<visuals::Sprite>(glm::vec2(640, 480), glm::vec2(1, 1), "images/UI/CreditsBackground.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, *m_shaderProgram);
+	m_credits = std::make_unique<visuals::Sprite>(glm::vec2(640, 480), glm::vec2(1, 1), "images/UI/Credits.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, *m_shaderProgram);
 	std::unique_ptr<Button> controlsButton = std::make_unique<Button>(170, 380, 300, 33, *m_shaderProgram, Button::ButtonText::Back);
 	m_buttons.emplace_back(std::move(controlsButton), core::Scene::SceneResult::GoToMainMenu);
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
@@ -46,9 +48,11 @@ void CreditsMenu::render()
 	modelview = glm::mat4(1.0f);
 	m_shaderProgram->setUniformMatrix4f("modelview", modelview);
 	m_shaderProgram->setUniform2f("texCoordDispl", 0.f, 0.f);
+	m_background->render();
 	std::for_each(std::begin(m_buttons), std::end(m_buttons), [](ButtonAction& i_button) {
 		i_button.button->Render();
 	});
+	m_credits->render();
 }
 
 std::pair<core::Scene::SceneResult, uint32_t> CreditsMenu::GetSceneResult()

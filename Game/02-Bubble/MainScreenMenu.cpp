@@ -33,6 +33,7 @@ void MainScreenMenu::init()
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 
 	m_backgroundSprite = std::make_unique<visuals::Sprite>(glm::vec2(640,480), glm::vec2(1,1),"images/UI/MainMenuBackgroung.png",visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,*m_shaderProgram);
+	m_titleSprite = std::make_unique<visuals::Sprite>(glm::vec2(640,480), glm::vec2(1,1),"images/UI/Title.png",visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA,*m_shaderProgram);
 }
 
 void MainScreenMenu::update(int i_deltaTime)
@@ -58,6 +59,7 @@ void MainScreenMenu::render()
 	std::for_each(std::begin(m_buttons), std::end(m_buttons), [](ButtonAction& i_button) {
 		i_button.button->Render(); 
 	});
+	m_titleSprite->render();
 }
 
 std::pair<core::Scene::SceneResult, uint32_t> MainScreenMenu::GetSceneResult()
