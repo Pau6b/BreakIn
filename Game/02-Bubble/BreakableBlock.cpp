@@ -19,7 +19,7 @@ BreakableBlock::BreakableBlock(uint32_t i_resistance, std::unique_ptr<visuals::S
 	case BreakableBlockAnimationSize::Big:
 		m_breakAnimationSprite = std::make_unique<visuals::Sprite>(glm::vec2(32, 32), glm::vec2(0.5, 0.5), "images/BreakAnimationBig.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 		m_breakAnimationSprite->setNumberAnimations(1);
-		m_breakAnimationSprite->setAnimationSpeed(0, 15);
+		m_breakAnimationSprite->setAnimationSpeed(0, 20);
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0, 0));
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0.5f, 0));
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0, 0.5f));
@@ -28,7 +28,7 @@ BreakableBlock::BreakableBlock(uint32_t i_resistance, std::unique_ptr<visuals::S
 	case BreakableBlockAnimationSize::Small:
 		m_breakAnimationSprite = std::make_unique<visuals::Sprite>(glm::vec2(32, 16), glm::vec2(0.5, 0.2), "images/BreakAnimationSmall.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 		m_breakAnimationSprite->setNumberAnimations(1);
-		m_breakAnimationSprite->setAnimationSpeed(0, 15);
+		m_breakAnimationSprite->setAnimationSpeed(0, 20);
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0, 0));
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0.5f, 0));
 		m_breakAnimationSprite->addKeyframe(0, glm::vec2(0, 0.2f));
