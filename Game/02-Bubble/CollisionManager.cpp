@@ -209,7 +209,7 @@ bool CollisionManager::CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, 
 
 	uint32_t y_ini, y_end;
 	y_ini = posPlayer.y;
-	y_end = posPlayer.y + sizePlayer.y;
+	y_end = posPlayer.y + sizePlayer.y*0.4f;
 
 	uint32_t ballDown = i_pos.y + i_size;
 	uint32_t ballMid = i_pos.x + i_size / 2;
