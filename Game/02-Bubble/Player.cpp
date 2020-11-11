@@ -47,10 +47,10 @@ void Player::Update(int i_deltaTime)
 	{
 		if(m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
-		m_pos.x -= 2;
+		m_pos.x -= 4;
 		if(m_map.CollisionMoveLeft(m_pos, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
-			m_pos.x += 2;
+			m_pos.x += 4;
 			m_sprite->changeAnimation(STAND_LEFT);
 		}
 	}
@@ -58,17 +58,17 @@ void Player::Update(int i_deltaTime)
 	{
 		if(m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
-		m_pos.x += 2;
+		m_pos.x += 4;
 		if(m_map.CollisionMoveRight(m_pos, glm::ivec2(32, 12)) == physics::CollisionResult::CollidedWithStaticBlock)
 		{
-			m_pos.x -= 2;
+			m_pos.x -= 4;
 			m_sprite->changeAnimation(STAND_RIGHT);
 		}
 	}
 
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
-		m_pos.y -= 2;
+		m_pos.y -= 4;
 		if (m_map.CollisionMoveUp(m_pos, glm::ivec2(32, 12), &m_pos.y) != physics::CollisionResult::CollidedWithStaticBlock)
 		{
 			//m_posPlayer.y -= 2;
@@ -77,7 +77,7 @@ void Player::Update(int i_deltaTime)
 
 	else if (core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
-		m_pos.y += 2;
+		m_pos.y += 4;
 		if (m_map.CollisionMoveDown(m_pos, glm::ivec2(32, 12), &m_pos.y) == physics::CollisionResult::NoCollision)
 		{
 			//m_posPlayer.y += 2;

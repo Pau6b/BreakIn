@@ -29,7 +29,7 @@ namespace game
 			, m_state(BallState::FollowingPlayer)
 			, m_dirBall(0, -1)
 			//, m_dirBall(CreateRandomStartDirection())
-			, m_speed(2.5f)
+			, m_speed(3.f)
 			, m_player(i_player)
 			, m_currentMap(i_currentMap)
 			, m_tileMapDispl(i_tileMapPos)
