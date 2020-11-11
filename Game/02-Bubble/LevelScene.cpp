@@ -338,7 +338,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 		}
 		if (!anyCoinLeft)
 		{
-			m_currentSceneResult = { core::Scene::SceneResult::GoToNextLevel, m_currentMine+1 };
+			m_currentSceneResult = { core::Scene::SceneResult::GoToLevel, m_currentMine+1 };
 		}
 	}
 	else //It's a key

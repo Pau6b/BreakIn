@@ -214,7 +214,7 @@ bool CollisionManager::CollisionPlayer(const glm::vec2& i_pos, uint32_t i_size, 
 	uint32_t ballDown = i_pos.y + i_size;
 	uint32_t ballMid = i_pos.x + i_size / 2;
 
-	return (ballDown >= y_ini && ballDown <= y_end && (ballMid >= posPlayer.x) && ballMid <= (posPlayer.x + sizePlayer.x+i_size/2) && i_dirY > 0);
+	return (ballDown >= y_ini && ballDown <= y_end && (ballMid >= posPlayer.x) && ballMid <= (posPlayer.x + sizePlayer.x+i_size/2) && i_dirY >= 0);
 }
 
 CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_dir, const int& i_size, const float i_speed, Ball* i_ball)
@@ -249,7 +249,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			if (oldMap > 0)
 			{
 				i_pos.y = (2 - *m_currentMap)*m_mapSizeY*m_tileSize+i_size;
-				//#dani_pau_todo quitar linea si no hay sonido
+				//#dani_todo #pau_todo quitar linea si no hay sonido
 				//m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LevelMoved);
 			}
 			return CollisionResult::CollidedWithScreen;
@@ -274,19 +274,7 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			uint32_t x, y, dir;
 			std::tie(x, y, dir) = CheckDirectionOfCollision(x_mid, y_mid, x_right, x_left, y_up, y_down);
 			CollisionResult collResult = CheckCollision(x, y);
-			if (collResult == CollisionResult::CollidedWithStaticBlock)
-			{
-				i_dir[dir] = -i_dir[dir];
-				m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
-				return CollisionResult::CollidedWithStaticBlock;
-			}
-			else if (collResult == CollisionResult::CollidedWithAlarm)
-			{
-				i_dir[dir] = -i_dir[dir];
-				m_sensor.at(*m_currentMap)->ActivateAlarm();
-				return CollisionResult::CollidedWithAlarm;
-			}
-			else if (collResult == CollisionResult::CollidedWithPortal)
+			if (collResult == CollisionResult::CollidedWithPortal)
 			{
 				isInPortal = true;
 				if (!i_ball->IsInPortal())
@@ -304,8 +292,22 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 			else
 			{
 				i_dir[dir] = -i_dir[dir];
-				ProcessBlockCollision(x, y);
-				return CollisionResult::CollidedWithStaticBlock;
+				i_pos = new_pos + i_dir * 2.f;
+				if (collResult == CollisionResult::CollidedWithStaticBlock)
+				{
+					m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::BallStaticBlockCollision);
+					return CollisionResult::CollidedWithStaticBlock;
+				}
+				else if (collResult == CollisionResult::CollidedWithAlarm)
+				{
+					m_sensor.at(*m_currentMap)->ActivateAlarm();
+					return CollisionResult::CollidedWithAlarm;
+				}
+				else
+				{
+					ProcessBlockCollision(x, y);
+					return CollisionResult::CollidedWithStaticBlock;
+				}
 			}
 
 		}
@@ -335,13 +337,14 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 				yDiag--;
 			}
 			glm::vec2 distBallCorner = glm::ivec2(x_modInTile - xSquare, y_modInTile - ySquare);
-			//std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
 			float distBallCornerLength = glm::length(distBallCorner);
 			if ( distBallCornerLength < i_size/2)
 			{
 				CollisionResult collisionResult = CheckCollision(xDiag, yDiag);
 				if (collisionResult != CollisionResult::NoCollision)
 				{
+					
+					std::cout << "BallPos (" << x_mid << "," << y_mid << ") diagChecking (" << xDiag << "," << yDiag << ")" << "distance is : (" << distBallCorner.x << "," << distBallCorner.y << ")  and absolute is = " << glm::length(distBallCorner) <<"\n";
 					if (collisionResult == CollisionResult::CollidedWithPortal)
 					{
 						isInPortal = true;
@@ -359,15 +362,15 @@ CollisionResult CollisionManager::CollisionBall(glm::vec2& i_pos, glm::vec2& i_d
 					}
 					else
 					{
-						//std::cout << "block content is : [" << m_staticCollisions[m_currentMap][xDiag][yDiag] << "]\n";
-						//std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
+						std::cout << "block content is : [" << m_staticCollisions[*m_currentMap][xDiag][yDiag] << "]\n";
+						std::cout << "Starting dir is (" << i_dir.x  << "," << i_dir.y <<  "), ";
 						CollisionResult yPartialCollision = CheckCollision(x_mid, yDiag);
 						CollisionResult xPartialCollision = CheckCollision(xDiag, y_mid);
 						i_dir = glm::normalize(distBallCorner);
-						//std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
+						std::cout << "final dir is (" << i_dir.x  << "," << i_dir.y <<  ")\n";
 						const float overPercentage = distBallCornerLength - (i_size / 2);
 						const glm::vec2 correctingVector = -i_dir * (1.f / nsteps)* i_speed;
-						i_pos = originalPos;
+						i_pos = new_pos + 2.f*i_dir;
 						if (collisionResult == CollisionResult::CollidedWithAlarm)
 						{
 							m_sensor.at(*m_currentMap)->ActivateAlarm();
