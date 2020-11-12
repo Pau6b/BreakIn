@@ -46,6 +46,8 @@ public:
 	BorderBlockInfo GetBorderBlockInfo();
 	void SetDoor(uint32_t i_map, std::unique_ptr<visuals::Door> i_door);
 	void SetCurrentMap(uint32_t i_currentMap);
+	bool HasDoorAnimationFinished();
+	void EraseDoor(uint32_t i_map);
 	
 private:
 	bool loadLevel(const std::string& i_levelFile);

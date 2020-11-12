@@ -122,7 +122,7 @@ void LevelScene::init()
 
 	m_collisionManager->LinkPlayer(m_player.get());
 
-	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player, m_currentMap, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,4);
+	m_ball = std::make_unique<Ball>(*m_collisionManager, *m_player, m_currentMap, glm::ivec2(SCREEN_X, SCREEN_Y), *m_texProgram,4, m_cheatSystem);
 
 	m_projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	m_currentTime = 0.0f;
@@ -137,7 +137,14 @@ void LevelScene::init()
 
 void LevelScene::update(int i_deltaTime)
 {
-
+	if(m_levelState == LevelState::KEY_ANIMATION)
+	{
+		m_map->Update(i_deltaTime);
+		if (m_map->HasDoorAnimationFinished())
+		{
+			m_levelState = LevelState::QUIET;
+		}
+	}
 	if (m_cheatSystem.CheckUp()) 
 	{
 		if (m_currentMap < 2 && m_levelState == LevelState::QUIET)
@@ -146,7 +153,7 @@ void LevelScene::update(int i_deltaTime)
 			if (key != m_keys.end())
 			{
 				m_collisionManager->DeleteKey(key->second);
-				m_map->WipeDoorPositions(m_currentMap);
+				m_map->EraseDoor(m_currentMap);
 				m_keys.erase(key);
 			}
 			Reset();
@@ -226,7 +233,7 @@ void LevelScene::render()
 	}
 	//Sure there is a better way to do this, but we assume that there are only a few portals
 	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
-	if (m_levelState == LevelState::QUIET)
+	if (m_levelState == LevelState::QUIET || m_levelState == LevelState::KEY_ANIMATION)
 	{
 		m_player->Render();
 		m_ball->Render();
@@ -239,14 +246,14 @@ void LevelScene::render()
 		std::for_each(std::begin(m_coins[m_previousMap]), std::end(m_coins[m_previousMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
 		m_mask->render();
 		m_text->render();
-		m_progressChange += LEVEL_SIZE_Y / 64;
+		m_progressChange += LEVEL_SIZE_Y / 32;
 		if (m_levelState == LevelState::MOVING_DOWN)
 		{
-			*m_projectionY -= LEVEL_SIZE_Y / 64;
+			*m_projectionY -= LEVEL_SIZE_Y / 32;
 		}
 		else
 		{
-			*m_projectionY += LEVEL_SIZE_Y / 64;
+			*m_projectionY += LEVEL_SIZE_Y / 32;
 		}
 		if (m_levelState == LevelState::MOVING_UP)
 		{
@@ -307,7 +314,6 @@ void LevelScene::MoveLevelDown()
 		LoseHP();
 	}
 }
-
 
 LevelScene::LevelResult LevelScene::GetLevelResult()
 {
@@ -401,7 +407,7 @@ void LevelScene::ParseBricks(std::string i_path)
 		{
 			int32_t nblocks = (doorPositions.y - doorPositions.x + 1);
 			visuals::TileMap::BorderBlockInfo borderBlockInfo = m_map->GetBorderBlockInfo();
-			std::unique_ptr<visuals::Door> door = std::make_unique<visuals::Door>(nblocks, borderBlockInfo.texturePath, borderBlockInfo.texturePixelFormat,*m_texProgram);
+			std::unique_ptr<visuals::Door> door = std::make_unique<visuals::Door>(nblocks, borderBlockInfo.texturePath, borderBlockInfo.texturePixelFormat,*m_texProgram, m_soundSystem);
 			glm::vec2 doorPos(doorPositions.x * 16 + SCREEN_X, (2 - i)*m_levelSizeY * 16 + SCREEN_Y);
 			door->SetPosition(doorPos);
 			m_map->SetDoor(i, std::move(door));
@@ -441,6 +447,7 @@ void LevelScene::OnBreakableBlockBroken(std::shared_ptr<BreakableBlock> i_broken
 		m_keys.erase(m_currentMap);
 		std::pair<uint32_t, uint32_t> wipedPositions = m_collisionManager->WipeDoorPositions();
 		m_map->WipeDoorPositions(m_currentMap);
+		m_levelState = LevelState::KEY_ANIMATION;
 	}
 }
 

@@ -29,6 +29,11 @@ void TileMap::Update(uint32_t i_delta)
 {
 	if (m_doorToUpdate != nullptr)
 	{
+		m_doorToUpdate->Update(i_delta);
+		if (m_doorToUpdate->HasAnimationFinished())
+		{
+			m_doorToUpdate = nullptr;
+		}
 	}
 }
 
@@ -46,6 +51,10 @@ void TileMap::render() const
 	{
 		it->second->Render();
 	}
+	if (m_doorToUpdate != nullptr)
+	{
+		m_doorToUpdate->Render();
+	}
 }
 
 void TileMap::free()
@@ -55,6 +64,7 @@ void TileMap::free()
 
 void TileMap::WipeDoorPositions(uint32_t i_map)
 {
+	m_doorToUpdate = std::move(m_doorSprites.at(i_map));
 	m_doorSprites.erase(i_map);
 }
 
@@ -71,6 +81,20 @@ TileMap::BorderBlockInfo TileMap::GetBorderBlockInfo()
 void TileMap::SetCurrentMap(uint32_t i_currentMap)
 {
 	m_currentMap = i_currentMap;
+}
+
+bool TileMap::HasDoorAnimationFinished()
+{
+	return !m_doorToUpdate;
+}
+
+void TileMap::EraseDoor(uint32_t i_map)
+{
+	auto it = m_doorSprites.find(i_map);
+	if (it!= m_doorSprites.end())
+	{
+		m_doorSprites.erase(it);
+	}
 }
 
 bool TileMap::loadLevel(const std::string& i_levelFile)

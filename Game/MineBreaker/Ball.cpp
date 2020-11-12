@@ -23,7 +23,7 @@ namespace game
 			}
 		}
 
-		Ball::Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed)
+		Ball::Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed, core::CheatSystem& i_cheatSystem)
 			: m_map(i_collisionsManager)
 			, m_size(12)
 			, m_state(BallState::FollowingPlayer)
@@ -33,6 +33,7 @@ namespace game
 			, m_currentMap(i_currentMap)
 			, m_tileMapDispl(i_tileMapPos)
 			, m_maxSpeed(i_maxSpeed)
+			, m_cheatSystem(i_cheatSystem)
 		{
 			m_sprite = std::make_unique<visuals::Sprite>(glm::ivec2(m_size, m_size), glm::vec2(1.0, 1.0), "images/BolaNieve.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGBA, i_shaderProgram);
 			m_sprite->setPosition(glm::vec2(float(m_tileMapDispl.x + m_posBall.x), float(m_tileMapDispl.y + m_posBall.y)));
@@ -51,6 +52,10 @@ namespace game
 			{
 				if (core::Game::instance().getSpecialKey(GLUT_KEY_UP) || core::Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 				{
+					if (m_cheatSystem.InGodMode())
+					{
+						m_dirBall = glm::vec2(0, -1);
+					}
 					m_state = BallState::Free;
 					Update(i_deltaTime);
 				}

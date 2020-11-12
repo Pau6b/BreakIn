@@ -109,7 +109,6 @@ public:
 	std::pair<core::Scene::SceneResult, uint32_t> GetSceneResult() override;
 	void MoveLevelUp();
 	void MoveLevelDown();
-
 	LevelResult GetLevelResult();
 
 private:

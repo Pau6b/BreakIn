@@ -11,6 +11,14 @@ namespace game
 	}
 }
 
+namespace game
+{
+	namespace core
+	{
+		class CheatSystem;
+	}
+}
+
 
 // Ball is a sprite
 
@@ -22,7 +30,7 @@ namespace gameplay
 class Ball
 {
 public:
-	Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed);
+	Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed, core::CheatSystem& i_cheatSystem);
 	void Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
 	void Update(int i_deltaTime);
 	void Render();
@@ -53,6 +61,7 @@ private:
 	bool m_inPortal = false;
 	uint32_t m_currentTimeElapsed = 0;
 	uint32_t m_currentMap;
+	core::CheatSystem& m_cheatSystem;
 };
 }
 }
