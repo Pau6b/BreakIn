@@ -1,0 +1,45 @@
+Integrants del grup:
+	- Daniel Cano Carrascosa
+	- Pau Murciano Julià
+
+Funcionalitats implementades:
+	* Part comuna:
+		- 3 nivells amb 3 pantalles cada un.
+		- 3 tipus de blocs bàsics amb dureses diferents (1,2 i 3 respectivament).
+		- Mecànica de claus que permet passar d'un nivell a un altre.
+		- Mecànica de diners a l'última pantalla.
+		- Alarma que activa un vigilant, que si ens atrapa, perdem una vida.
+		Extres:
+			- Mecànica de passwords.
+		- Tecles per saltar contingut:
+			- God Mode (tecla g)
+			- Saltar d'un nivell a un altre (tecles z,x,c per als nivells 1,2 i 3 respectivament)
+			- Tecla que permeti canviar a la pantalla superior (tecla w)
+			Extres:
+				- Tecla que permet canviar a la pantalla inferior (tecla s)
+				- Tecla que permet reiniciar la posició del jugador i de la pilota (tecla p)
+				
+	* Funcionalitats del joc:
+		- Estructura bàsica de 5* pantalles. * (Hem afegit una extra per als passwords)
+		- So: música de fons, sons al menú principal i sons de gameplay.
+		- Interactivitat del joc:
+		- Animació de pujar i baixar pantalla
+		- Animació d'agafar clau
+		- Animació del portal
+		- Animació del vigilant (tant quan està quiet com quan es mou)
+		- Animació de l'alarma.
+		- Sons per a cada col·lisió de la pilota.
+		- So per a quan es mor.
+		- Música de fons per quan s'ha activat l'alarma
+
+	* Part addicional:
+		- Mecànica de portals. (Quan la pilota col·lisiona amb un portal, surt per al portal enllaçat amb el portal inicial).
+
+Instruccions:
+	- Per poder executar el joc, es necessita el compilador de C++ de Visual Studio 2015 (Visual C++).
+	- Per executar el joc, entrarem a la carpeta Binari, i executarem el fitxer MineBreaker.exe
+	- Per jugar al joc es pot fer de dues formes: Prement el botó de Play al menú principal (o prement la tecla Enter) i fent servir la Mecànica de contrasenyes, les quals les trobem als diferents nivells.
+	- Per moure el jugador, es fa mitjançant les fletxes.
+	- Eines útils per provar les funcionalitats del joc:
+	- Tecles z,x,c per a anar a un nivell en concret (1,2 i 3 respectivament).
+	- Tecles w,s per a pujar i baixar de pantalla, respectivament.
