@@ -51,7 +51,7 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	, m_soundSystem(i_soundSystem)
 	, m_currentMine(i_currentMine)
 	, m_keyLevel(i_currentMine * 100 + i_currentMine * 10 + i_currentMine)
-	, m_changeLevel(LevelState::QUIET)
+	, m_levelState(LevelState::QUIET)
 	, m_progressChange(0)
 	, m_previousMap(0)
 {
@@ -128,7 +128,7 @@ void LevelScene::update(int i_deltaTime)
 
 	if (m_cheatSystem.CheckUp()) 
 	{
-		if (m_currentMap < 2)
+		if (m_currentMap < 2 && m_levelState == LevelState::QUIET)
 		{
 			auto key = m_keys.find(m_currentMap);
 			if (key != m_keys.end())
@@ -141,7 +141,7 @@ void LevelScene::update(int i_deltaTime)
 			MoveLevelUp();
 		}
 	}
-	else if (m_cheatSystem.CheckDown())
+	else if (m_cheatSystem.CheckDown() && m_levelState == LevelState::QUIET)
 	{
 		if (m_currentMap > 0)
 		{
@@ -156,7 +156,7 @@ void LevelScene::update(int i_deltaTime)
 	}
 
 	m_currentTime += i_deltaTime;
-	if (m_changeLevel == LevelState::QUIET)
+	if (m_levelState == LevelState::QUIET)
 	{
 		m_player->Update(i_deltaTime);
 		m_ball->Update(i_deltaTime);
@@ -214,14 +214,21 @@ void LevelScene::render()
 	}
 	//Sure there is a better way to do this, but we assume that there are only a few portals
 	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
-	if (m_changeLevel == LevelState::QUIET)
+	if (m_levelState == LevelState::QUIET)
 	{
 		m_player->Render();
 		m_ball->Render();
+		m_mask->render();
+		m_text->render();
 	}
 	else
 	{
-		if (m_changeLevel == LevelState::MOVING_DOWN)
+		std::for_each(std::begin(m_bricks[m_previousMap]), std::end(m_bricks[m_previousMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
+		std::for_each(std::begin(m_coins[m_previousMap]), std::end(m_coins[m_previousMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
+		m_mask->render();
+		m_text->render();
+		m_progressChange += LEVEL_SIZE_Y / 64;
+		if (m_levelState == LevelState::MOVING_DOWN)
 		{
 			*m_projectionY -= LEVEL_SIZE_Y / 64;
 		}
@@ -229,25 +236,21 @@ void LevelScene::render()
 		{
 			*m_projectionY += LEVEL_SIZE_Y / 64;
 		}
-		m_progressChange += LEVEL_SIZE_Y / 64;
-		if (m_changeLevel == LevelState::MOVING_UP)
+		if (m_levelState == LevelState::MOVING_UP)
 		{
-			m_mask->setPosition(glm::vec2(-16, -32 + (2 - m_previousMap)*LEVEL_SIZE_Y - (m_progressChange-5)));
+			m_mask->setPosition(glm::vec2(-16, -32 + (2 - m_previousMap)*LEVEL_SIZE_Y - (m_progressChange)));
 		}
 		else 
 		{
-			m_mask->setPosition(glm::vec2(-16, -32 + (2 - m_previousMap)*LEVEL_SIZE_Y + (m_progressChange-5)));
+			m_mask->setPosition(glm::vec2(-16, -32 + (2 - m_previousMap)*LEVEL_SIZE_Y + (m_progressChange)));
 		}
 		if (m_progressChange == LEVEL_SIZE_Y)
 		{
 			int32_t currentMap_aux = m_currentMap;
-			m_mask->setPosition(glm::vec2(-16, -32 + (2 - currentMap_aux)*LEVEL_SIZE_Y));
-			m_progressChange = 0; 
-			m_changeLevel = LevelState::QUIET;
+			m_progressChange = 0;
+			m_levelState = LevelState::QUIET;
 		}
 	}
-	m_mask->render();
-	m_text->render();
 }
 
 void LevelScene::MoveLevelUp()
@@ -260,11 +263,9 @@ void LevelScene::MoveLevelUp()
 		}
 	}
 
-	//*m_projectionY += LEVEL_SIZE_Y;
 	m_previousMap = m_currentMap;
 	m_currentMap++;
-	//m_mask->setPosition(glm::vec2(-16, -32 +  (2 - currentmap_temp)*LEVEL_SIZE_Y));
-	m_changeLevel = LevelState::MOVING_UP;
+	m_levelState = LevelState::MOVING_UP;
 	m_player->SetCurrentMap(m_currentMap);
 	m_map->SetCurrentMap(m_currentMap);
 
@@ -283,11 +284,9 @@ void LevelScene::MoveLevelDown()
 
 	if (m_currentMap > 0)
 	{
-		//*m_projectionY -= LEVEL_SIZE_Y;
 		m_previousMap = m_currentMap;
 		m_currentMap--;
-		//m_mask->setPosition(glm::vec2(-16, -32 +  (2 - m_currentMap)*LEVEL_SIZE_Y));
-		m_changeLevel = LevelState::MOVING_DOWN;
+		m_levelState = LevelState::MOVING_DOWN;
 		m_player->SetCurrentMap(m_currentMap);
 		m_map->SetCurrentMap(m_currentMap);
 	}

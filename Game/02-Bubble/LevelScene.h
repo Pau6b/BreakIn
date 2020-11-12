@@ -143,13 +143,14 @@ private:
 	uint32_t m_currentMine;
 	std::unique_ptr<visuals::Sprite> m_mask;
 	uint32_t m_keyLevel;
-	enum LevelState
+	enum class LevelState
 	{
 		MOVING_DOWN,
 		MOVING_UP,
+		KEY_ANIMATION,
 		QUIET
 
-	} m_changeLevel;
+	} m_levelState;
 	int32_t m_progressChange;
 	int32_t m_previousMap;
 };
