@@ -51,7 +51,10 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	, m_soundSystem(i_soundSystem)
 	, m_currentMine(i_currentMine)
 {
-
+	m_text = std::make_unique<gui::Text>("fonts/Minecraft-Regular.otf", FONT_SIZE);
+	m_text->linkStr("LIVES: ", &m_currentLives);
+	m_text->linkStr("ROOM: ", &m_currentMap);
+	m_text->linkStr("MINE: ", &m_currentMine);
 }
 
 LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine, const LevelResult& i_previousResult)
@@ -80,10 +83,6 @@ void LevelScene::init()
 	std::function<void(std::shared_ptr<BreakableBlock> i_brokenBlock)> onBreakableBlockBroken = [this](std::shared_ptr<BreakableBlock> i_brokenBlock) {
 		OnBreakableBlockBroken(i_brokenBlock);
 	};
-	m_text = std::make_unique<gui::Text>("fonts/Minecraft-Regular.otf", FONT_SIZE);
-	m_text->linkStr("LIVES: ", &m_currentLives);
-	m_text->linkStr("ROOM: ", &m_currentMap);
-	m_text->linkStr("MINE: ", &m_currentMine);
 	m_collisionManager = std::make_unique<physics::CollisionManager>(m_physicsMapPath,
 																	 m_map->getTileSize(),
 																	 m_currentMap,

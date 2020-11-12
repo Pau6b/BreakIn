@@ -52,7 +52,7 @@ bool CheatSystem::CheckDown()
 std::pair<Scene::SceneResult, glm::uint32_t> CheatSystem::CheckLevelCheat()
 {
 	Game& gameInstance = Game::instance();
-	bool isOnePressed = gameInstance.getKey('1');
+	bool isOnePressed = gameInstance.getKey('z');
 	if (isOnePressed && !m_levelResults[0])
 	{
 		m_levelResults[0] = true;
@@ -62,7 +62,7 @@ std::pair<Scene::SceneResult, glm::uint32_t> CheatSystem::CheckLevelCheat()
 	{
 		m_levelResults[0] = false;
 	}
-	bool isTwoPressed = gameInstance.getKey('2');
+	bool isTwoPressed = gameInstance.getKey('x');
 	if (isTwoPressed && !m_levelResults[1])
 	{
 		m_levelResults[1] = true;
@@ -72,7 +72,7 @@ std::pair<Scene::SceneResult, glm::uint32_t> CheatSystem::CheckLevelCheat()
 	{
 		m_levelResults[1] = false;
 	}
-	bool isThreePresed = gameInstance.getKey('3');
+	bool isThreePresed = gameInstance.getKey('c');
 	if ( isThreePresed && !m_levelResults[2])
 	{
 		m_levelResults[2] = true;

@@ -44,9 +44,14 @@ void SceneManager::Update(int i_deltaTime)
 		{
 			Scene* currentScene = m_currentScene.get();
 			gameplay::LevelScene* currentLevelScene = dynamic_cast<gameplay::LevelScene*>(currentScene);
-			if (currentLevelScene && isCheat)
+			if (currentLevelScene && !isCheat)
 			{
-				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
+				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath,
+																		m_config.levels.at(sceneResult.second).physicsMapPath,
+																		m_cheatSystem,
+																		m_soundSystem,
+																		sceneResult.second,
+																		currentLevelScene->GetLevelResult());
 			}
 			else
 			{
