@@ -142,6 +142,7 @@ private:
 	std::unique_ptr<gui::Text> m_text;
 	uint32_t m_currentMine;
 	std::unique_ptr<visuals::Sprite> m_mask;
+	uint32_t m_keyLevel;
 };
 }
 }
