@@ -50,11 +50,13 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	, m_currentMap(0)
 	, m_soundSystem(i_soundSystem)
 	, m_currentMine(i_currentMine)
+	, m_keyLevel(i_currentMine * 100 + i_currentMine * 10 + i_currentMine)
 {
 	m_text = std::make_unique<gui::Text>("fonts/Minecraft-Regular.otf", FONT_SIZE);
 	m_text->linkStr("LIVES: ", &m_currentLives);
 	m_text->linkStr("ROOM: ", &m_currentMap);
 	m_text->linkStr("MINE: ", &m_currentMine);
+	m_text->linkStr("LEVEL SEED: ", &m_keyLevel);
 }
 
 LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine, const LevelResult& i_previousResult)

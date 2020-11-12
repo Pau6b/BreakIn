@@ -118,7 +118,7 @@ namespace game
 			int n = 0;
 			std::for_each(std::begin(m_texts), std::end(m_texts), [&n, this](auto it) {auto number = (it.first.find("ROOM") != std::string::npos) ? *it.second + 1 : *it.second;
 																				  RenderString(it.first + std::to_string(number),
-																				  glm::vec2(INIT_TEXT, 100 + 70 * n),
+																				  glm::vec2(INIT_TEXT, 80 + 65 * n),
 																				  glm::vec4(1, 1, 1, 1));
 																				  ++n; });
 		}
