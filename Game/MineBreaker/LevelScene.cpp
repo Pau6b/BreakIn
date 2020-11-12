@@ -217,13 +217,14 @@ void LevelScene::render()
 	std::for_each(std::begin(m_bricks[m_currentMap]), std::end(m_bricks[m_currentMap]), [](const std::shared_ptr<Brick>& i_brick) { i_brick->Render(); });
 	std::for_each(std::begin(m_coins[m_currentMap]), std::end(m_coins[m_currentMap]), [](const std::shared_ptr<Coin>& i_coin) { i_coin->Render(); });
 	std::for_each(std::begin(m_blocksToCheck), std::end(m_blocksToCheck), [](const std::shared_ptr<BreakableBlock>& i_breakable) { i_breakable->Render(); });
-	auto it = m_keys.find(m_currentMap);
 	{
+		auto it = m_keys.find(m_currentMap);
 		if (it != m_keys.end())
 		{
 			it->second->Render();
 		}
 	}
+	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
 	{
 		auto it = m_sensor.find(m_currentMap);
 		if (it != m_sensor.end())
@@ -232,7 +233,6 @@ void LevelScene::render()
 		}
 	}
 	//Sure there is a better way to do this, but we assume that there are only a few portals
-	std::for_each(std::begin(m_portals), std::end(m_portals), [](Portal* i_portal) { i_portal->Render(); });
 	if (m_levelState == LevelState::QUIET || m_levelState == LevelState::KEY_ANIMATION)
 	{
 		m_player->Render();

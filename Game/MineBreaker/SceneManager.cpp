@@ -174,6 +174,7 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 	m_currentScene = std::make_unique<gui::MainScreenMenu>(m_soundSystem);
 	m_currentScene->init();
 	m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
+	m_soundSystem.PlayBackgroundMusic(m_config.mainMenu->backgroundSound);
 	
 }
 
