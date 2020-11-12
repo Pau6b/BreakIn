@@ -463,6 +463,24 @@ std::vector<Portal*> CollisionManager::GetPortals() const
 	return portals;
 }
 
+void CollisionManager::DeleteKey(std::shared_ptr<BreakableBlock> i_key)
+{
+	const auto& it = std::find_if(std::begin(m_breakableBlocks[*m_currentMap]), std::end(m_breakableBlocks[*m_currentMap]), [i_key](const auto& i_pair) { return i_pair.second == i_key; });
+	BreakIf(it == std::end(m_breakableBlocks[*m_currentMap]), "There is no key at this level");
+	std::string id = std::to_string(it->first);
+	for (uint32_t i = 0; i < m_staticCollisions[*m_currentMap].size(); ++i)
+	{
+		for (uint32_t j = 0; j < m_staticCollisions[*m_currentMap].size(); ++j)
+		{
+			if (m_staticCollisions[*m_currentMap][i][j] == id || m_staticCollisions[*m_currentMap][i][j] == "I")
+			{
+				m_staticCollisions[*m_currentMap][i][j] = "0";
+			}
+		}
+
+	}
+}
+
 void CollisionManager::PlayBreakableBlockSound(std::shared_ptr<BreakableBlock> i_breakableBlock)
 {
 	Coin* coin = dynamic_cast<Coin*>(i_breakableBlock.get());

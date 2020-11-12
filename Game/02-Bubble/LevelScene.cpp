@@ -127,7 +127,13 @@ void LevelScene::update(int i_deltaTime)
 	{
 		if (m_currentMap < 2)
 		{
-			
+			auto key = m_keys.find(m_currentMap);
+			if (key != m_keys.end())
+			{
+				m_collisionManager->DeleteKey(key->second);
+				m_map->WipeDoorPositions(m_currentMap);
+				m_keys.erase(key);
+			}
 			Reset();
 			MoveLevelUp();
 		}

@@ -94,6 +94,7 @@ public:
 	void LinkPlayer(Player* i_player);
 	std::pair<uint32_t,uint32_t> WipeDoorPositions();
 	std::vector<Portal*> GetPortals() const;
+	void DeleteKey(std::shared_ptr<BreakableBlock> i_key);
 
 private:
 	//#pau_todo i know this won't be fixed, but it is the result of a disastrous collision manager
