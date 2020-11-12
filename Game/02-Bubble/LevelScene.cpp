@@ -54,6 +54,14 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 
 }
 
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine, const LevelResult& i_previousResult)
+	: LevelScene(i_visualTilemapPath, i_physicsMapPath, i_cheatSystem, i_soundSystem, i_currentMine)
+{
+	m_currentLives = i_previousResult.currentLives;
+	m_text->SetCurrentCoins(i_previousResult.currentCoins);
+	m_text->SetCurrentPoints(i_previousResult.currentPoints);
+}
+
 LevelScene::~LevelScene()
 {
 
@@ -224,6 +232,15 @@ void LevelScene::MoveLevelDown()
 	}
 }
 
+
+LevelScene::LevelResult LevelScene::GetLevelResult()
+{
+	LevelResult levelResult;
+	levelResult.currentLives = m_currentLives;
+	levelResult.currentPoints = m_text->GetCurrentPoints();
+	levelResult.currentCoins = m_text->GetCurrentCoins();
+	return levelResult;
+}
 
 std::pair<core::Scene::SceneResult, glm::uint32_t> LevelScene::GetSceneResult()
 {

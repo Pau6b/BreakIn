@@ -124,6 +124,11 @@ namespace game
 		}
 
 
+		uint32_t Text::GetCurrentPoints() const
+		{
+			return m_coins;
+		}
+
 		void Text::linkStr(std::string i_text, uint32_t* value)
 		{
 			m_texts.push_back(std::make_pair(i_text, value));
@@ -248,6 +253,22 @@ namespace game
 			n_textureAtlas.setWrapS(GL_CLAMP_TO_EDGE);
 			n_textureAtlas.setWrapT(GL_CLAMP_TO_EDGE);
 		}
+
+		uint32_t Text::GetCurrentCoins() const
+		{
+			return m_coins;
+		}
+
+		void Text::SetCurrentPoints(uint32_t i_currentPoints)
+		{
+			m_points = i_currentPoints;
+		}
+
+		void Text::SetCurrentCoins(uint32_t i_currentCoins)
+		{
+			m_coins = i_currentCoins;
+		}
+
 	}
 }
 

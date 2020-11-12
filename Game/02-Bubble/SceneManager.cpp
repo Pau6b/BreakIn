@@ -27,15 +27,31 @@ void SceneManager::Update(int i_deltaTime)
 {
 	if (m_currentScene)
 	{
+
 		m_currentScene->update(i_deltaTime);
-		std::pair<Scene::SceneResult, uint32_t> sceneResult = m_currentScene->GetSceneResult();
+		std::pair<Scene::SceneResult, uint32_t> sceneResult = m_cheatSystem.CheckLevelCheat();
+		bool isCheat = true;
+		if (sceneResult.first == Scene::SceneResult::NotFinished)
+		{
+			isCheat = false;
+			sceneResult = m_currentScene->GetSceneResult();
+		}
 		switch (sceneResult.first)
 		{
 		case Scene::SceneResult::NotFinished:
 			break;
 		case Scene::SceneResult::GoToLevel:
 		{
-			m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
+			Scene* currentScene = m_currentScene.get();
+			gameplay::LevelScene* currentLevelScene = dynamic_cast<gameplay::LevelScene*>(currentScene);
+			if (currentLevelScene && isCheat)
+			{
+				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
+			}
+			else
+			{
+				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
+			}
 			m_currentScene->init();
 			m_config.levels.at(sceneResult.second);
 			m_soundSystem.PlayBackgroundMusic(m_config.levels.at(sceneResult.second).backgroundSound);

@@ -49,6 +49,42 @@ bool CheatSystem::CheckDown()
 	return false;
 }
 
+std::pair<Scene::SceneResult, glm::uint32_t> CheatSystem::CheckLevelCheat()
+{
+	Game& gameInstance = Game::instance();
+	bool isOnePressed = gameInstance.getKey('1');
+	if (isOnePressed && !m_levelResults[0])
+	{
+		m_levelResults[0] = true;
+		return{ Scene::SceneResult::GoToLevel, 1 };
+	}
+	else if (!isOnePressed)
+	{
+		m_levelResults[0] = false;
+	}
+	bool isTwoPressed = gameInstance.getKey('2');
+	if (isTwoPressed && !m_levelResults[1])
+	{
+		m_levelResults[1] = true;
+		return{ Scene::SceneResult::GoToLevel, 2 };
+	}
+	else if (!isTwoPressed)
+	{
+		m_levelResults[1] = false;
+	}
+	bool isThreePresed = gameInstance.getKey('3');
+	if ( isThreePresed && !m_levelResults[2])
+	{
+		m_levelResults[2] = true;
+		return{ Scene::SceneResult::GoToLevel, 3 };
+	}
+	else if (!isThreePresed)
+	{
+		m_levelResults[2] = false;
+	}
+	return { Scene::SceneResult::NotFinished, 0 };
+}
+
 bool CheatSystem::InGodMode() const
 {
 	return m_inGodMode;

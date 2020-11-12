@@ -38,6 +38,11 @@ namespace game
 			void UpdatePoints();
 			void render();
 
+			uint32_t GetCurrentPoints() const;
+			uint32_t GetCurrentCoins() const;
+			void SetCurrentPoints(uint32_t i_currentPoints);
+			void SetCurrentCoins(uint32_t i_currentCoins);
+
 			void linkStr(std::string i_text, uint32_t* value);
 
 		private:

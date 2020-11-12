@@ -79,7 +79,27 @@ namespace gameplay
 class LevelScene : public core::Scene
 {
 public:
-	LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine);
+	
+	struct LevelResult
+	{
+		uint32_t currentLives;
+		uint32_t currentPoints;
+		uint32_t currentCoins;
+	};
+
+	LevelScene(const std::string& i_visualTilemapPath,
+			   const std::string& i_physicsMapPath,
+		       core::CheatSystem& i_cheatSystem,
+			   sound::SoundSystem& i_soundSystem,
+			   uint32_t i_currentMine);
+
+	LevelScene(const std::string& i_visualTilemapPath,
+		const std::string& i_physicsMapPath,
+		core::CheatSystem& i_cheatSystem,
+		sound::SoundSystem& i_soundSystem,
+		uint32_t i_currentMine,
+		const LevelResult& i_previousResult);
+
 	~LevelScene();
 	void init() override;
 	void update(int i_deltaTime) override;
@@ -88,6 +108,7 @@ public:
 	void MoveLevelUp();
 	void MoveLevelDown();
 
+	LevelResult GetLevelResult();
 
 private:
 	void ParseBricks(std::string i_path);
