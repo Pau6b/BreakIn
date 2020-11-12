@@ -1,0 +1,29 @@
+MainMenu
+MainMenu
+
+ControlsMenu
+MainMenu
+
+CreditsMenu
+CreditsScreen
+
+PasswordsMenu
+MainMenu
+
+Level 1
+levels/level1/visualTilemap.txt
+levels/level1/physics.txt
+Cave
+123
+
+Level 2
+levels/level2/visualTilemap.txt
+levels/level2/physics.txt
+Nether
+666
+
+Level 3
+levels/level3/visualTilemap.txt
+levels/level3/physics.txt
+End
+404
