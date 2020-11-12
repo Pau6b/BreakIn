@@ -30,7 +30,7 @@ namespace gameplay
 class Ball
 {
 public:
-	Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed, core::CheatSystem& i_cheatSystem);
+	Ball(physics::CollisionManager& i_collisionsManager, const Player& i_player, uint32_t i_currentMap, const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram, float i_maxSpeed, core::CheatSystem& i_cheatSystem, uint32_t i_currentBall);
 	void Init(const glm::ivec2& i_tileMapPos, visuals::ShaderProgram& i_shaderProgram);
 	void Update(int i_deltaTime);
 	void Render();
