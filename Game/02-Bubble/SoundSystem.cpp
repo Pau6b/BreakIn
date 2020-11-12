@@ -26,8 +26,10 @@ void SoundSystem::PlayBackgroundMusic(BackgroundMusic i_backgroundSound)
 {
 	if (i_backgroundSound != m_currentBackgroundSound)
 	{
+		BackgroundMusic preMusic = m_currentBackgroundSound;
 		m_currentBackgroundSound = i_backgroundSound;
 		m_backgroundEngine->stopAllSounds();
+		m_gameplayEngine->stopAllSounds();
 		switch (i_backgroundSound)
 		{
 		case BackgroundMusic::MainMenu:
@@ -49,6 +51,10 @@ void SoundSystem::PlayBackgroundMusic(BackgroundMusic i_backgroundSound)
 		case BackgroundMusic::End:
 			m_backgroundEngine->play2D("sounds/background/creative4.mp3",true);
 			break;
+		}
+		if (preMusic == BackgroundMusic::Fight)
+		{
+			m_gameplayEngine->play2D("sounds/gameplaySounds/classic_hurt.mp3", false);
 		}
 	}
 }
@@ -83,7 +89,9 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 		m_gameplayEngine->play2D("sounds/gameplaySounds/gta.mp3", false);
 		break;
 	case GameplaySounds::AlarmAcivated:
-		m_gameplayEngine->play2D("sounds/gameplaySounds/alarm.mp3", false);
+		m_backgroundEngine->stopAllSounds();
+		m_gameplayEngine->play2D("sounds/gameplaySounds/fight.mp3", true);
+		m_currentBackgroundSound = BackgroundMusic::Fight;
 		break;
 	case GameplaySounds::Portal:
 		m_gameplayEngine->play2D("sounds/gameplaySounds/vwoop.mp3", false);

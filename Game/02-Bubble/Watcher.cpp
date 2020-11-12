@@ -46,10 +46,6 @@ namespace game
 		void Watcher::Update(int i_deltaTime)
 		{
 			m_sprite->update(i_deltaTime);
-			if (m_state == WatcherState::FollowingPlayer)
-			{
-				
-			}
 		}
 
 		void Watcher::Render()

@@ -11,7 +11,8 @@ enum class BackgroundMusic
 	Cave,
 	Nether,
 	End,
-	WinScreen
+	WinScreen,
+	Fight
 };
 
 enum class GameplaySounds

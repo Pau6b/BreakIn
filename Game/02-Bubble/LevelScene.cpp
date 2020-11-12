@@ -208,16 +208,34 @@ void LevelScene::render()
 
 void LevelScene::MoveLevelUp()
 {
+	{
+		auto it = m_sensor.find(m_currentMap);
+		if (it != m_sensor.end())
+		{
+			it->second->DesactivateAlarm();
+		}
+	}
+
 	*m_projectionY += LEVEL_SIZE_Y;
 	m_currentMap++;
 	int32_t currentmap_temp = m_currentMap;
 	m_mask->setPosition(glm::vec2(-16, -32 +  (2 - currentmap_temp)*LEVEL_SIZE_Y));
 	m_player->SetCurrentMap(m_currentMap);
 	m_map->SetCurrentMap(m_currentMap);
+
 }
 
 void LevelScene::MoveLevelDown()
 {
+
+	{
+		auto it = m_sensor.find(m_currentMap);
+		if (it != m_sensor.end())
+		{
+			it->second->DesactivateAlarm();
+		}
+	}
+
 	if (m_currentMap > 0)
 	{
 		*m_projectionY -= LEVEL_SIZE_Y;
@@ -311,7 +329,7 @@ void LevelScene::ParseBricks(std::string i_path)
 				else if (c == 'A')
 				{
 					m_sensor.emplace(i, std::make_shared<Sensor>(std::make_unique<visuals::Sprite>(glm::vec2(32, 32), glm::vec2(1/7.f, 1), "images/luces.png", visuals::PixelFormat::TEXTURE_PIXEL_FORMAT_RGB, *m_texProgram),
-													  glm::ivec2(SCREEN_X, SCREEN_Y), m_soundSystem));
+													  glm::ivec2(SCREEN_X, SCREEN_Y), m_soundSystem, m_currentMine));
 				}
 			}
 			//this is to clean the /n
