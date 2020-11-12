@@ -15,12 +15,13 @@ namespace game
 	namespace gui
 	{
 
-		PasswordsMenu::PasswordsMenu(sound::SoundSystem& i_soundSystem)
+		PasswordsMenu::PasswordsMenu(sound::SoundSystem& i_soundSystem, const std::map<std::string, uint32_t>& i_passwords)
 			: m_soundSystem(i_soundSystem)
 			, m_timeElapsed(0)
 			, m_printLimit(0)
 			, m_pressKey('n')
 			, m_finalMap(0)
+			, m_passwords(i_passwords)
 		{
 
 		}
@@ -44,29 +45,15 @@ namespace game
 			m_timeElapsed += float(i_deltaTime)/1000;
 			if (core::Game::instance().getKey(13))
 			{
-				bool correctKey = false;
-				if (m_userText == "111") 
+				const auto it = m_passwords.find(m_userText);
+				if (it != m_passwords.end())
 				{
-					m_finalMap = 1;
-					correctKey = true;
-				}
-				else if (m_userText == "222")
-				{
-					m_finalMap = 2;
-					correctKey = true;
-				}
-				else if (m_userText == "333")
-				{
-					m_finalMap = 3;
-					correctKey = true;
+					m_currentResult = core::Scene::SceneResult::GoToLevel;
+					m_finalMap = it->second;
 				}
 				else
 				{
 					m_userText = "";
-				}
-				if (correctKey)
-				{
-					m_currentResult = core::Scene::SceneResult::GoToLevel;
 				}
 			}
 			else if (core::Game::instance().getKey(8))
@@ -78,6 +65,14 @@ namespace game
 						m_userText.erase(std::prev(m_userText.end()));
 						m_pressKey = 'd';
 					}
+				}
+			}
+			else if (core::Game::instance().getKey('0') && m_userText.size() < 15)
+			{
+				if (m_pressKey != '0')
+				{
+					m_pressKey = '0';
+					m_userText += "0";
 				}
 			}
 			else if (core::Game::instance().getKey('1') && m_userText.size() < 15)

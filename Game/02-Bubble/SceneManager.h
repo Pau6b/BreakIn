@@ -41,6 +41,8 @@ private:
 	CheatSystem& m_cheatSystem;
 	sound::SoundSystem& m_soundSystem;
 
+	std::map<std::string, uint32_t> m_passwords;
+
 	struct SceneConfig
 	{
 		SceneConfig(sound::BackgroundMusic i_backgroundSound);
@@ -49,9 +51,10 @@ private:
 
 	struct LevelConfig : public SceneConfig
 	{
-		LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap, sound::BackgroundMusic i_backgroundMusic);
+		LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap, sound::BackgroundMusic i_backgroundMusic, const std::string& i_password);
 		std::string visualTilemapPath;
 		std::string physicsMapPath;
+		std::string password;
 	};
 
 	struct GlobalScenesConfig

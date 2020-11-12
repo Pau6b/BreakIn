@@ -28,7 +28,7 @@ namespace game
 		class PasswordsMenu : public core::Scene
 		{
 		public:
-			PasswordsMenu(sound::SoundSystem& i_soundSystem);
+			PasswordsMenu(sound::SoundSystem& i_soundSystem, const std::map<std::string, uint32_t>& i_passwords);
 			void init() override;
 			void update(int i_deltaTime) override;
 			void render() override;
@@ -61,6 +61,8 @@ namespace game
 			bool m_printLimit;
 			char m_pressKey;
 			std::string m_userText;
+
+			const std::map<std::string, uint32_t> m_passwords;
 
 		};
 	}

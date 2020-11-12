@@ -91,13 +91,15 @@ public:
 			   const std::string& i_physicsMapPath,
 		       core::CheatSystem& i_cheatSystem,
 			   sound::SoundSystem& i_soundSystem,
-			   uint32_t i_currentMine);
+			   uint32_t i_currentMine,
+			   std::string i_password);
 
 	LevelScene(const std::string& i_visualTilemapPath,
 		const std::string& i_physicsMapPath,
 		core::CheatSystem& i_cheatSystem,
 		sound::SoundSystem& i_soundSystem,
 		uint32_t i_currentMine,
+		std::string i_password,
 		const LevelResult& i_previousResult);
 
 	~LevelScene();

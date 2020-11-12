@@ -59,11 +59,17 @@ void SceneManager::Update(int i_deltaTime)
 																		m_cheatSystem,
 																		m_soundSystem,
 																		sceneResult.second,
+																		m_config.levels.at(sceneResult.second).password,
 																		currentLevelScene->GetLevelResult());
 			}
 			else
 			{
-				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath, m_config.levels.at(sceneResult.second).physicsMapPath, m_cheatSystem, m_soundSystem, sceneResult.second);
+				m_currentScene = std::make_unique<gameplay::LevelScene>(m_config.levels.at(sceneResult.second).visualTilemapPath,
+																		m_config.levels.at(sceneResult.second).physicsMapPath,
+																		m_cheatSystem,
+																		m_soundSystem,
+																		sceneResult.second,
+																		m_config.levels.at(sceneResult.second).password);
 			}
 			m_currentScene->init();
 			m_config.levels.at(sceneResult.second);
@@ -86,7 +92,7 @@ void SceneManager::Update(int i_deltaTime)
 			m_soundSystem.PlayBackgroundMusic(m_config.creditsMenu->backgroundSound);
 			break;
 		case Scene::SceneResult::GoToPasswordsMenu:
-			m_currentScene = std::make_unique<gui::PasswordsMenu>(m_soundSystem);
+			m_currentScene = std::make_unique<gui::PasswordsMenu>(m_soundSystem, m_passwords);
 			m_currentScene->init();
 			m_soundSystem.PlayBackgroundMusic(m_config.passwordsMenu->backgroundSound);
 			break;
@@ -149,10 +155,13 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 			std::string tilemapPath;
 			std::string physicsPath;
 			std::string backgroundSound;
+			std::string password;
 			std::getline(file, tilemapPath);
 			std::getline(file, physicsPath);
 			std::getline(file, backgroundSound);
-			m_config.levels.emplace(levelNumber, LevelConfig(tilemapPath, physicsPath, sound::helpers::StringToBackgroundSound(backgroundSound)));
+			std::getline(file, password);
+			m_passwords.emplace(password, levelNumber);
+			m_config.levels.emplace(levelNumber, LevelConfig(tilemapPath, physicsPath, sound::helpers::StringToBackgroundSound(backgroundSound), password));
 		}
 		else
 		{
@@ -168,10 +177,11 @@ void SceneManager::ParseSceneConfigFilePath(const std::string& i_sceneConfigFile
 	
 }
 
-SceneManager::LevelConfig::LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap, sound::BackgroundMusic i_backgroundMusic)
+SceneManager::LevelConfig::LevelConfig(const std::string& i_visualTilemapPath, const std::string& i_physicsTilemap, sound::BackgroundMusic i_backgroundMusic, const std::string& i_password)
 	: SceneConfig(i_backgroundMusic)
 	, visualTilemapPath(i_visualTilemapPath)
 	, physicsMapPath(i_physicsTilemap)
+	, password(i_password)
 {
 }
 

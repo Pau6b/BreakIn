@@ -43,14 +43,19 @@ namespace game
 namespace gameplay
 {
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath, 
+					   const std::string& i_physicsMapPath,
+					   core::CheatSystem& i_cheatSystem,
+					   sound::SoundSystem& i_soundSystem,
+					   uint32_t i_currentMine,
+					   std::string i_password)
 	: m_visualTilemapPath(i_visualTilemapPath)
 	, m_physicsMapPath(i_physicsMapPath)
 	, m_cheatSystem(i_cheatSystem)
 	, m_currentMap(0)
 	, m_soundSystem(i_soundSystem)
 	, m_currentMine(i_currentMine)
-	, m_keyLevel(i_currentMine * 100 + i_currentMine * 10 + i_currentMine)
+	, m_keyLevel(std::stoi(i_password))
 	, m_levelState(LevelState::QUIET)
 	, m_progressChange(0)
 	, m_previousMap(0)
@@ -62,8 +67,14 @@ LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string
 	m_text->linkStr("LEVEL SEED: ", &m_keyLevel);
 }
 
-LevelScene::LevelScene(const std::string& i_visualTilemapPath, const std::string& i_physicsMapPath, core::CheatSystem& i_cheatSystem, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine, const LevelResult& i_previousResult)
-	: LevelScene(i_visualTilemapPath, i_physicsMapPath, i_cheatSystem, i_soundSystem, i_currentMine)
+LevelScene::LevelScene(const std::string& i_visualTilemapPath,
+					   const std::string& i_physicsMapPath,
+					   core::CheatSystem& i_cheatSystem,
+					   sound::SoundSystem& i_soundSystem,
+					   uint32_t i_currentMine,
+					   std::string i_password,
+					   const LevelResult& i_previousResult)
+	: LevelScene(i_visualTilemapPath, i_physicsMapPath, i_cheatSystem, i_soundSystem, i_currentMine, i_password)
 {
 	m_currentLives = i_previousResult.currentLives;
 	m_text->SetCurrentCoins(i_previousResult.currentCoins);
