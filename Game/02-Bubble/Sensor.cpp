@@ -11,11 +11,12 @@ namespace game
 {
 	namespace gameplay
 	{
-		Sensor::Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay, sound::SoundSystem& i_soundSystem)
+		Sensor::Sensor(std::unique_ptr<visuals::Sprite> i_sprite, const glm::ivec2& i_tileMapDisplay, sound::SoundSystem& i_soundSystem, uint32_t i_currentMine)
 			: m_sprite(std::move(i_sprite))
 			, m_state(SensorState::OFF)
 			, m_tileMapDisplay(i_tileMapDisplay)
 			, m_soundSystem(i_soundSystem)
+			, m_currentMine(i_currentMine)
 		{
 			m_sprite->setNumberAnimations(2);
 			m_sprite->setAnimationSpeed(ON, 8);
@@ -68,6 +69,18 @@ namespace game
 
 		void Sensor::DesactivateAlarm()
 		{
+			if (m_currentMine == 1) 
+			{
+				m_soundSystem.PlayBackgroundMusic(sound::BackgroundMusic::Cave);
+			}
+			else if (m_currentMine == 2)
+			{
+				m_soundSystem.PlayBackgroundMusic(sound::BackgroundMusic::Nether);
+			}
+			else if (m_currentMine == 3)
+			{
+				m_soundSystem.PlayBackgroundMusic(sound::BackgroundMusic::End);
+			}
 			m_sprite->changeAnimation(OFF);
 			m_state = SensorState::OFF;
 			m_watcher->Reset();
