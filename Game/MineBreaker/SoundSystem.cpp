@@ -29,6 +29,8 @@ SoundSystem::SoundSystem()
 	m_backgroundSounds.at(BackgroundMusic::Nether)->setDefaultVolume(0.05f);
 	m_backgroundSounds.emplace(BackgroundMusic::End, m_backgroundEngine->addSoundSourceFromFile("sounds/background/creative4.mp3"));
 	m_backgroundSounds.at(BackgroundMusic::End)->setDefaultVolume(0.3f);
+	m_fightSound = m_backgroundEngine->addSoundSourceFromFile("sounds/gameplaySounds/fight.mp3");
+	m_fightSound->setDefaultVolume(0.3f);
 }
 
 SoundSystem::~SoundSystem()
@@ -78,7 +80,7 @@ void SoundSystem::PlayGameplaySounds(GameplaySounds i_gameplaySounds)
 		break;
 	case GameplaySounds::AlarmAcivated:
 		m_backgroundEngine->stopAllSounds();
-		m_backgroundEngine->play2D("sounds/gameplaySounds/fight.mp3", true);
+		m_backgroundEngine->play2D(m_fightSound, true);
 		m_currentBackgroundSound = BackgroundMusic::Fight;
 		break;
 	case GameplaySounds::Portal:

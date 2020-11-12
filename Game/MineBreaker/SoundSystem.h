@@ -24,8 +24,7 @@ private:
 	irrklang::ISoundEngine* m_menuSoundEngine;
 	BackgroundMusic m_currentBackgroundSound;
 	std::map<BackgroundMusic, irrklang::ISoundSource*> m_backgroundSounds;
-	std::map<GameplaySounds, irrklang::ISoundSource*> m_gameplaySounds;
-	std::map<MenuSounds, irrklang::ISoundSource*> m_menuSounds;
+	irrklang::ISoundSource* m_fightSound;
 };
 }
 }
