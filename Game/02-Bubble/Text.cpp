@@ -108,7 +108,7 @@ namespace game
 			maxTexCoord = glm::vec2(float(m_chars[c - 32].tx + m_chars[c - 32].sx) / m_textureSize, float(m_chars[c - 32].ty + m_chars[c - 32].sy) / m_textureSize);
 			m_program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
 			m_program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
-			m_quad->render(n_textureAtlas);
+			m_quad->render(m_textureAtlas);
 			glDisable(GL_BLEND);
 		}
 
@@ -158,7 +158,7 @@ namespace game
 				maxTexCoord = glm::vec2(float(m_chars[str[i] - 32].tx + m_chars[str[i] - 32].sx) / m_textureSize, float(m_chars[str[i] - 32].ty + m_chars[str[i] - 32].sy) / m_textureSize);
 				m_program.setUniform2f("minTexCoord", minTexCoord.s, minTexCoord.t);
 				m_program.setUniform2f("maxTexCoord", maxTexCoord.s, maxTexCoord.t);
-				m_quad->render(n_textureAtlas);
+				m_quad->render(m_textureAtlas);
 				pos.x += (float(m_size) / m_fontSize) * m_chars[str[i] - 32].ax;
 			}
 
@@ -229,7 +229,7 @@ namespace game
 			unsigned char c;
 			int x = 0, y = 0;
 
-			n_textureAtlas.createEmptyTexture(m_textureSize, m_textureSize);
+			m_textureAtlas.createEmptyTexture(m_textureSize, m_textureSize);
 			for (c = 32; c < 128; c++)
 			{
 				FT_Load_Char(m_face, c, FT_LOAD_RENDER);
@@ -241,7 +241,7 @@ namespace game
 				m_chars[c - 32].ay = m_face->glyph->advance.y >> 6;
 				m_chars[c - 32].bl = m_face->glyph->bitmap_left;
 				m_chars[c - 32].bt = m_face->glyph->bitmap_top;
-				n_textureAtlas.loadSubtextureFromGlyphBuffer(m_face->glyph->bitmap.buffer, x, y, m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows);
+				m_textureAtlas.loadSubtextureFromGlyphBuffer(m_face->glyph->bitmap.buffer, x, y, m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows);
 				x += m_maxCharWidth;
 				if ((x + m_maxCharWidth) >= m_textureSize)
 				{
@@ -249,9 +249,9 @@ namespace game
 					y += m_maxCharHeight;
 				}
 			}
-			n_textureAtlas.generateMipmap();
-			n_textureAtlas.setWrapS(GL_CLAMP_TO_EDGE);
-			n_textureAtlas.setWrapT(GL_CLAMP_TO_EDGE);
+			m_textureAtlas.generateMipmap();
+			m_textureAtlas.setWrapS(GL_CLAMP_TO_EDGE);
+			m_textureAtlas.setWrapT(GL_CLAMP_TO_EDGE);
 		}
 
 		uint32_t Text::GetCurrentCoins() const

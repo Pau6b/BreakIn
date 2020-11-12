@@ -61,7 +61,7 @@ namespace game
 			int m_fontSize, m_textureSize, m_maxCharWidth, m_maxCharHeight;
 			FT_Face m_face;
 			CharMetrics m_chars[NUM_CHARACTERS];
-			visuals::Texture n_textureAtlas;
+			visuals::Texture m_textureAtlas;
 			visuals::ShaderProgram m_program;
 			TexturedQuad *m_quad;
 			int m_size;
