@@ -1,42 +1,42 @@
-c:\breakin\breakin\game\02-bubble\debug\vc140.pdb
-c:\breakin\breakin\game\02-bubble\debug\vc140.idb
-c:\breakin\breakin\game\02-bubble\debug\cheatsystem.obj
-c:\breakin\breakin\game\02-bubble\debug\collisionmanager.obj
-c:\breakin\breakin\game\02-bubble\debug\main.obj
-c:\breakin\breakin\game\02-bubble\debug\levelscene.obj
-c:\breakin\breakin\game\02-bubble\debug\scenemanager.obj
-c:\breakin\breakin\game\02-bubble\debug\soundsystem.obj
-c:\breakin\breakin\game\02-bubble\debug\tilemap.obj
-c:\breakin\breakin\game\02-bubble\debug\ball.obj
-c:\breakin\breakin\game\02-bubble\debug\watcher.obj
-c:\breakin\breakin\game\02-bubble\debug\player.obj
-c:\breakin\breakin\game\02-bubble\debug\sensor.obj
-c:\breakin\breakin\game\02-bubble\debug\button.obj
-c:\breakin\breakin\game\02-bubble\debug\gameplayhelpers.obj
-c:\breakin\breakin\game\02-bubble\debug\portal.obj
-c:\breakin\breakin\game\02-bubble\debug\sprite.obj
-c:\breakin\breakin\game\02-bubble\debug\text.obj
-c:\breakin\breakin\game\02-bubble\debug\controlsmenu.obj
-c:\breakin\breakin\game\02-bubble\debug\creditsmenu.obj
-c:\breakin\breakin\game\02-bubble\debug\mainscreenmenu.obj
-c:\breakin\breakin\game\02-bubble\debug\game.obj
-c:\breakin\breakin\game\02-bubble\debug\scene.obj
-c:\breakin\breakin\game\02-bubble\debug\passwordsmenu.obj
-c:\breakin\breakin\game\02-bubble\debug\breakableblock.obj
-c:\breakin\breakin\game\02-bubble\debug\brick.obj
-c:\breakin\breakin\game\02-bubble\debug\coin.obj
-c:\breakin\breakin\game\02-bubble\debug\log.obj
-c:\breakin\breakin\game\02-bubble\debug\shader.obj
-c:\breakin\breakin\game\02-bubble\debug\shaderprogram.obj
-c:\breakin\breakin\game\02-bubble\debug\soundhelpers.obj
-c:\breakin\breakin\game\02-bubble\debug\texture.obj
-c:\breakin\breakin\game\02-bubble\debug\texturedquad.obj
-c:\breakin\breakin\game\debug\02-bubble.ilk
-c:\breakin\breakin\game\debug\02-bubble.exe
-c:\breakin\breakin\game\debug\02-bubble.pdb
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\cl.command.1.tlog
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\cl.read.1.tlog
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\cl.write.1.tlog
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\link.command.1.tlog
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\link.read.1.tlog
-c:\breakin\breakin\game\02-bubble\debug\02-bubble.tlog\link.write.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\vc140.pdb
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\vc140.idb
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\log.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\main.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\mainscreenmenu.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\passwordsmenu.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\player.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\portal.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\scene.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\scenemanager.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\sensor.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\shader.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\shaderprogram.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\soundhelpers.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\soundsystem.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\sprite.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\text.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\texture.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\texturedquad.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\tilemap.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\watcher.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\ball.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\breakableblock.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\brick.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\button.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\cheatsystem.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\coin.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\collisionmanager.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\controlsmenu.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\creditsmenu.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\game.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\gameplayhelpers.obj
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\levelscene.obj
+c:\users\daniel cano\desktop\vj\breakin\game\debug\02-bubble.ilk
+c:\users\daniel cano\desktop\vj\breakin\game\debug\02-bubble.exe
+c:\users\daniel cano\desktop\vj\breakin\game\debug\02-bubble.pdb
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\cl.command.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\cl.read.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\cl.write.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\link.command.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\link.read.1.tlog
+c:\users\daniel cano\desktop\vj\breakin\game\02-bubble\debug\02-bubble.tlog\link.write.1.tlog
