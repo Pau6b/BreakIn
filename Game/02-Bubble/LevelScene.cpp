@@ -125,6 +125,7 @@ void LevelScene::update(int i_deltaTime)
 	{
 		if (m_currentMap < 2)
 		{
+			
 			Reset();
 			MoveLevelUp();
 		}
