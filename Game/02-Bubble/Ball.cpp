@@ -96,6 +96,7 @@ namespace game
 
 		void Ball::Reset()
 		{
+			m_currentTimeElapsed = 0;
 			m_state = BallState::FollowingPlayer;
 			m_dirBall = CreateRandomStartDirection();
 		}

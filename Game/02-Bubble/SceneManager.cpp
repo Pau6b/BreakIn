@@ -36,6 +36,14 @@ void SceneManager::Update(int i_deltaTime)
 			isCheat = false;
 			sceneResult = m_currentScene->GetSceneResult();
 		}
+		if (sceneResult.first == Scene::SceneResult::GoToLevel)
+		{
+			auto it = m_config.levels.find(sceneResult.second);
+			if(it == m_config.levels.end())
+			{
+				sceneResult.first = Scene::SceneResult::GoToMainMenu;
+			}
+		}
 		switch (sceneResult.first)
 		{
 		case Scene::SceneResult::NotFinished:

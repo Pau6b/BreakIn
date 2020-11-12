@@ -2,6 +2,7 @@
 #include <irrKlang.h>
 #include "ik_ISoundEngine.h"
 #include "Sounds.h"
+#include <map>
 
 namespace game
 {
@@ -22,6 +23,9 @@ private:
 	irrklang::ISoundEngine* m_gameplayEngine;
 	irrklang::ISoundEngine* m_menuSoundEngine;
 	BackgroundMusic m_currentBackgroundSound;
+	std::map<BackgroundMusic, irrklang::ISoundSource*> m_backgroundSounds;
+	std::map<GameplaySounds, irrklang::ISoundSource*> m_gameplaySounds;
+	std::map<MenuSounds, irrklang::ISoundSource*> m_menuSounds;
 };
 }
 }

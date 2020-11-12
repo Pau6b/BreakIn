@@ -49,7 +49,7 @@ private:
 	int m_size;
 	float m_speed;
 	float m_maxSpeed;
-	const uint32_t k_timeToStartMoving = 3000000000;
+	const uint32_t k_timeToStartMoving = 6000;
 	bool m_inPortal = false;
 	uint32_t m_currentTimeElapsed = 0;
 	uint32_t m_currentMap;

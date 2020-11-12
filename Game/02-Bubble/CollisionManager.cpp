@@ -510,10 +510,10 @@ void CollisionManager::PlayBreakableBlockSound(std::shared_ptr<BreakableBlock> i
 void CollisionManager::ProcessBlockCollision(uint32_t i_x, uint32_t i_y)
 {
 	uint32_t blockPos = std::stoi(m_staticCollisions[*m_currentMap][i_x][i_y]);
-	uint32_t brickResistance = m_breakableBlocks[*m_currentMap].at(blockPos)->GetResistance() - 1;
+	int32_t brickResistance = m_breakableBlocks[*m_currentMap].at(blockPos)->GetResistance() - 1;
 	m_breakableBlocks[*m_currentMap].at(blockPos)->SetResistance(brickResistance);
 	PlayBreakableBlockSound(m_breakableBlocks[*m_currentMap].at(blockPos));
-	if (brickResistance == 0)
+	if (brickResistance <= 0)
 	{
 		m_onBreakableBlockBroken(m_breakableBlocks[*m_currentMap].at(blockPos));
 		m_breakableBlocks[*m_currentMap].erase(blockPos);

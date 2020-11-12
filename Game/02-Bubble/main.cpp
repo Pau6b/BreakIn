@@ -6,7 +6,7 @@
 #define SCREEN_HEIGHT 480
 
 //Remove console (only works in Visual Studio)
-#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+//#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 #pragma comment(lib, "irrKlang.lib")
 
 

@@ -79,24 +79,28 @@ void BreakableBlock::Render()
 	
 }
 
-void BreakableBlock::SetResistance(uint32_t i_resistance)
+void BreakableBlock::SetResistance(int32_t i_resistance)
 {
-	if (m_breakAnimationSprite)
+	if (m_breakAnimationSprite && m_resistance > 0)
 	{
 		if (!m_isDamaged)
 		{
 			m_breakAnimationSprite->SetFramesToAdvance(2);
 			m_isDamaged = true;
+			m_resistance--;
 		}
-		else
+		if (m_resistance != i_resistance)
 		{
-			m_breakAnimationSprite->SetFramesToAdvance(3);
+			int32_t resistanceCapped = std::max(i_resistance, 0);
+			uint32_t leftResistanceToAdvance = m_resistance - resistanceCapped;
+			m_resistance = resistanceCapped;
+			m_breakAnimationSprite->SetFramesToAdvance(3*leftResistanceToAdvance);
 		}
 	}
 	m_resistance = i_resistance;
 }
 
-uint32_t BreakableBlock::GetResistance() const
+int32_t BreakableBlock::GetResistance() const
 {
 	if (m_breakAnimationSprite)
 	{
