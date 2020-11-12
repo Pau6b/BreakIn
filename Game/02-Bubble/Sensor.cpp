@@ -38,6 +38,7 @@ namespace game
 				Watcher::ResultMovement resultado =  m_watcher->FollowPlayer();
 				if (resultado == Watcher::ResultMovement::PlayerHit) {
 					DesactivateAlarm();
+					m_soundSystem.PlayGameplaySounds(sound::GameplaySounds::LiveLost);
 				}
 			}
 			m_sprite->update(i_deltaTime);
